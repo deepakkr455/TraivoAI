@@ -97,7 +97,7 @@ export const subscriptionService = {
     /**
      * Check current daily query count for a user
      */
-    async getDailyQueryCount(userId: string): Promise<number> {
+    async getDailyMessageCount(userId: string): Promise<number> {
         if (!supabase) return 0;
 
         const today = new Date();

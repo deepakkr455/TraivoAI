@@ -24,7 +24,7 @@ export function useSubscription() {
 
             if (user) {
                 promises.push(subscriptionService.getUserSubscription(user.id));
-                promises.push(subscriptionService.getDailyQueryCount(user.id));
+                promises.push(subscriptionService.getDailyMessageCount(user.id));
                 promises.push(subscriptionService.getUserSubscriptionHistory(user.id));
             }
 

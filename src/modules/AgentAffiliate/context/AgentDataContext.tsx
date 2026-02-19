@@ -315,7 +315,7 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 const sub = await affiliateSubscriptionService.getUserSubscription(session.user.id);
                 if (sub && sub.tier) {
                     const quota = sub.tier.query_daily_quota || 20; // Safe fallback
-                    const usage = await affiliateSubscriptionService.getDailyQueryCount(session.user.id);
+                    const usage = await affiliateSubscriptionService.getDailyMessageCount(session.user.id);
                     if (usage >= quota && quota !== -1) {
                         const limitMessage: ChatMessage = {
                             id: crypto.randomUUID(),

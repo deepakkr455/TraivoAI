@@ -100,7 +100,7 @@ export const affiliateSubscriptionService = {
     /**
      * Check current daily query count for an affiliate
      */
-    async getDailyQueryCount(businessId: string): Promise<number> {
+    async getDailyMessageCount(businessId: string): Promise<number> {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 

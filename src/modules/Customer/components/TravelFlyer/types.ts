@@ -1,5 +1,13 @@
 export type TemplateId = string;
 
+export interface Template {
+    id: TemplateId;
+    name: string;
+    description: string;
+    thumbnail: string;
+    isMultiPage?: boolean;
+}
+
 export interface ItineraryItem {
     day: string;
     title: string;

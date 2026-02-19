@@ -28,6 +28,10 @@
   },
   "exclude": [
     "node_modules",
-    "supabase"
+    "supabase",
+    "debug_metrics.ts",
+    "debug_metrics_v2.js",
+    "check_interactions.ts",
+    "supabase_edge_function_example.ts"
   ]
 }

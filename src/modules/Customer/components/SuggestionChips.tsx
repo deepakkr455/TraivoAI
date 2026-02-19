@@ -29,12 +29,15 @@ export const SuggestionChips: React.FC<ExtendedSuggestionChipProps> = ({ onChipC
     let prompt = template;
 
     // Fill in blanks if we have data
-    if (personalization.location?.country && (prompt.includes('[Destination]') || prompt.includes('[City]') || prompt.includes('[City A]'))) {
-      const loc = personalization.location.state ? `${personalization.location.state}, ${personalization.location.country}` : personalization.location.country;
+    if (personalization.city && (prompt.includes('[Destination]') || prompt.includes('[City]') || prompt.includes('[City A]'))) {
+      const loc = personalization.state ? `${personalization.city}, ${personalization.state}` : personalization.city;
       prompt = prompt.replace('[Destination]', loc).replace('[City]', loc).replace('[City A]', loc);
     }
-    if (personalization.tripTypes && prompt.includes('[Interests]')) prompt = prompt.replace('[Interests]', personalization.tripTypes);
-    if (personalization.tripTypes && prompt.includes('[Type]')) prompt = prompt.replace('[Type]', personalization.tripTypes);
+    if (personalization.interests && personalization.interests.length > 0) {
+      const interestsStr = personalization.interests.join(', ');
+      if (prompt.includes('[Interests]')) prompt = prompt.replace('[Interests]', interestsStr);
+      if (prompt.includes('[Type]')) prompt = prompt.replace('[Type]', personalization.interests[0]);
+    }
     return prompt;
   };
 

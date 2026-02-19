@@ -2,7 +2,7 @@
 // This can be used in any page or modal
 
 import React, { useState } from 'react';
-import TravelPersonalization, { PersonalizationData } from '../components/TravelPersonalization';
+import { TravelPersonalization, PersonalizationData } from '../components/TravelPersonalization';
 
 const ExampleUsage: React.FC = () => {
     const [showPersonalization, setShowPersonalization] = useState(false);
@@ -36,10 +36,12 @@ const ExampleUsage: React.FC = () => {
                             onComplete={handleComplete}
                             onCancel={handleCancel}
                             initialData={{
-                                tripTypes: ['adventure', 'culture'],
-                                excitement: ['mountains', 'history'],
-                                pace: 'balanced',
-                                budget: 'mid',
+                                referral_source: 'Google Search',
+                                state: 'Maharashtra',
+                                city: 'Mumbai',
+                                interests: ['Adventure', 'Culture'],
+                                travel_frequency: 'regularly',
+                                budget: 'Mid',
                             }}
                         />
                     </div>
@@ -50,6 +52,7 @@ const ExampleUsage: React.FC = () => {
             <div className="container mx-auto py-12">
                 <TravelPersonalization
                     onComplete={handleComplete}
+                    onCancel={() => { }}
                 />
             </div>
         </div>

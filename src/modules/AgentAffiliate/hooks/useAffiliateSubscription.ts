@@ -22,7 +22,7 @@ export function useAffiliateSubscription() {
 
             if (user) {
                 promises.push(affiliateSubscriptionService.getUserSubscription(user.id));
-                promises.push(affiliateSubscriptionService.getDailyQueryCount(user.id));
+                promises.push(affiliateSubscriptionService.getDailyMessageCount(user.id));
             }
 
             const results = await Promise.all(promises);
