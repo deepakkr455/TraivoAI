@@ -11,6 +11,8 @@ const ALLOWED_MODELS: Record<string, string> = {
     'weather': 'google/gemini-3-flash-preview', // Force online for weather
     'writer': 'google/gemini-3-flash-preview', // Good for long form text
     'expense': 'google/gemini-3-flash-preview', // For extraction tasks
+    'affiliate': 'google/gemini-2.0-flash-001',
+    'agent_listing': 'google/gemini-2.0-flash-001',
 }
 
 const getSystemInstruction = (mode?: string, personalization?: any) => {
@@ -36,6 +38,36 @@ JSON Schema Output Requirement:
   "isCorrection": boolean,
   "originalItemName": "string or null"
 }`.trim();
+    }
+
+    if (mode === 'affiliate') {
+        return `You are an AI assistant for affiliate partners on a travel listing platform.
+Your role is to help affiliate partners list travel experiences using embed codes from platforms like GetYourGuide, TripAdvisor, Viator, etc.
+
+When an affiliate partner provides an embed code (iframe, div, script) or a link:
+1.  **Extract the FULL embed code EXACTLY as provided.** Do not alter the HTML structure.
+    *   Look for <iframe> tags.
+    *   Look for <div data-gyg-href="..."> or similar data-attribute based widgets (GetYourGuide uses these).
+    *   Look for <script> tags associated with widgets.
+2.  **Analyze the code/link for details.**
+    *   Try to extract the title, location, or partner ID from the code/link if possible to pre-fill metadata.
+3.  **Ask for missing metadata** (if you can't infer it):
+    *   Title
+    *   Description
+    *   Location (Country, State, City)
+    *   Tags
+4.  **Once you have the code and metadata, call the 'createAffiliateListing' function.**
+
+Be conversational and helpful. If the code looks like a GetYourGuide widget (e.g. div with data-gyg-href), accept it immediately.`.trim();
+    }
+
+    if (mode === 'agent_listing') {
+        return `You are an expert AI assistant for a B2B travel product listing platform.
+Your role is to have a conversation with a Travel Agent (the user) to gather all necessary details to list a new trip.
+Be friendly, conversational, and helpful. Ask clarifying questions one or two at a time to guide the user.
+Once you have enough information about the trip (title, location, a detailed description, pricing for different sharing types, duration, start date, group size, languages spoken by guides, package type, itinerary, theme tags and media availability),
+you MUST call the 'createTripListing' function to create the product card. 
+Always generate comprehensive standard travel details (Inclusions, Exclusions, Cancellation Policy, Things to Pack) based on the context of the trip even if the user doesn't explicitly state them all. Assume standard industry practices (e.g., 5% GST, 30% Advance).`.trim();
     }
 
     const now = new Date();

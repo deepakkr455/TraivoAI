@@ -27,3 +27,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build logs and temporary files
+*.txt
+single_tsc_output.txt
+tsc_output.txt
+
+# Debug and example scripts
+debug_metrics.ts
+debug_metrics_v2.js
+check_interactions.ts
+supabase_edge_function_example.ts
+
+# Supabase temporary files
+supabase/.temp/

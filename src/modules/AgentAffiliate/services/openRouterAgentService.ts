@@ -1,28 +1,9 @@
-import OpenAI from 'openai';
 import { ChatMessage } from '../types';
+import supabase from '../../../services/supabaseClient';
+
+// OpenAI client removed. Now using Supabase Edge Function 'openrouter-api' for security.
 
 
-// Initialize OpenAI client pointing to OpenRouter
-const openai = new OpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    // Try process.env first (defined in vite.config.ts), then import.meta.env (standard Vite)
-    apiKey: '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',
-    // apiKey: process.env.OPENROUTER_API_KEY || (import.meta as any).env?.VITE_OPENROUTER_API_KEY || process.env.API_KEY,
-    dangerouslyAllowBrowser: true, // Client-side usage
-    defaultHeaders: {
-        "HTTP-Referer": window.location.origin, // Required by OpenRouter for rankings
-        "X-Title": "AI Trip Lister", // Optional
-    }
-});
-
-const model = "google/gemini-2.0-flash-001"; // Using a similar model via OpenRouter
-
-const systemInstruction = `You are an expert AI assistant for a B2B travel product listing platform.
-Your role is to have a conversation with a Travel Agent (the user) to gather all necessary details to list a new trip.
-Be friendly, conversational, and helpful. Ask clarifying questions one or two at a time to guide the user.
-Once you have enough information about the trip (title, location, a detailed description, pricing for different sharing types, duration, start date, group size, languages spoken by guides, package type, itinerary, theme tags and media availability),
-you MUST call the 'createTripListing' function to create the product card. 
-Always generate comprehensive standard travel details (Inclusions, Exclusions, Cancellation Policy, Things to Pack) based on the context of the trip even if the user doesn't explicitly state them all. Assume standard industry practices (e.g., 5% GST, 30% Advance).`;
 
 // Tool Definition in OpenAI JSON Schema format
 const tools = [
@@ -124,33 +105,39 @@ const formatConversationHistory = (history: ChatMessage[]) => {
 };
 
 export const getAgentResponse = async (history: ChatMessage[]): Promise<AppCompatibleResponse> => {
+    if (!supabase) {
+        throw new Error("Supabase client not initialized");
+    }
+
     const formattedHistory = formatConversationHistory(history);
 
-    const completion = await openai.chat.completions.create({
-        model: model,
-        messages: [
-            { role: 'system', content: systemInstruction },
-            ...formattedHistory
-        ],
-        tools: tools,
+    const { data, error } = await supabase.functions.invoke('openrouter-api', {
+        body: {
+            mode: 'agent_listing',
+            messages: formattedHistory,
+            tools: tools
+        }
     });
 
-    const choice = completion.choices[0];
+    if (error) {
+        console.error("Edge Function Error:", error);
+        throw new Error(error.message || "Failed to get AI response from Edge Function");
+    }
+
+    // The Edge Function returns the full OpenAI-style completion object
+    const choice = data.choices[0];
     const message = choice.message;
 
     const response: AppCompatibleResponse = {};
 
     if (message.tool_calls && message.tool_calls.length > 0) {
-        response.functionCalls = message.tool_calls.map(tc => ({
+        response.functionCalls = message.tool_calls.map((tc: any) => ({
             name: tc.function.name,
             args: JSON.parse(tc.function.arguments)
         }));
     }
 
     // If there is content, include it. 
-    // Note: models might return both content and tool calls. 
-    // The original App.tsx logic has an 'if/else' structure: if functionCalls exist, it processes them, else it shows text.
-    // If we have both, and we return both, App.tsx might ignore text if functionCalls is present. This is acceptable or we can just populate both.
     if (message.content) {
         response.text = message.content;
     }
