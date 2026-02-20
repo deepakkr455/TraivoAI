@@ -176,12 +176,16 @@ const AppContent: React.FC = () => {
     );
 };
 
+import { SubscriptionProvider } from './context/SubscriptionContext';
+
 const App: React.FC = () => {
     return (
         <AuthProvider>
-            <HashRouter>
-                <AppContent />
-            </HashRouter>
+            <SubscriptionProvider>
+                <HashRouter>
+                    <AppContent />
+                </HashRouter>
+            </SubscriptionProvider>
         </AuthProvider>
     );
 };

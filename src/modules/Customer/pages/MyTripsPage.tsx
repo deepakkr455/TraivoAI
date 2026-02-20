@@ -128,7 +128,7 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                 placeholder="Search collection..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-12 md:pl-14 pr-12 py-3.5 bg-gray-50/50 border-none rounded-[1.5rem] leading-5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:bg-white text-sm md:text-base transition-all"
+                className="block w-full pl-12 md:pl-14 pr-12 py-3 md:py-3.5 bg-gray-50/50 border-none rounded-[1.5rem] leading-5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:bg-white text-sm md:text-base transition-all"
               />
               {searchTerm && (
                 <button
@@ -141,18 +141,18 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
             </div>
 
             {/* KPIs & Actions (Right) */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-8 order-2 lg:order-2 px-2 md:px-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 lg:gap-8 order-2 lg:order-2 px-2 md:px-4 w-full lg:w-auto">
               {trips.length > 0 && (
-                <div className="flex items-center justify-center gap-8 md:gap-10 py-1 sm:py-0 w-full sm:w-auto">
+                <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-10 py-1 sm:py-0 w-full sm:w-auto overflow-x-auto no-scrollbar">
                   <SmallStat label="Total" value={trips.length} />
-                  <div className="h-6 w-px bg-gray-100" />
+                  <div className="h-6 w-px bg-gray-100 shrink-0" />
                   <SmallStat label="Upcoming" value={upcomingTrips.length} />
-                  <div className="h-6 w-px bg-gray-100" />
+                  <div className="h-6 w-px bg-gray-100 shrink-0" />
                   <SmallStat label="Done" value={completedTrips.length} />
                 </div>
               )}
 
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-center lg:justify-end">
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-center lg:justify-end shrink-0">
                 <button
                   onClick={() => navigate('/user/wanderchat')}
                   className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-teal-600 text-white font-bold rounded-full hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/10 active:scale-95 whitespace-nowrap text-xs md:text-sm"
@@ -162,7 +162,7 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                 </button>
                 <button
                   onClick={loadTrips}
-                  className="p-3 bg-gray-50 text-gray-400 hover:text-teal-600 rounded-full border border-gray-100 transition-all active:rotate-180"
+                  className="p-3 bg-gray-50 text-gray-400 hover:text-teal-600 rounded-full border border-gray-100 transition-all active:rotate-180 flex items-center justify-center shrink-0"
                   title="Refresh Collection"
                 >
                   <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />

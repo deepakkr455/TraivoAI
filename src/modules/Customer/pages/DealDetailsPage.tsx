@@ -5,12 +5,12 @@ import { Product } from '../../AgentAffiliate/types';
 import { getListedProducts, getPublicProfile, getSavedDeals, saveDeal, unsaveDeal, trackProductTimeSpent, incrementProductView } from '../../AgentAffiliate/services/supabaseService';
 import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon, MapIcon, HeartIcon } from '../../AgentAffiliate/components/Icons';
 import { ItineraryTimeline } from '../../AgentAffiliate/components/ItineraryTimeline';
-import { EnquiryModal } from '../components/EnquiryModal';
 import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../services/messageService';
 import Header from '../components/Header';
 import { ArrowLeft, MessageCircle, Share2 } from 'lucide-react';
 import { AffiliateBanner } from '../../AgentAffiliate/components/AffiliateBanner';
+import { FloatingChatIcon } from '../components/FloatingChatIcon';
 
 const InfoItem: React.FC<{ icon: React.ReactNode; label: string; value: string; }> = ({ icon, label, value }) => (
     <div className="flex flex-col gap-2">
@@ -34,7 +34,6 @@ const DealDetailsPage: React.FC = () => {
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'policies'>('overview');
-    const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [agentProfile, setAgentProfile] = useState<any>(null);
@@ -241,25 +240,6 @@ const DealDetailsPage: React.FC = () => {
         }
     };
 
-    const handleEnquirySubmit = async (message: string) => {
-        if (!user) {
-            navigate('/login');
-            return;
-        }
-        if (!product) return;
-
-        const agentId = product.business_id || '29605330-80a2-4752-9b2f-2267f565f3f3';
-        const customerName = (user as any)?.user_metadata?.full_name || user.email || 'Traveler';
-
-        const inquiryId = await messageService.checkOrCreateInquiry(product.id, agentId, user.id, customerName, undefined);
-
-        if (inquiryId) {
-            await messageService.sendMessage(inquiryId, message, 'customer', user.id);
-            navigate(`/user/messages?inquiry_id=${inquiryId}`);
-        } else {
-            alert("Failed to start conversation. Please try again.");
-        }
-    };
 
     if (loading) {
         return (
@@ -514,7 +494,7 @@ const DealDetailsPage: React.FC = () => {
 
                                 <div className="space-y-4">
                                     <button
-                                        onClick={() => setIsEnquiryOpen(true)}
+                                        onClick={handleChatRedirect}
                                         className="w-full py-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-lg shadow-lg shadow-teal-500/20 transition-transform active:scale-95"
                                     >
                                         Send Enquiry
@@ -545,24 +525,8 @@ const DealDetailsPage: React.FC = () => {
                 </div>
             </main>
 
-            {/* Floating Chat Button */}
-            <button
-                onClick={handleChatRedirect}
-                className="fixed bottom-6 right-6 z-50 p-4 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center group"
-                title="Chat with Agent"
-            >
-                <MessageCircle className="w-7 h-7" />
-                <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 ease-in-out whitespace-nowrap ml-0 group-hover:ml-2 text-sm font-bold">
-                    Chat with Agent
-                </span>
-            </button>
+            <FloatingChatIcon />
 
-            <EnquiryModal
-                isOpen={isEnquiryOpen}
-                onClose={() => setIsEnquiryOpen(false)}
-                onSubmit={handleEnquirySubmit}
-                productTitle={product.title}
-            />
 
             <style>{`
                 .no-scrollbar::-webkit-scrollbar { display: none; }

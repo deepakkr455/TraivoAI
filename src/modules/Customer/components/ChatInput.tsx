@@ -211,7 +211,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
           <div className="pb-1 pl-1">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 ${showMenu ? 'bg-teal-100 text-teal-600 rotate-45' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}`}
+              className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 ${showMenu
+                ? 'bg-gray-100 text-gray-600 rotate-45'
+                : 'bg-gradient-to-br from-violet-600 to-red-500 text-white'
+                }`}
               title="More options"
             >
               <Plus className="w-5 h-5" />
@@ -228,7 +231,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               placeholder={isFocused ? PLACEHOLDER_MESSAGES[placeholderIndex] : PLACEHOLDER_MESSAGES[placeholderIndex]}
-              className="animated-placeholder w-full bg-transparent text-gray-800 placeholder-gray-400 border-none focus:ring-0 resize-none py-2.5 max-h-48 outline-none"
+              className="animated-placeholder w-full bg-transparent text-gray-800 placeholder-gray-400 border-none focus:ring-0 resize-none py-2 md:py-2.5 max-h-48 outline-none text-sm md:text-base"
               rows={1}
               disabled={isLoading}
             />

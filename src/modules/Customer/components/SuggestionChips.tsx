@@ -50,7 +50,7 @@ export const SuggestionChips: React.FC<ExtendedSuggestionChipProps> = ({ onChipC
             const template = realisticPrompts[text] || text;
             onChipClick(getPersonalizedPrompt(text, template));
           }}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isDarkBackground
+          className={`px-2 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors ${isDarkBackground
             ? 'bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white'
             : 'bg-teal-600 text-white hover:bg-teal-700 shadow-sm'
             }`}

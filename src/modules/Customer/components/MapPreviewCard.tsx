@@ -13,7 +13,7 @@ export const MapPreviewCard: React.FC<MapPreviewCardProps> = ({ dayPlan, onViewM
     const activityCount = itinerary.filter(item => item.type === 'activity').length;
 
     return (
-        <div className="bg-gray-800/60 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-gray-600/50 w-80 mt-2 hover:bg-gray-800/70 transition-all group flex-shrink-0">
+        <div className="bg-gray-800/60 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-gray-600/50 w-full max-w-[320px] mx-auto mt-2 hover:bg-gray-800/70 transition-all group flex-shrink-0">
             <div className="p-4">
                 <div className="flex justify-between items-start mb-3">
                     <div>

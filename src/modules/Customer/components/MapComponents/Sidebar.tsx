@@ -98,10 +98,10 @@ export const Sidebar: React.FC<{ dayPlan: DayPlan | null; onClose: () => void }>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={onClose}
-                            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+                            className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors bg-white/50"
                             title="Collapse Sidebar"
                         >
-                            <ChevronRight className="h-5 w-5" />
+                            <ChevronRight className="h-6 w-6" />
                         </button>
                         <div>
                             <h2 className="text-lg font-bold text-gray-900 leading-none">Your Day Plan</h2>

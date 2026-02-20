@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Product } from '../../AgentAffiliate/types';
 import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon, MapIcon, HeartIcon } from '../../AgentAffiliate/components/Icons';
 import { ItineraryTimeline } from '../../AgentAffiliate/components/ItineraryTimeline';
-import { EnquiryModal } from './EnquiryModal';
 import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../services/messageService';
 import { getPublicProfile } from '../../AgentAffiliate/services/supabaseService';
@@ -21,7 +20,6 @@ export const CustomerProductPreview: React.FC<CustomerProductPreviewProps> = ({ 
     const navigate = useNavigate();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'policies'>('overview');
-    const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
     const [agentProfile, setAgentProfile] = useState<any>(null);
 
     React.useEffect(() => {
@@ -74,7 +72,7 @@ export const CustomerProductPreview: React.FC<CustomerProductPreviewProps> = ({ 
         if (onLikeToggle) onLikeToggle(newState);
     };
 
-    const handleEnquirySubmit = async (message: string) => {
+    const handleChatRedirect = async () => {
         if (!user) {
             navigate('/login');
             return;
@@ -82,11 +80,11 @@ export const CustomerProductPreview: React.FC<CustomerProductPreviewProps> = ({ 
 
         const agentId = product.business_id || '29605330-80a2-4752-9b2f-2267f565f3f3';
         const customerName = (user as any)?.user_metadata?.full_name || user.email || 'Traveler';
+        const avatarUrl = (user as any)?.user_metadata?.avatar_url || (user as any)?.user_metadata?.picture || null;
 
-        const inquiryId = await messageService.checkOrCreateInquiry(product.id, agentId, user.id, customerName, undefined, tripId);
+        const inquiryId = await messageService.checkOrCreateInquiry(product.id, agentId, user.id, customerName, avatarUrl, tripId);
 
         if (inquiryId) {
-            await messageService.sendMessage(inquiryId, message, 'customer', user.id);
             navigate(`/user/messages?inquiry_id=${inquiryId}`);
         } else {
             alert("Failed to start conversation. Please try again.");
@@ -333,7 +331,7 @@ export const CustomerProductPreview: React.FC<CustomerProductPreviewProps> = ({ 
                                 </div>
 
                                 <button
-                                    onClick={() => setIsEnquiryOpen(true)}
+                                    onClick={handleChatRedirect}
                                     className="w-full py-3 md:py-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-base md:text-lg shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-1 block"
                                 >
                                     Enquire Now
@@ -347,12 +345,6 @@ export const CustomerProductPreview: React.FC<CustomerProductPreviewProps> = ({ 
                 </main>
             </div>
 
-            <EnquiryModal
-                isOpen={isEnquiryOpen}
-                onClose={() => setIsEnquiryOpen(false)}
-                onSubmit={handleEnquirySubmit}
-                productTitle={product.title}
-            />
 
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }

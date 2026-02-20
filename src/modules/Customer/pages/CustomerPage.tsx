@@ -328,7 +328,6 @@ const WanderChatPage: React.FC = () => {
 
   const handleSuggestionClick = (prompt: string) => {
     setChatInput(prompt);
-    handleSend(prompt);
   };
 
   useEffect(() => {
@@ -579,7 +578,7 @@ const WanderChatPage: React.FC = () => {
   }
 
   return (
-    <div className={`flex flex-col h-screen w-screen ${bgClass} ${isChatStarted ? 'text-gray-800' : 'text-white'} transition-all duration-500 ease-in-out overflow-hidden`}>
+    <div className={`flex flex-col h-[100dvh] w-full ${bgClass} ${isChatStarted ? 'text-gray-800' : 'text-white'} transition-all duration-500 ease-in-out overflow-hidden`}>
       <div className={`flex flex-col h-full w-full transition-all duration-700 ${showSmartWelcome ? 'blur-xl scale-[0.98] brightness-50 pointer-events-none' : ''}`}>
         {/* Header */}
         <div
@@ -620,8 +619,8 @@ const WanderChatPage: React.FC = () => {
             {user && (isChatStarted || isSidebarOpen) && (
               <div className={`transition-all duration-300 ease-in-out border-gray-200 overflow-hidden 
                 ${isChatStarted
-                  ? `absolute inset-y-0 left-0 z-40 lg:relative lg:border-r ${isSidebarCollapsed ? 'lg:w-0 lg:border-none' : 'lg:w-80'}`
-                  : 'fixed inset-y-0 left-0 z-50 h-full shadow-2xl bg-white w-80'
+                  ? `absolute inset-y-0 left-0 z-40 lg:relative lg:border-r ${isSidebarCollapsed ? 'lg:w-0 lg:border-none' : 'w-full md:w-80'}`
+                  : 'fixed inset-y-0 left-0 z-50 h-full shadow-2xl bg-white w-full md:w-80'
                 }
             `}>
                 <CustomerChatSidebar
@@ -651,17 +650,17 @@ const WanderChatPage: React.FC = () => {
 
 
             <div className="flex-1 flex overflow-hidden relative">
-              <div className={`flex flex-col transition-all duration-500 ease-in-out ${activeRightPanel ? 'md:w-1/2' : 'w-full'} ${(isWeatherExpanded && activeRightPanel === 'weather') || (isMapExpanded && activeRightPanel === 'map') ? '!hidden' : ''}`}>
+              <div className={`flex flex-col transition-all duration-500 ease-in-out ${activeRightPanel ? 'hidden lg:flex lg:w-1/2' : 'w-full'} ${(isWeatherExpanded && activeRightPanel === 'weather') || (isMapExpanded && activeRightPanel === 'map') ? '!hidden' : ''}`}>
                 <main ref={chatContainerRef} className={`flex-1 overflow-y-auto w-full px-4 scroll-smooth ${isChatStarted ? 'pt-20' : ''}`}>
                   {!isChatStarted ? (
-                    <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                      <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg mb-2">Hey I'm TraivoAI,</h1>
-                      <div className="h-20 flex items-center justify-center">
-                        <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 drop-shadow-lg text-teal-300 animate-pulse">
+                    <div className="flex flex-col items-center justify-start md:justify-center h-full text-center px-4 pt-10 md:pt-0">
+                      <h1 className="text-3xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg mb-1 md:mb-2">Hey I'm TraivoAI,</h1>
+                      <div className="h-16 md:h-20 flex items-center justify-center">
+                        <h2 className="text-3xl md:text-6xl font-extrabold tracking-tight mb-2 md:mb-4 drop-shadow-lg text-teal-300 animate-pulse">
                           <DynamicHeadline />
                         </h2>
                       </div>
-                      <p className="text-lg md:text-xl text-white/90 max-w-2xl mb-8 font-medium drop-shadow-md">Tell me your style and budget, and I'll design a trip for you.</p>
+                      <p className="text-base md:text-xl text-white/90 max-w-2xl mb-6 md:mb-8 font-medium drop-shadow-md">Tell me your style and budget, and I'll design a trip for you.</p>
                       <div className="w-full max-w-4xl mx-auto">
                         <ChatInput
                           onSend={handleSend}
@@ -678,7 +677,7 @@ const WanderChatPage: React.FC = () => {
 
                         <SuggestionChips onChipClick={handleSuggestionClick} isDarkBackground={true} personalization={user?.personalization} />
 
-                        <div className="mt-6 flex flex-wrap justify-center gap-4 mb-4">
+                        <div className="mt-4 md:mt-6 flex flex-wrap justify-center gap-3 md:gap-4 mb-2 md:mb-4">
                           <button
                             onClick={() => {
                               if (!user) {
@@ -688,9 +687,9 @@ const WanderChatPage: React.FC = () => {
                               setIsChatStarted(true);
                               setIsSidebarOpen(true);
                             }}
-                            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-full font-medium transition-all border border-white/20 shadow-lg"
+                            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-4 py-2.5 md:px-6 md:py-3 rounded-full font-medium transition-all border border-white/20 shadow-lg text-sm md:text-base"
                           >
-                            <MessageSquare className="w-5 h-5" /> Chat History
+                            <MessageSquare className="w-4 h-4 md:w-5 md:h-5" /> Chat History
                           </button>
                           <button
                             onClick={() => {
@@ -700,9 +699,9 @@ const WanderChatPage: React.FC = () => {
                               }
                               goToMyTrips();
                             }}
-                            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-full font-medium transition-all border border-white/20 shadow-lg"
+                            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-4 py-2.5 md:px-6 md:py-3 rounded-full font-medium transition-all border border-white/20 shadow-lg text-sm md:text-base"
                           >
-                            <Map className="w-5 h-5" /> View My Trips
+                            <Map className="w-4 h-4 md:w-5 md:h-5" /> View My Trips
                           </button>
                         </div>
                       </div>
@@ -726,10 +725,10 @@ const WanderChatPage: React.FC = () => {
                       {/* SCROLL TRIGGER BUTTON */}
                       <button
                         onClick={() => setViewMode('recommendations')}
-                        className="mt-8 flex flex-col items-center gap-2 text-white/80 hover:text-teal-300 transition-all animate-bounce"
+                        className="mt-4 md:mt-8 flex flex-col items-center gap-1 md:gap-2 text-white/80 hover:text-teal-300 transition-all animate-bounce"
                       >
-                        <span className="text-sm font-bold uppercase tracking-widest shadow-black drop-shadow-md">Scroll for Recommendations</span>
-                        <ChevronDown className="w-8 h-8 drop-shadow-md" />
+                        <span className="text-[10px] md:text-sm font-bold uppercase tracking-widest shadow-black drop-shadow-md">Scroll for Recommendations</span>
+                        <ChevronDown className="w-6 h-6 md:w-8 md:h-8 drop-shadow-md" />
                       </button>
                     </div>
                   ) : (
@@ -819,7 +818,7 @@ const WanderChatPage: React.FC = () => {
 
               {/* Right Panels (Plan/Weather/Map) */}
               {activeRightPanel === 'plan' && activePlanView && (
-                <div className="w-full md:w-1/2 bg-slate-50 relative border-l border-gray-200 animate-slideInRight h-full">
+                <div className="w-full lg:w-1/2 bg-slate-50 relative border-l border-gray-200 animate-slideInRight h-full">
                   <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
                     <button onClick={closePlanView} className="bg-white hover:bg-gray-100 rounded-full p-2 shadow-lg transition-colors"><X className="w-6 h-6 text-gray-700" /></button>
                     {user && (
@@ -837,7 +836,7 @@ const WanderChatPage: React.FC = () => {
                 </div>
               )}
               {activeRightPanel === 'weather' && weatherData && (
-                <div className={`transition-all duration-500 bg-white border-l border-gray-200 shadow-2xl relative h-full ${isWeatherExpanded ? 'w-full fixed inset-0 z-50 animate-in zoom-in-95 duration-300' : 'w-full md:w-1/2 animate-slideInRight'}`}>
+                <div className={`transition-all duration-500 bg-white border-l border-gray-200 shadow-2xl relative h-full ${isWeatherExpanded ? 'w-full fixed inset-0 z-50 animate-in zoom-in-95 duration-300' : 'w-full lg:w-1/2 animate-slideInRight'}`}>
                   <WeatherPanel
                     data={weatherData}
                     onClose={() => setActiveRightPanel(null)}
@@ -847,7 +846,7 @@ const WanderChatPage: React.FC = () => {
                 </div>
               )}
               {activeRightPanel === 'map' && dayPlanData && (
-                <div className={`transition-all duration-500 bg-white border-l border-gray-200 shadow-2xl relative h-full ${isMapExpanded ? 'w-full fixed inset-0 z-50 animate-in zoom-in-95 duration-300' : 'w-full md:w-1/2 animate-slideInRight'}`}>
+                <div className={`transition-all duration-500 bg-white border-l border-gray-200 shadow-2xl relative h-full ${isMapExpanded ? 'w-full fixed inset-0 z-50 animate-in zoom-in-95 duration-300' : 'w-full lg:w-1/2 animate-slideInRight'}`}>
                   <MapPanel
                     dayPlan={dayPlanData}
                     onClose={() => setActiveRightPanel(null)}

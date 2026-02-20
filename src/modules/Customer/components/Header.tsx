@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import ProfileModal from './ProfileModal';
+import { ChevronDown } from 'lucide-react';
 
 const MapPinIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-500">
@@ -29,32 +30,57 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNaviga
     navigate('/');
   };
 
-  const NavLinks = () => (
+  const NavLinks = ({ isMobile = false }) => (
     <>
       {onNavigateChat && onNavigateHome ? (
         // Dynamic link for TraivoAI page
         isChatActive ? (
-          <button onClick={() => { onNavigateHome?.(); setIsMobileMenuOpen(false); }} className="text-sm font-medium hover:text-teal-500 transition-colors text-left w-full md:w-auto p-2 md:p-0">Home</button>
+          <button onClick={() => { onNavigateHome?.(); setIsMobileMenuOpen(false); }} className="text-sm font-medium hover:text-teal-500 transition-colors text-left w-full xl:w-auto p-2 xl:p-0 whitespace-nowrap">Home</button>
         ) : (
-          <button onClick={() => { onNavigateChat?.(); setIsMobileMenuOpen(false); }} className="text-sm font-medium hover:text-teal-500 transition-colors text-left w-full md:w-auto p-2 md:p-0">Chat</button>
+          <button onClick={() => { onNavigateChat?.(); setIsMobileMenuOpen(false); }} className="text-sm font-medium hover:text-teal-500 transition-colors text-left w-full xl:w-auto p-2 xl:p-0 whitespace-nowrap">Chat</button>
         )
       ) : (
         // Fallback for other pages
-        <Link to="/user/wanderchat" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">Home</Link>
+        <Link to="/user/wanderchat" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">Home</Link>
       )}
-      <Link to="/user/best-deals" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">Best Deals</Link>
-      <Link to="/user/my-trips" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">My Trips</Link>
-      <Link to="/user/my-blogs" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">Blogs</Link>
-      <Link to="/user/subscription" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">Subscription</Link>
-      <Link to="/user/about" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">About Us</Link>
-      <Link to="/user/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">Contact</Link>
-      {user && (
+      <Link to="/user/best-deals" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">Best Deals</Link>
+      <Link to="/user/my-trips" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">My Trips</Link>
+      <Link to="/user/subscription" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">Subscription</Link>
+
+      {!isMobile && (
+        <div className="relative group/more">
+          <button className="flex items-center gap-1 text-sm font-medium hover:text-teal-500 transition-colors py-2 xl:py-0 whitespace-nowrap">
+            More <ChevronDown className="w-4 h-4" />
+          </button>
+          <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 opacity-0 invisible group-hover/more:opacity-100 group-hover/more:visible transition-all duration-200 transform origin-top-left z-50 text-gray-800">
+            <Link to="/user/my-blogs" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">Blogs</Link>
+            <Link to="/user/about" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">About Us</Link>
+            <Link to="/user/contact" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">Contact</Link>
+            {user && (
+              <>
+                <Link to="/user/saved-deals" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">Saved Deals</Link>
+                <Link to="/user/messages" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">Inquiries</Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {isMobile && (
         <>
-          <Link to="/user/saved-deals" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">Saved Deals</Link>
-          <Link to="/user/messages" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">Inquiries</Link>
+          <Link to="/user/my-blogs" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">Blogs</Link>
+          <Link to="/user/about" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">About Us</Link>
+          <Link to="/user/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">Contact</Link>
+          {user && (
+            <>
+              <Link to="/user/saved-deals" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">Saved Deals</Link>
+              <Link to="/user/messages" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">Inquiries</Link>
+            </>
+          )}
         </>
       )}
-      <Link to="/agent-portal" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block md:inline p-2 md:p-0">Agent Portal</Link>
+
+      <Link to="/agent-portal" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">Agent Portal</Link>
     </>
   );
 
@@ -79,8 +105,8 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNaviga
       </div>
 
       {/* Desktop Navigation */}
-      <nav className="hidden md:flex items-center space-x-6">
-        <NavLinks />
+      <nav className="hidden xl:flex items-center space-x-6">
+        <NavLinks isMobile={false} />
 
         {/* User Auth: Sign In/Up if Guest, Dropdown if User */}
         {user ? (
@@ -122,7 +148,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNaviga
       </nav>
 
       {/* Mobile Menu Toggle & History Icon */}
-      <div className="md:hidden flex items-center gap-1">
+      <div className="xl:hidden flex items-center gap-1">
         {onToggleSidebar && user && (
           <button
             onClick={onToggleSidebar}
@@ -148,8 +174,8 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNaviga
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl p-4 md:hidden flex flex-col space-y-2 animate-in slide-in-from-top-2 text-gray-800">
-          <NavLinks />
+        <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl p-4 xl:hidden flex flex-col space-y-2 animate-in slide-in-from-top-2 text-gray-800">
+          <NavLinks isMobile={true} />
           <div className="h-px bg-gray-100 my-2"></div>
 
           <button onClick={() => { setIsProfileOpen(true); setIsMobileMenuOpen(false); }} className="block text-left px-2 py-2 text-sm font-medium hover:text-teal-600">My Profile</button>

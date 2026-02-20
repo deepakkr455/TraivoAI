@@ -25,7 +25,7 @@ export const TripPlanPreviewCard: React.FC<TripPlanPreviewCardProps> = ({ url, t
   const hasBlog = false; // TODO: Check if blog exists for this plan (could be passed as prop or fetched)
 
   return (
-    <div className="bg-gray-800/60 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-gray-600/50 w-80 flex-shrink-0 flex flex-col">
+    <div className="bg-gray-800/60 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-gray-600/50 w-full max-w-[320px] mx-auto flex-shrink-0 flex flex-col">
       <div
         onClick={handleClick}
         className="block hover:opacity-90 transition-opacity cursor-pointer flex-grow"

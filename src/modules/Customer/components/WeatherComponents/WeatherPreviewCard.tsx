@@ -13,7 +13,7 @@ export const WeatherPreviewCard: React.FC<WeatherPreviewCardProps> = ({ data, on
   const Icon = getWeatherIcon(data?.current?.condition || 'Sunny', "w-10 h-10");
 
   return (
-    <div className="bg-gray-800/60 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-gray-600/50 w-80 flex-shrink-0">
+    <div className="bg-gray-800/60 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-gray-600/50 w-full max-w-[320px] mx-auto flex-shrink-0">
       <div
         className="block hover:opacity-90 transition-opacity cursor-pointer"
         onClick={(e) => {

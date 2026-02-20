@@ -45,7 +45,7 @@ const CreatorPage: React.FC = () => {
             {/* Mobile History Drawer */}
             <div className={`fixed inset-0 z-[60] lg:hidden transition-opacity duration-300 ${isMobileHistoryOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileHistoryOpen(false)} />
-                <div className={`absolute left-0 top-0 bottom-0 w-80 bg-gray-100 dark:bg-gray-950 shadow-2xl transform transition-transform duration-300 ${isMobileHistoryOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className={`absolute left-0 top-0 bottom-0 w-full max-w-[320px] bg-gray-100 dark:bg-gray-950 shadow-2xl transform transition-transform duration-300 ${isMobileHistoryOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <ChatHistorySidebar
                         sessions={chatSessions}
                         currentSessionId={currentSessionId}
@@ -97,13 +97,13 @@ const CreatorPage: React.FC = () => {
             <button
                 onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
                 className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-l-md shadow-md text-gray-500 hover:text-teal-500 transition-transform hover:scale-110"
-                style={{ right: isWorkspaceOpen ? '25%' : '0' }}
+                style={{ right: isWorkspaceOpen ? 'min(400px, 25%)' : '0' }}
             >
                 {isWorkspaceOpen ? <ChevronRightIcon className="w-4 h-4" /> : <ChevronLeftIcon className="w-4 h-4" />}
             </button>
 
             {/* Workspace */}
-            <div className={`hidden lg:block flex-shrink-0 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out ${isWorkspaceOpen ? 'w-1/4 opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
+            <div className={`hidden lg:block flex-shrink-0 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out ${isWorkspaceOpen ? 'w-[min(400px,25%)] opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
                 <div className="w-full h-full">
                     {profile?.user_type === 'affiliate_partner' ? (
                         <AffiliateWorkspace

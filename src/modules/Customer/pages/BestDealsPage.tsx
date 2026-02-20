@@ -108,17 +108,18 @@ const BestDealsPage: React.FC = () => {
                     </div>
 
                     {/* Centered Search Bar (Aligned with MyBlogsPage design) */}
-                    <div className="flex flex-col lg:flex-row items-center justify-center gap-4 mb-12">
-                        <div className="w-full max-w-xl relative group">
+                    {/* Centered Search Bar & Controls */}
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-12 w-full max-w-4xl mx-auto px-2">
+                        <div className="w-full md:flex-1 relative group">
                             <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                 <Search className="h-5 w-5 text-gray-400 group-focus-within:text-teal-500 transition-colors" />
                             </div>
                             <input
                                 type="text"
-                                placeholder="Search destinations, styles, or experiences..."
+                                placeholder="Search destinations, styles..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="block w-full pl-12 pr-12 py-4 bg-white border border-gray-200 rounded-[2rem] leading-5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 text-lg shadow-sm hover:shadow-md transition-all"
+                                className="block w-full pl-12 pr-12 py-3.5 md:py-4 bg-white border border-gray-200 rounded-[2rem] leading-5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 text-base md:text-lg shadow-sm hover:shadow-md transition-all"
                             />
                             {searchTerm && (
                                 <button
@@ -130,24 +131,26 @@ const BestDealsPage: React.FC = () => {
                             )}
                         </div>
 
-                        {user && (
-                            <button
-                                onClick={() => setShowSavedOnly(!showSavedOnly)}
-                                className={`px-4 py-4 rounded-full border shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 ${showSavedOnly ? 'bg-pink-50 border-pink-200 text-pink-600' : 'bg-white border-gray-200 text-gray-400 hover:text-pink-600'}`}
-                                title={showSavedOnly ? 'Show All Deals' : 'Show Saved Only'}
-                            >
-                                <Heart className={`w-5 h-5 ${showSavedOnly ? 'fill-pink-600' : ''}`} />
-                                <span className="text-sm font-medium">Saved Deals</span>
-                            </button>
-                        )}
+                        <div className="flex items-center gap-3 w-full md:w-auto justify-center">
+                            {user && (
+                                <button
+                                    onClick={() => setShowSavedOnly(!showSavedOnly)}
+                                    className={`flex-1 md:flex-none px-6 py-3.5 md:py-4 rounded-full border shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 ${showSavedOnly ? 'bg-pink-50 border-pink-200 text-pink-600' : 'bg-white border-gray-200 text-gray-400 hover:text-pink-600'}`}
+                                    title={showSavedOnly ? 'Show All Deals' : 'Show Saved Only'}
+                                >
+                                    <Heart className={`w-4 h-4 md:w-5 md:h-5 ${showSavedOnly ? 'fill-pink-600' : ''}`} />
+                                    <span className="text-sm font-medium whitespace-nowrap">Saved Deals</span>
+                                </button>
+                            )}
 
-                        <button
-                            onClick={loadDeals}
-                            className="p-4 bg-white text-gray-400 hover:text-teal-600 rounded-full border border-gray-200 shadow-sm hover:shadow-md transition-all active:rotate-180 flex items-center justify-center"
-                            title="Refresh Deals"
-                        >
-                            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
-                        </button>
+                            <button
+                                onClick={loadDeals}
+                                className="p-3.5 md:p-4 bg-white text-gray-400 hover:text-teal-600 rounded-full border border-gray-200 shadow-sm hover:shadow-md transition-all active:rotate-180 flex items-center justify-center shrink-0"
+                                title="Refresh Deals"
+                            >
+                                <RefreshCw className={`w-4 h-4 md:w-5 md:h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                            </button>
+                        </div>
                     </div>
 
                     {isLoading ? (

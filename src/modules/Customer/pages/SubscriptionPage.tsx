@@ -80,7 +80,7 @@ const SubscriptionPage: React.FC = () => {
         });
     };
 
-    if (loading) {
+    if (loading && availablePlans.length === 0) {
         return (
             <div className="h-screen bg-white flex items-center justify-center">
                 <Loader2 className="animate-spin h-12 w-12 text-teal-600" />
@@ -159,20 +159,20 @@ const SubscriptionPage: React.FC = () => {
                     </div>
 
                     {/* Billing Cycle Toggles */}
-                    <div className="mt-12 flex justify-center">
-                        <div className="bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm flex gap-1">
+                    <div className="mt-8 md:mt-12 flex justify-center">
+                        <div className="bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm flex flex-wrap items-center justify-center gap-1 max-w-full">
                             {(['monthly', 'quarterly', 'yearly'] as BillingCycle[]).map((cycle) => (
                                 <button
                                     key={cycle}
                                     onClick={() => setBillingCycle(cycle)}
-                                    className={`relative py-2.5 px-8 rounded-xl text-sm font-bold whitespace-nowrap focus:outline-none transition-all duration-300 ${billingCycle === cycle
+                                    className={`relative py-2 px-6 md:px-8 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap focus:outline-none transition-all duration-300 ${billingCycle === cycle
                                         ? 'bg-gray-900 text-white shadow-xl scale-105'
                                         : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                                         }`}
                                 >
                                     {cycle.charAt(0).toUpperCase() + cycle.slice(1)}
-                                    {cycle === 'quarterly' && <span className="text-[10px] ml-1 text-teal-400 font-black">SAVE 10%</span>}
-                                    {cycle === 'yearly' && <span className="text-[10px] ml-1 text-teal-400 font-black">SAVE 15%</span>}
+                                    {cycle === 'quarterly' && <span className="text-[9px] md:text-[10px] ml-1 text-teal-400 font-black">SAVE 10%</span>}
+                                    {cycle === 'yearly' && <span className="text-[9px] md:text-[10px] ml-1 text-teal-400 font-black">SAVE 15%</span>}
                                 </button>
                             ))}
                         </div>
@@ -223,16 +223,7 @@ const SubscriptionPage: React.FC = () => {
                                             </div>
                                         ) : (
                                             <>
-                                                {/* Display specific quotas if available */}
-                                                {plan.daily_quota && (
-                                                    <div className="flex items-start gap-2">
-                                                        <div className="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center bg-teal-50 text-teal-600 shrink-0">
-                                                            <CheckCircle2 className="h-3 w-3" />
-                                                        </div>
-                                                        <p className="text-xs text-gray-600 font-bold">{plan.daily_quota} Queries / Day</p>
-                                                    </div>
-                                                )}
-
+                                                {/* Features based on controls */}
                                                 {getFeaturesForPlan(plan.name).map((control) => (
                                                     <div key={control.id} className="flex items-start gap-2">
                                                         <div className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${control.control_value === 'No' ? 'bg-gray-50 text-gray-300' : 'bg-teal-50 text-teal-600'}`}>
@@ -265,7 +256,7 @@ const SubscriptionPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

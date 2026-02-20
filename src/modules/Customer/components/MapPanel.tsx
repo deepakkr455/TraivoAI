@@ -39,7 +39,7 @@ export const MapPanel: React.FC<MapPanelProps> = ({ dayPlan, onClose, isExpanded
     return (
         <div className="relative h-full w-full flex flex-col bg-gray-50 overflow-hidden">
             {/* Header/Controls - ABSOLUTE positioned to float over map */}
-            <div className={`absolute top-4 z-[1001] flex flex-col gap-2 transition-all duration-300 ${isSidebarOpen ? 'md:right-[21rem] right-4' : 'right-4'}`}>
+            <div className={`absolute top-4 z-[1100] flex flex-col gap-2 transition-all duration-300 ${isSidebarOpen ? 'md:right-[21rem] right-4' : 'right-4'}`}>
                 <button
                     onClick={onClose}
                     className="bg-white hover:bg-gray-100 rounded-full p-3 shadow-lg transition-colors text-gray-700 border border-gray-100 flex items-center justify-center"

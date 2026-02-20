@@ -30,7 +30,7 @@ const AuthenticatedLayout: React.FC = () => {
 
     return (
         <AgentDataProvider>
-            <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900 font-sans text-gray-900 dark:text-white overflow-hidden">
+            <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-900 font-sans text-gray-900 dark:text-white overflow-hidden">
                 <TopHeader />
                 <div className="flex-1 overflow-y-auto">
                     <Outlet />
