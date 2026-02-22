@@ -209,7 +209,7 @@ const CustomerMessagesPage: React.FC = () => {
                     {/* Vertical Banner Column */}
                     {isDesktopSidebarOpen && (
                         <div className="hidden md:flex flex-col w-[160px] border-r border-gray-200 bg-white overflow-hidden flex-shrink-0">
-                            <AffiliateBanner bannerType="vertical-banner" className="h-full w-full" />
+                            <AffiliateBanner bannerType="vertical-banner" source="viator" className="h-full w-full" />
                         </div>
                     )}
 
@@ -299,7 +299,7 @@ const CustomerMessagesPage: React.FC = () => {
                                 )}
                                 {/* Mobile Banner - Horizontal at bottom of users list (Inside scroll) */}
                                 <div className="md:hidden p-2 flex justify-center bg-gray-50/50 mt-2">
-                                    <AffiliateBanner bannerType="horizontal-banner" className="w-full max-w-[320px]" />
+                                    <AffiliateBanner bannerType="horizontal-banner" source="viator" className="w-full max-w-[320px]" />
                                 </div>
                             </div>
                         </div>

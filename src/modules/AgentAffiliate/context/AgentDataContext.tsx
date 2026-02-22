@@ -284,6 +284,7 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 country: args.country,
                 state: args.state,
                 city: args.city,
+                banner_type: args.banner_type,
                 is_active: true
             };
 

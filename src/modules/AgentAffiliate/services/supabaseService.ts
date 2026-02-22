@@ -472,18 +472,85 @@ export const getAffiliateListings = async (userId?: string): Promise<import('../
     return data || [];
 };
 
-export const getAffiliateBanners = async (bannerType: string, limit: number = 5): Promise<import('../types').AffiliateListing[]> => {
-    const { data, error } = await supabase
+export const getAffiliateBanners = async (bannerType: string, limit: number = 5, source?: string): Promise<import('../types').AffiliateListing[]> => {
+    console.log(`🔍 [SupabaseService] Entering getAffiliateBanners(type=${bannerType}, source=${source})`);
+    // Robust Matching: handle vertical-banner vs vertical_banner, etc.
+    const typeVariations = [bannerType, bannerType.replace('-', '_'), bannerType.replace('_', '-')];
+
+    let query = supabase
         .from('affiliate_listings')
         .select('*')
-        // .eq('link_health', true)
-        .eq('banner_type', bannerType)
-        .order('platform_ranking', { ascending: false }) // Prioritize platform ranking for these
+        .eq('is_active', true)
+        .eq('link_health', 'active')
+        .in('banner_type', typeVariations);
+
+    if (source) {
+        // Use ilike for case-insensitive matching (e.g., 'Viator' vs 'viator')
+        query = query.ilike('affiliate_source', source);
+    }
+
+    let { data, error } = await query
+        .order('platform_ranking', { ascending: false })
         .limit(limit);
 
     if (error) {
-        console.error(`Error fetching affiliate banners (${bannerType}):`, error);
+        console.error(`Error fetching affiliate banners (${bannerType}${source ? ` - ${source}` : ''}):`, error);
         return [];
+    }
+
+    // Fallback: If no categorized banners found, get ANY active and healthy banners for this source
+    if ((!data || data.length === 0) && bannerType !== 'any') {
+        console.warn(`[SupabaseService] No categorized banners found for ${bannerType}/${source}. Trying source-only fallback.`);
+        let fallbackQuery = supabase
+            .from('affiliate_listings')
+            .select('*')
+            .eq('is_active', true)
+            .eq('link_health', 'active');
+
+        if (source) {
+            fallbackQuery = fallbackQuery.ilike('affiliate_source', source);
+        }
+
+        const { data: fallbackData, error: fallbackError } = await fallbackQuery.limit(limit);
+        if (fallbackError) console.error(`❌ [SupabaseService] Fallback 1 Error:`, fallbackError);
+        if (fallbackData && fallbackData.length > 0) {
+            console.log(`✅ [SupabaseService] Fallback 1 succeeded with ${fallbackData.length} results.`);
+            data = fallbackData;
+        }
+    }
+
+    // Fallback 2: ABSOLUTE PERMISSIVE DEBUG (Ignore all filters except source string)
+    if (!data || data.length === 0) {
+        console.warn(`[SupabaseService] STILL 0 results. Running table-wide diagnostic...`);
+
+        // 1. Check ALL rows without ANY filters
+        const { data: allRows, error: allErr } = await supabase.from('affiliate_listings').select('*').limit(5);
+        if (allErr) {
+            console.error(`❌ [SupabaseService] Table-wide fetch failed:`, allErr);
+        } else if (allRows && allRows.length > 0) {
+            console.log(`✅ [SupabaseService] Success! Found ${allRows.length} rows when ignoring all filters.`);
+            console.log(`📋 [SupabaseService] Sample Sources:`, [...new Set(allRows.map(r => r.affiliate_source))]);
+            console.log(`📋 [SupabaseService] Sample Types:`, [...new Set(allRows.map(r => r.banner_type))]);
+            console.log(`📋 [SupabaseService] One Row:`, allRows[0]);
+
+            // Try to find one that matches our source string even loosely
+            if (source) {
+                const search = source.toLowerCase();
+                const match = allRows.find(r => r.affiliate_source?.toLowerCase().includes(search));
+                if (match) console.warn(`⚠️ [SupabaseService] Found a potential match in memory but filters missed it!`, match);
+            }
+        } else {
+            console.error(`💀 [SupabaseService] TABLE IS EMPTY or RLS BLOCKED even for select('*') limit 5`);
+        }
+
+        if (source) {
+            let debugQuery = supabase.from('affiliate_listings').select('*').ilike('affiliate_source', `%${source}%`);
+            const { data: debugData } = await debugQuery.limit(1);
+            if (debugData && debugData.length > 0) {
+                console.warn(`⚠️ [SupabaseService] Found match with broad search:`, debugData[0]);
+                data = debugData;
+            }
+        }
     }
 
     return data || [];

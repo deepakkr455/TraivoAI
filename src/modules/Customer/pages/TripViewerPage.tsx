@@ -10,7 +10,7 @@ export const TripViewerPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [trip, setTrip] = useState<TripWithAccess | null>(null);
-    const [blobUrl, setBlobUrl] = useState<string>('');
+    const [htmlContent, setHtmlContent] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
     const [isResponding, setIsResponding] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -20,10 +20,6 @@ export const TripViewerPage: React.FC = () => {
         loadTrip();
         return () => {
             console.log('🔴 TripViewerPage unmounted');
-            // Clean up blob URL
-            if (blobUrl) {
-                URL.revokeObjectURL(blobUrl);
-            }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
@@ -56,24 +52,16 @@ export const TripViewerPage: React.FC = () => {
 
             if (result.success && result.data) {
                 console.log('✅ Access granted - Loading trip:', result.data.id);
-                // alert("hurray")
 
                 const hash = window.location.hash;
                 const queryString = hash.split('?')[1];
                 const params = new URLSearchParams(queryString);
                 const version = params.get('version');
-                // alert(params.get('version'));
-
-                // Check for version query param
-                // const searchParams = new URLSearchParams(window.location.search);
-                // const version = searchParams.get('version');
-                // alert(version)
 
                 let tripDataToRender = result.data;
                 let planDataToRender = result.data.planData;
 
                 if (version === 'updated' && result.data.updatedPlanData) {
-                    // alert(1)
                     console.log('Rendering updated plan data');
                     planDataToRender = result.data.updatedPlanData;
 
@@ -82,17 +70,14 @@ export const TripViewerPage: React.FC = () => {
                         ...result.data,
                         title: result.data.updatedPlanData.title || result.data.title,
                         planData: result.data.updatedPlanData,
-                        // Update other relevant fields if they exist in updatedPlanData
                     };
                 }
 
                 setTrip(tripDataToRender);
 
                 // Generate HTML from the JSON planData
-                const htmlContent = generateTripPlanHtml(planDataToRender);
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                setBlobUrl(url);
+                const html = generateTripPlanHtml(planDataToRender);
+                setHtmlContent(html);
 
             } else {
                 // Check if it's an access denied error
@@ -117,8 +102,8 @@ export const TripViewerPage: React.FC = () => {
     };
 
     const handleBack = () => {
-        console.log('🔙 Back button clicked, using browser history');
-        navigate(-1);
+        console.log('🔙 Navigating to My Trips');
+        navigate('/user/my-trips');
     };
 
     const handleDelete = async () => {
@@ -312,7 +297,7 @@ export const TripViewerPage: React.FC = () => {
     return (
         <TripViewer
             trip={trip}
-            blobUrl={blobUrl}
+            htmlContent={htmlContent}
             onBack={handleBack}
             onDelete={handleDelete}
             onAcceptInvitation={handleAcceptInvitation}

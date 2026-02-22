@@ -51,9 +51,14 @@ const tools = [
                     city: {
                         type: "string",
                         description: 'The city where this experience takes place'
+                    },
+                    banner_type: {
+                        type: "string",
+                        enum: ['horizontal-banner', 'vertical-banner', 'square-banner'],
+                        description: 'Categorize this banner based on its dimensions in the embed code.'
                     }
                 },
-                required: ['embed_code', 'title', 'country', 'city']
+                required: ['embed_code', 'title', 'country', 'city', 'banner_type']
             }
         }
     }

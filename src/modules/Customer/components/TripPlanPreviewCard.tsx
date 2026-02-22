@@ -16,6 +16,7 @@ export const TripPlanPreviewCard: React.FC<TripPlanPreviewCardProps> = ({ url, t
   const imageUrl = customImageUrl || `https://placehold.co/800x400/0d9488/ffffff?text=${encodeURIComponent(heroImageText)}`;
 
   const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onViewClick) {
       e.preventDefault();
       onViewClick(planId);

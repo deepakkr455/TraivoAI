@@ -7,7 +7,7 @@ import { TravelRecommendations } from './TravelRecommendations';
 import { WeatherNews } from './WeatherNews';
 import { VerifiedSources } from './VerifiedSources';
 
-import { X, Share2, MapPin, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Share2, MapPin, Maximize2, Minimize2, Zap } from 'lucide-react';
 
 interface WeatherPanelProps {
   data: WeatherData | null;
@@ -90,6 +90,30 @@ export const WeatherPanel: React.FC<WeatherPanelProps> = ({
 
               {/* 6. Sources */}
               <VerifiedSources urls={data.groundingUrls} />
+
+              {/* 7. AI Disclaimer / Caution */}
+              <div className="mt-4 pb-12">
+                {data.caution ? (
+                  <div className="p-6 rounded-[2rem] bg-amber-50 border border-amber-200 shadow-sm animate-in fade-in duration-700">
+                    <div className="flex items-center gap-2 mb-3 text-amber-700">
+                      <Zap className="w-5 h-5 fill-current" />
+                      <span className="font-bold uppercase tracking-wider text-xs">Weather Advisory</span>
+                    </div>
+                    <p className="text-amber-900 text-sm leading-relaxed font-medium">
+                      {data.caution}
+                    </p>
+                    <p className="mt-4 text-[11px] text-amber-600/80 italic">
+                      ⚠️ <strong>AI-Generated Insights:</strong> This report is synthesized from global data using advanced AI. For safety-critical decisions, we recommend cross-verifying these details with official meteorological services.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-6 rounded-[2rem] bg-slate-50 border border-slate-200 shadow-sm animate-in fade-in duration-700">
+                    <p className="text-slate-500 text-sm leading-relaxed text-center italic">
+                      ⚠️ <strong>AI-Generated Insights:</strong> This report is synthesized from global data using advanced AI. For safety-critical decisions, we recommend cross-verifying these details with official meteorological services.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

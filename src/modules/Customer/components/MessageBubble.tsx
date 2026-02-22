@@ -95,25 +95,25 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
     // Render text with Markdown
     return (
-      <div className={`prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-gray-800 prose-pre:text-gray-100 ${content.isLimit ? 'text-red-600 font-bold' : ''}`}>
+      <div className={`prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-gray-800 prose-pre:text-gray-100 ${isUser ? 'prose-invert !text-white prose-p:text-white prose-headings:text-white prose-li:text-white prose-strong:text-white prose-code:text-white' : ''} ${content.isLimit ? 'text-red-600 font-bold' : ''}`}>
         <Markdown
           remarkPlugins={[remarkGfm]}
           components={{
-            p: ({ node, ...props }) => <p className="mb-4 last:mb-0" {...props} />,
-            h1: ({ node, ...props }) => <h1 className="text-xl font-bold mb-4" {...props} />,
-            h2: ({ node, ...props }) => <h2 className="text-lg font-bold mb-3" {...props} />,
-            h3: ({ node, ...props }) => <h3 className="text-md font-bold mb-2" {...props} />,
+            p: ({ node, ...props }) => <p className={`mb-4 last:mb-0 ${isUser ? 'text-white' : ''}`} {...props} />,
+            h1: ({ node, ...props }) => <h1 className={`text-xl font-bold mb-4 ${isUser ? 'text-white' : ''}`} {...props} />,
+            h2: ({ node, ...props }) => <h2 className={`text-lg font-bold mb-3 ${isUser ? 'text-white' : ''}`} {...props} />,
+            h3: ({ node, ...props }) => <h3 className={`text-md font-bold mb-2 ${isUser ? 'text-white' : ''}`} {...props} />,
             ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4" {...props} />,
             ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
-            li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+            li: ({ node, ...props }) => <li className={`mb-1 ${isUser ? 'text-white' : ''}`} {...props} />,
             table: ({ node, ...props }) => (
               <div className="overflow-x-auto mb-4">
                 <table className="min-w-full border-collapse border border-gray-300 rounded-lg overflow-hidden" {...props} />
               </div>
             ),
             thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
-            th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 text-left font-semibold" {...props} />,
-            td: ({ node, ...props }) => <td className="border border-gray-300 px-4 py-2" {...props} />,
+            th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900" {...props} />,
+            td: ({ node, ...props }) => <td className={`border border-gray-300 px-4 py-2 ${isUser ? 'text-white' : ''}`} {...props} />,
             code: ({ node, ...props }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-pink-600 font-mono text-sm" {...props} />,
           }}
         >

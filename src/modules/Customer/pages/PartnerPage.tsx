@@ -69,7 +69,7 @@ const PartnerPage: React.FC = () => {
                             <div className="space-y-2">
                                 <label className="flex items-center gap-2 text-sm font-bold text-gray-200 ml-1">
                                     <Mail className="w-4 h-4 text-blue-400" />
-                                    Tell us about your business and your interest in iWander... <span className="text-red-500">*</span>
+                                    Tell us about your business and your interest in TraivoAI... <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     required
@@ -114,7 +114,7 @@ const PartnerPage: React.FC = () => {
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 text-2xl font-bold">
-                            <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">iWander</span>
+                            <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">TraivoAI</span>
                         </div>
                         <p className="text-gray-500 text-sm">Powering in-destination experiences</p>
                         <div className="flex gap-4 opacity-50">

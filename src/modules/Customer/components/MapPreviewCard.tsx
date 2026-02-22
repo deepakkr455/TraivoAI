@@ -47,7 +47,10 @@ export const MapPreviewCard: React.FC<MapPreviewCardProps> = ({ dayPlan, onViewM
                 </div>
 
                 <button
-                    onClick={onViewMap}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onViewMap();
+                    }}
                     className="w-full py-2.5 px-3 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-500 hover:to-blue-500 text-white text-sm font-bold rounded-lg shadow-lg border border-teal-500/30 transition-all flex items-center justify-center gap-2 group-hover:shadow-teal-500/20 transform group-hover:-translate-y-0.5"
                 >
                     <Map className="w-4 h-4" />

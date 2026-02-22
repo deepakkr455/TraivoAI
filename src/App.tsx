@@ -36,7 +36,7 @@ import CustomerMessagesPage from './modules/Customer/pages/CustomerMessagesPage'
 import TripViewerPage from './modules/Customer/pages/TripViewerPage';
 import BlogViewerPage from './modules/Customer/pages/BlogViewerPage';
 import BestDealsPage from './modules/Customer/pages/BestDealsPage';
-import SavedDealsPage from './modules/Customer/pages/SavedDealsPage';
+
 import DealDetailsPage from './modules/Customer/pages/DealDetailsPage';
 import PartnerPage from './modules/Customer/pages/PartnerPage';
 import SubscriptionPage from './modules/Customer/pages/SubscriptionPage';
@@ -132,7 +132,6 @@ const AppContent: React.FC = () => {
                         <Route path="group-planner" element={<ProtectedRoute><GroupPlannerPage /></ProtectedRoute>} />
                         <Route path="my-trips" element={<ProtectedRoute><MyTripsPage /></ProtectedRoute>} />
                         <Route path="best-deals" element={<BestDealsPage />} />
-                        <Route path="saved-deals" element={<ProtectedRoute><SavedDealsPage /></ProtectedRoute>} />
                         <Route path="deals" element={<DealDetailsPage />} />
                         {/* <Route path="partner" element={<PartnerPage />} /> */}
                         <Route path="subscription" element={<SubscriptionPage />} />

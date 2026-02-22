@@ -308,6 +308,7 @@ export interface WeatherData {
     source: string;
   }[];
   groundingUrls: string[];
+  caution?: string;
 }
 
 export interface WeatherState {

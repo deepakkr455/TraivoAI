@@ -4,7 +4,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../../Customer/services/messageService';
 import { Product } from '../types';
 import { ClockIcon, LightningIcon, StarIcon, HeartIcon } from './Icons';
-import { incrementProductView, incrementProductClick } from '../services/supabaseService';
+import { incrementProductView, incrementProductClick, saveDeal, unsaveDeal } from '../services/supabaseService';
 
 interface ProductCardProps {
     product: Product;
@@ -23,7 +23,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isLi
         setLocalLiked(isLiked);
     }, [isLiked]);
 
-    const toggleLike = (e: React.MouseEvent) => {
+    const toggleLike = async (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!user) {
             navigate('/login');
@@ -31,12 +31,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isLi
         }
 
         const newStatus = !localLiked;
-        setLocalLiked(newStatus);
+        setLocalLiked(newStatus); // Optimistic update
 
-        if (newStatus) {
-            localStorage.setItem(`like_${product.id}`, 'true');
-        } else {
-            localStorage.removeItem(`like_${product.id}`);
+        try {
+            if (newStatus) {
+                console.log(`💾 Saving deal ${product.id} for user ${user.id}...`);
+                localStorage.setItem(`like_${product.id}`, 'true');
+                await saveDeal(user.id, product.id);
+                console.log(`✅ Deal ${product.id} saved successfully.`);
+            } else {
+                console.log(`🗑️ Unsaving deal ${product.id} for user ${user.id}...`);
+                localStorage.removeItem(`like_${product.id}`);
+                await unsaveDeal(user.id, product.id);
+                console.log(`✅ Deal ${product.id} unsaved successfully.`);
+            }
+        } catch (error) {
+            console.error("❌ Failed to sync liked status with database:", error);
+            // Optionally revert local state if it fails, but keeping it for now to avoid flickering
         }
     };
 

@@ -25,7 +25,7 @@ export const DEFAULT_FLYER_DATA = {
     ],
     contactEmail: 'hello@voyageflyer.com',
     contactPhone: '+1-555-WANDER',
-    website: 'www.wanderhub.com',
+    website: 'www.traivoai.com',
     colorTheme: '#0f172a',
     fontFamily: 'serif' as const,
     bgStyle: 'clean' as const,

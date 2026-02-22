@@ -39,7 +39,7 @@ const mapSupabaseUserToAppUser = (supabaseUser: SupabaseUser | null): AppUser | 
   return {
     id: supabaseUser.id,
     email: supabaseUser.email || '',
-    name: supabaseUser.user_metadata?.full_name || supabaseUser.email || 'Wanderer',
+    name: supabaseUser.user_metadata?.full_name || supabaseUser.email || 'Traivo',
     sessionId: getOrCreateSessionId(),
     personalization: supabaseUser.user_metadata?.personalization
   };

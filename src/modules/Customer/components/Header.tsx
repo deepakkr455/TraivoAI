@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth';
 import ProfileModal from './ProfileModal';
 import { ChevronDown } from 'lucide-react';
@@ -22,6 +22,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNavigateHome, onNavigateChat, showBackground, onEditPersonalization }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -30,76 +31,67 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNaviga
     navigate('/');
   };
 
-  const NavLinks = ({ isMobile = false }) => (
-    <>
-      {onNavigateChat && onNavigateHome ? (
-        // Dynamic link for TraivoAI page
-        isChatActive ? (
-          <button onClick={() => { onNavigateHome?.(); setIsMobileMenuOpen(false); }} className="text-sm font-medium hover:text-teal-500 transition-colors text-left w-full xl:w-auto p-2 xl:p-0 whitespace-nowrap">Home</button>
+  const NavLinks = ({ isMobile = false }) => {
+    const linkClass = isMobile
+      ? "text-sm font-medium transition-colors block p-2 whitespace-nowrap text-left w-full"
+      : "text-sm font-medium hover:text-teal-500 transition-colors py-2 xl:py-0 whitespace-nowrap";
+
+    const activeClass = "text-teal-600 font-bold";
+    const inactiveClass = isMobile ? "hover:text-teal-500" : "hover:text-teal-500";
+
+    const getLinkStyle = (path: string) =>
+      `${linkClass} ${location.pathname === path ? activeClass : inactiveClass}`;
+
+    return (
+      <>
+        {onNavigateChat && onNavigateHome ? (
+          isChatActive ? (
+            <button onClick={() => { onNavigateHome?.(); setIsMobileMenuOpen(false); }} className={linkClass}>Home</button>
+          ) : (
+            <button onClick={() => { onNavigateChat?.(); setIsMobileMenuOpen(false); }} className={linkClass}>Chat</button>
+          )
         ) : (
-          <button onClick={() => { onNavigateChat?.(); setIsMobileMenuOpen(false); }} className="text-sm font-medium hover:text-teal-500 transition-colors text-left w-full xl:w-auto p-2 xl:p-0 whitespace-nowrap">Chat</button>
-        )
-      ) : (
-        // Fallback for other pages
-        <Link to="/user/wanderchat" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">Home</Link>
-      )}
-      <Link to="/user/best-deals" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">Best Deals</Link>
-      <Link to="/user/my-trips" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">My Trips</Link>
-      <Link to="/user/subscription" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">Subscription</Link>
+          <Link to="/user/wanderchat" onClick={() => setIsMobileMenuOpen(false)} className={getLinkStyle('/user/wanderchat')}>Home</Link>
+        )}
+        <Link to="/user/best-deals" onClick={() => setIsMobileMenuOpen(false)} className={getLinkStyle('/user/best-deals')}>Best Deals</Link>
+        <Link to="/user/my-trips" onClick={() => setIsMobileMenuOpen(false)} className={getLinkStyle('/user/my-trips')}>My Trips</Link>
+        <Link to="/user/subscription" onClick={() => setIsMobileMenuOpen(false)} className={getLinkStyle('/user/subscription')}>Subscription</Link>
+        <Link to="/user/my-blogs" onClick={() => setIsMobileMenuOpen(false)} className={getLinkStyle('/user/my-blogs')}>Blogs</Link>
+        <Link to="/user/about" onClick={() => setIsMobileMenuOpen(false)} className={getLinkStyle('/user/about')}>About Us</Link>
+        <Link to="/user/contact" onClick={() => setIsMobileMenuOpen(false)} className={getLinkStyle('/user/contact')}>Contact</Link>
 
-      {!isMobile && (
-        <div className="relative group/more">
-          <button className="flex items-center gap-1 text-sm font-medium hover:text-teal-500 transition-colors py-2 xl:py-0 whitespace-nowrap">
-            More <ChevronDown className="w-4 h-4" />
-          </button>
-          <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 opacity-0 invisible group-hover/more:opacity-100 group-hover/more:visible transition-all duration-200 transform origin-top-left z-50 text-gray-800">
-            <Link to="/user/my-blogs" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">Blogs</Link>
-            <Link to="/user/about" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">About Us</Link>
-            <Link to="/user/contact" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">Contact</Link>
-            {user && (
-              <>
-                <Link to="/user/saved-deals" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">Saved Deals</Link>
-                <Link to="/user/messages" className="block px-4 py-2 text-sm hover:bg-teal-50 hover:text-teal-600">Inquiries</Link>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+        {user && (
+          <>
 
-      {isMobile && (
-        <>
-          <Link to="/user/my-blogs" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">Blogs</Link>
-          <Link to="/user/about" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">About Us</Link>
-          <Link to="/user/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">Contact</Link>
-          {user && (
-            <>
-              <Link to="/user/saved-deals" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">Saved Deals</Link>
-              <Link to="/user/messages" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block p-2 whitespace-nowrap">Inquiries</Link>
-            </>
-          )}
-        </>
-      )}
+            <Link to="/user/messages" onClick={() => setIsMobileMenuOpen(false)} className={getLinkStyle('/user/messages')}>Inquiries</Link>
+          </>
+        )}
 
-      <Link to="/agent-portal" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium hover:text-teal-500 transition-colors block xl:inline p-2 xl:p-0 whitespace-nowrap">Agent Portal</Link>
-    </>
-  );
+        <Link to="/agent-portal" onClick={() => setIsMobileMenuOpen(false)} className={`${linkClass} hover:text-teal-500`}>Agent Portal</Link>
+      </>
+    );
+  };
 
   return (
     <header
-      className={`sticky top-0 z-40 flex justify-between items-center p-4 md:p-6 transition-all duration-500 ${showBackground
+      className={`sticky top-0 z-40 flex justify-between items-center p-4 md:p-6 transition-all duration-500 ${showBackground || isMobileMenuOpen
         ? 'backdrop-blur-md shadow-sm border-b border-gray-100/50 text-gray-800'
         : 'bg-transparent text-white'
         }`}
       style={{
-        backgroundColor: showBackground ? 'rgb(255 255 255 / 0.9)' : 'transparent'
+        backgroundColor: (showBackground || isMobileMenuOpen) ? 'rgb(255 255 255 / 0.9)' : 'transparent'
       }}
     >
       <div className="flex items-center space-x-3">
         <Link to="/user/wanderchat" className="flex items-center gap-2">
           <MapPinIcon />
-          <span className="text-2xl font-bold tracking-tight">
+          {/* <span className="text-2xl font-bold tracking-tight">
             <span className="text-teal-500 text-2xl md:text-3xl font-bold tracking-wider">Traivo</span>
             <span className="text-2xl md:text-3xl font-bold tracking-wider bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">AI</span>
+          </span> */}
+          <span className="text-2xl sm:text-3xl font-black tracking-tighter">
+            <span className="text-teal-500">Traivo</span>
+            <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">AI</span>
           </span>
         </Link>
       </div>
@@ -174,7 +166,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNaviga
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl p-4 xl:hidden flex flex-col space-y-2 animate-in slide-in-from-top-2 text-gray-800">
+        <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl p-4 xl:hidden flex flex-col space-y-2 animate-in slide-in-from-top-2 text-gray-800 max-h-[calc(100vh-80px)] overflow-y-auto">
           <NavLinks isMobile={true} />
           <div className="h-px bg-gray-100 my-2"></div>
 

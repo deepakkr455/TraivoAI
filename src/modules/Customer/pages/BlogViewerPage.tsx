@@ -277,7 +277,7 @@ const BlogViewerPage: React.FC = () => {
                         <div className="flex flex-wrap items-center gap-6 text-gray-300 text-sm font-medium animate-in fade-in slide-in-from-bottom-8 duration-1000">
                             <div className="flex items-center space-x-2.5 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10">
                                 <User className="w-4 h-4 text-teal-400" />
-                                <span>WanderWriter AI Editor</span>
+                                <span>TraivoWriter AI Editor</span>
                             </div>
                             {blog.tags && (
                                 <div className="flex items-center gap-2">
@@ -481,7 +481,7 @@ const BlogViewerPage: React.FC = () => {
                             <div className="absolute bottom-0 right-0 w-48 h-48 bg-teal-500/20 rounded-full -mb-24 -mr-24 blur-3xl group-hover:bg-teal-500/30 transition-all duration-700" />
                             <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-4 text-teal-400">Authority Note</h4>
                             <p className="text-gray-400 text-sm leading-relaxed relative z-10">
-                                This guide is curated using WanderWriter's semantic engine. All linked deal matches are based on geographic proximity and thematic alignment.
+                                This guide is curated using TraivoWriter's semantic engine. All linked deal matches are based on geographic proximity and thematic alignment.
                             </p>
                         </div>
                     </div>

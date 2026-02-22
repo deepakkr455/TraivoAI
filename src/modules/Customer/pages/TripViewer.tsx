@@ -15,7 +15,7 @@ import { TripProgressBreadcrumb } from '../components/TripProgressBreadcrumb';
 
 interface TripViewerProps {
   trip: TripWithAccess;
-  blobUrl: string;
+  htmlContent: string;
   onBack: () => void;
   onDelete: () => void;
   onAcceptInvitation?: () => void;
@@ -25,7 +25,7 @@ interface TripViewerProps {
 
 export const TripViewer: React.FC<TripViewerProps> = ({
   trip,
-  blobUrl,
+  htmlContent,
   onBack,
   onDelete,
   onAcceptInvitation,
@@ -550,7 +550,7 @@ export const TripViewer: React.FC<TripViewerProps> = ({
           {/* Trip Plan Iframe */}
           <div className="flex-1 overflow-hidden bg-gray-100/50 relative">
             <iframe
-              src={blobUrl}
+              srcDoc={htmlContent}
               className="w-full h-full border-none"
               title={trip.title}
               sandbox="allow-scripts"

@@ -35,13 +35,21 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
   const [showMenu, setShowMenu] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowMenu(false);
+      // If clicking inside the menu or on the toggle button, don't close here
+      // (The button's own onClick will handle toggling)
+      if (menuRef.current && menuRef.current.contains(event.target as Node)) {
+        return;
       }
+      if (buttonRef.current && buttonRef.current.contains(event.target as Node)) {
+        return;
+      }
+
+      setShowMenu(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -84,9 +92,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // On mobile (screen width < 768px), allow Enter to create a new line
+    const isMobile = window.innerWidth < 768;
+
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+      if (!isMobile) {
+        e.preventDefault();
+        handleSend();
+      }
+      // On mobile, let default behavior (new line) happen
     }
   };
 
@@ -117,12 +131,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
       {showMenu && (
         <div
           ref={menuRef}
-          className="absolute bottom-full left-0 mb-3 ml-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-2 min-w-[200px] z-50 animate-in fade-in slide-in-from-bottom-2 duration-200"
+          className="absolute top-full left-0 mt-3 ml-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-1.5 sm:p-2 min-w-[170px] sm:min-w-[200px] max-h-[280px] sm:max-h-[350px] overflow-y-auto theme-scrollbar z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-0.5 sm:gap-1">
             <button
               onClick={() => { onSetForcedTool?.('create_trip_plan'); setShowMenu(false); }}
-              className="flex items-center gap-3 w-full p-2.5 hover:bg-teal-50 text-gray-700 hover:text-teal-700 rounded-xl transition-all text-sm font-medium text-left"
+              className="flex items-center gap-2.5 sm:gap-3 w-full p-2 sm:p-2.5 hover:bg-teal-50 text-gray-700 hover:text-teal-700 rounded-xl transition-all text-xs sm:text-sm font-medium text-left"
             >
               <div className="p-1.5 bg-teal-100/50 rounded-lg text-teal-600">
                 <Calendar className="w-4 h-4" />
@@ -131,7 +145,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
             </button>
             <button
               onClick={() => { onSetForcedTool?.('search_internet'); setShowMenu(false); }}
-              className="flex items-center gap-3 w-full p-2.5 hover:bg-sky-50 text-gray-700 hover:text-sky-700 rounded-xl transition-all text-sm font-medium text-left"
+              className="flex items-center gap-2.5 sm:gap-3 w-full p-2 sm:p-2.5 hover:bg-sky-50 text-gray-700 hover:text-sky-700 rounded-xl transition-all text-xs sm:text-sm font-medium text-left"
             >
               <div className="p-1.5 bg-sky-100/50 rounded-lg text-sky-600">
                 <CloudSun className="w-4 h-4" />
@@ -140,7 +154,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
             </button>
             <button
               onClick={() => { onSetForcedTool?.('get_weather_forecast'); setShowMenu(false); }}
-              className="flex items-center gap-3 w-full p-2.5 hover:bg-amber-50 text-gray-700 hover:text-amber-700 rounded-xl transition-all text-sm font-medium text-left"
+              className="flex items-center gap-2.5 sm:gap-3 w-full p-2 sm:p-2.5 hover:bg-amber-50 text-gray-700 hover:text-amber-700 rounded-xl transition-all text-xs sm:text-sm font-medium text-left"
             >
               <div className="p-1.5 bg-amber-100/50 rounded-lg text-amber-600">
                 <CloudSun className="w-4 h-4" />
@@ -149,7 +163,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
             </button>
             <button
               onClick={() => { onSetForcedTool?.('generate_day_plan'); setShowMenu(false); }}
-              className="flex items-center gap-3 w-full p-2.5 hover:bg-blue-50 text-gray-700 hover:text-blue-700 rounded-xl transition-all text-sm font-medium text-left"
+              className="flex items-center gap-2.5 sm:gap-3 w-full p-2 sm:p-2.5 hover:bg-blue-50 text-gray-700 hover:text-blue-700 rounded-xl transition-all text-xs sm:text-sm font-medium text-left"
             >
               <div className="p-1.5 bg-blue-100/50 rounded-lg text-blue-600">
                 <Map className="w-4 h-4" />
@@ -158,7 +172,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
             </button>
             <button
               onClick={() => handleActionClick('flyer')}
-              className="flex items-center gap-3 w-full p-2.5 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 rounded-xl transition-all text-sm font-medium text-left"
+              className="flex items-center gap-2.5 sm:gap-3 w-full p-2 sm:p-2.5 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 rounded-xl transition-all text-xs sm:text-sm font-medium text-left"
             >
               <div className="p-1.5 bg-indigo-100/50 rounded-lg text-indigo-600">
                 <FileText className="w-4 h-4" />
@@ -205,24 +219,45 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
         className={`bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl transition-all duration-300 ease-in-out ${isFocused ? 'ring-2 ring-teal-400' : ''
           }`}
       >
-        <div className="relative flex items-end px-2 py-2 border border-gray-300 rounded-3xl focus:ring-teal-500">
+        <div className="relative flex items-center px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-3xl focus:ring-teal-500 min-h-[50px] sm:min-h-[60px]">
 
           {/* Plus Button */}
-          <div className="pb-1 pl-1">
+          <div className="flex-shrink-0">
             <button
+              ref={buttonRef}
               onClick={() => setShowMenu(!showMenu)}
-              className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 ${showMenu
-                ? 'bg-gray-100 text-gray-600 rotate-45'
-                : 'bg-gradient-to-br from-violet-600 to-red-500 text-white'
+              className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${showMenu
+                ? 'bg-teal-100 text-teal-600 rotate-45 shadow-inner'
+                : 'bg-gray-100 hover:bg-gray-200 shadow-sm hover:scale-110 active:scale-95'
                 }`}
               title="More options"
             >
-              <Plus className="w-5 h-5" />
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="transition-transform duration-300"
+              >
+                <defs>
+                  <linearGradient id="plus-icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#9333ea" /> {/* purple-600 */}
+                    <stop offset="100%" stopColor="#ef4444" /> {/* red-500 */}
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M12 5v14M5 12h14"
+                  stroke={showMenu ? "currentColor" : "url(#plus-icon-gradient)"}
+                />
+              </svg>
             </button>
           </div>
 
           {/* Textarea Container */}
-          <div className="flex-1 relative mx-2 mb-1">
+          <div className="flex-1 relative mx-3">
             <textarea
               ref={textareaRef}
               value={prompt}
@@ -231,17 +266,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               placeholder={isFocused ? PLACEHOLDER_MESSAGES[placeholderIndex] : PLACEHOLDER_MESSAGES[placeholderIndex]}
-              className="animated-placeholder w-full bg-transparent text-gray-800 placeholder-gray-400 border-none focus:ring-0 resize-none py-2 md:py-2.5 max-h-48 outline-none text-sm md:text-base"
+              className="animated-placeholder w-full bg-transparent text-gray-800 placeholder-gray-400 border-none focus:ring-0 resize-none py-1 max-h-48 outline-none text-sm md:text-base leading-relaxed"
               rows={1}
               disabled={isLoading}
             />
           </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center space-x-1 pb-1 pr-1">
-
-
-            {/* Send Button */}
+          {/* Send Button */}
+          <div className="flex-shrink-0">
             <button
               onClick={handleSend}
               disabled={isLoading || !prompt.trim()}

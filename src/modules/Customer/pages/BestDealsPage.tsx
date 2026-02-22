@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import { Product } from '../../AgentAffiliate/types';
-import { getListedProducts } from '../../AgentAffiliate/services/supabaseService';
+import { getListedProducts, getSavedDeals } from '../../AgentAffiliate/services/supabaseService';
 import { ProductCard } from '../../AgentAffiliate/components/ProductCard';
 import {
     ArrowLeft,
@@ -27,41 +27,60 @@ const ITEMS_PER_PAGE = 12; // 3 rows in 4-column layout
 
 const BestDealsPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
+    const [savedIds, setSavedIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [showSavedOnly, setShowSavedOnly] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const gridRef = React.useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useAuth();
 
     useEffect(() => {
-        loadDeals();
-    }, []);
+        if (location.state?.showSaved) {
+            setShowSavedOnly(true);
+        }
+    }, [location.state]);
+
+    useEffect(() => {
+        loadData();
+    }, [user]);
 
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, showSavedOnly]);
 
-    const loadDeals = async () => {
+    const loadData = async () => {
         setIsLoading(true);
         try {
             const allDeals = await getListedProducts();
             const activeDeals = allDeals.filter(p => p.is_active !== false);
             const sortedDeals = activeDeals.sort((a, b) => (b.is_boosted ? 1 : 0) - (a.is_boosted ? 1 : 0));
             setProducts(sortedDeals);
+
+            if (user) {
+                const ids = await getSavedDeals(user.id);
+                setSavedIds(ids);
+            }
         } catch (error) {
-            console.error("Failed to load deals", error);
+            console.error("Failed to load data", error);
         } finally {
             setIsLoading(false);
         }
     };
 
+    // Unified saved IDs (Database + LocalStorage fallback)
+    const localLikedIds = Object.keys(localStorage)
+        .filter(k => k.startsWith('like_') && localStorage.getItem(k) === 'true')
+        .map(k => k.replace('like_', ''));
+
+    const allSavedIds = Array.from(new Set([...savedIds, ...localLikedIds]));
+
     // First, apply saved filter if needed
     let displayProducts = products;
     if (showSavedOnly) {
-        const likedIds = Object.keys(localStorage).filter(k => k.startsWith('like_') && localStorage.getItem(k) === 'true').map(k => k.replace('like_', ''));
-        displayProducts = products.filter(p => likedIds.includes(p.id));
+        displayProducts = products.filter(p => allSavedIds.includes(p.id));
     }
 
     // Then apply search filter
@@ -87,8 +106,10 @@ const BestDealsPage: React.FC = () => {
         }
     };
 
-    // Get saved count for badge
-    const savedCount = Object.keys(localStorage).filter(k => k.startsWith('like_') && localStorage.getItem(k) === 'true').length;
+    const toggleSavedOnly = () => {
+        setShowSavedOnly(!showSavedOnly);
+        setSearchTerm('');
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans overflow-hidden">
@@ -97,17 +118,38 @@ const BestDealsPage: React.FC = () => {
             <main className="flex-1 overflow-y-auto w-full pb-24">
                 <div className="container mx-auto px-4 py-8 md:py-12">
 
-                    {/* Centered Editorial Title */}
-                    <div className="flex flex-col items-center justify-center mb-10 md:mb-16 text-center">
-                        <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-3 tracking-tight">
-                            Exclusive <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-cyan-600">Travel Deals</span>
-                        </h1>
-                        <p className="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed">
-                            Hand-picked adventures and luxury escapes, curated by world-class travel architects just for your story.
-                        </p>
+                    {showSavedOnly && (
+                        <button
+                            onClick={toggleSavedOnly}
+                            className="mb-8 flex items-center gap-2 text-gray-500 hover:text-teal-600 transition-colors font-medium animate-in slide-in-from-left-4"
+                        >
+                            <ArrowLeft className="w-5 h-5" /> Back to All Deals
+                        </button>
+                    )}
+
+                    {/* Dynamic Page Header */}
+                    <div className="flex flex-col items-center justify-center mb-10 md:mb-16 text-center animate-fade-in">
+                        {showSavedOnly ? (
+                            <>
+                                <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-3 tracking-tight">
+                                    Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-600">Saved Collection</span>
+                                </h1>
+                                <p className="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                    The adventures you're dreaming about, curated into your own personal travel story.
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-3 tracking-tight">
+                                    Exclusive <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-cyan-600">Travel Deals</span>
+                                </h1>
+                                <p className="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                                    Hand-picked adventures and luxury escapes, curated by world-class travel architects just for your story.
+                                </p>
+                            </>
+                        )}
                     </div>
 
-                    {/* Centered Search Bar (Aligned with MyBlogsPage design) */}
                     {/* Centered Search Bar & Controls */}
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-12 w-full max-w-4xl mx-auto px-2">
                         <div className="w-full md:flex-1 relative group">
@@ -116,7 +158,7 @@ const BestDealsPage: React.FC = () => {
                             </div>
                             <input
                                 type="text"
-                                placeholder="Search destinations, styles..."
+                                placeholder={showSavedOnly ? "Search your saved favorites..." : "Search destinations, styles..."}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="block w-full pl-12 pr-12 py-3.5 md:py-4 bg-white border border-gray-200 rounded-[2rem] leading-5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 text-base md:text-lg shadow-sm hover:shadow-md transition-all"
@@ -134,17 +176,19 @@ const BestDealsPage: React.FC = () => {
                         <div className="flex items-center gap-3 w-full md:w-auto justify-center">
                             {user && (
                                 <button
-                                    onClick={() => setShowSavedOnly(!showSavedOnly)}
+                                    onClick={toggleSavedOnly}
                                     className={`flex-1 md:flex-none px-6 py-3.5 md:py-4 rounded-full border shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 ${showSavedOnly ? 'bg-pink-50 border-pink-200 text-pink-600' : 'bg-white border-gray-200 text-gray-400 hover:text-pink-600'}`}
                                     title={showSavedOnly ? 'Show All Deals' : 'Show Saved Only'}
                                 >
                                     <Heart className={`w-4 h-4 md:w-5 md:h-5 ${showSavedOnly ? 'fill-pink-600' : ''}`} />
-                                    <span className="text-sm font-medium whitespace-nowrap">Saved Deals</span>
+                                    <span className="text-sm font-medium whitespace-nowrap">
+                                        {showSavedOnly ? 'Showing Saved' : 'Saved Deals'}
+                                    </span>
                                 </button>
                             )}
 
                             <button
-                                onClick={loadDeals}
+                                onClick={loadData}
                                 className="p-3.5 md:p-4 bg-white text-gray-400 hover:text-teal-600 rounded-full border border-gray-200 shadow-sm hover:shadow-md transition-all active:rotate-180 flex items-center justify-center shrink-0"
                                 title="Refresh Deals"
                             >
@@ -161,9 +205,9 @@ const BestDealsPage: React.FC = () => {
                     ) : (
                         <div className="max-w-[1440px] mx-auto space-y-12 md:space-y-20">
 
-                            {/* Hero Deal Section */}
+                            {/* Hero Deal Section - Hidden when viewing saved collection */}
                             {heroDeal && !searchTerm && !showSavedOnly && (
-                                <div className="space-y-5 md:space-y-8">
+                                <div className="space-y-5 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                                     <div className="flex items-center gap-4">
                                         <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-teal-600">Deal of the Week</h2>
                                         <div className="h-px flex-1 bg-teal-100" />
@@ -211,19 +255,24 @@ const BestDealsPage: React.FC = () => {
                             <div className="space-y-8 md:space-y-12" ref={gridRef}>
                                 <div className="flex items-center gap-4">
                                     <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-gray-400">
-                                        {searchTerm ? `Search Results for "${searchTerm}"` : 'Hand-Picked Adventures'}
+                                        {searchTerm
+                                            ? `Search Results for "${searchTerm}"`
+                                            : showSavedOnly
+                                                ? 'Your Premium Favorites'
+                                                : 'Hand-Picked Adventures'}
                                     </h2>
                                     <div className="h-px flex-1 bg-gray-100" />
                                 </div>
 
                                 {paginatedDeals.length > 0 ? (
                                     <>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                             {paginatedDeals.map((product) => (
                                                 <div key={product.id} className="group cursor-pointer">
                                                     <ProductCard
                                                         product={product}
                                                         onClick={() => navigate(`/user/deals?id=${product.id}`)}
+                                                        isLiked={allSavedIds.includes(product.id)}
                                                     />
                                                 </div>
                                             ))}
@@ -243,7 +292,6 @@ const BestDealsPage: React.FC = () => {
                                                 <div className="flex items-center gap-2">
                                                     {[...Array(totalPages)].map((_, i) => {
                                                         const pageNum = i + 1;
-                                                        // Simple pagination logic: show all for few pages, or current and neighbors for many
                                                         if (totalPages <= 7 || (pageNum >= currentPage - 2 && pageNum <= currentPage + 2) || pageNum === 1 || pageNum === totalPages) {
                                                             return (
                                                                 <button
@@ -275,19 +323,27 @@ const BestDealsPage: React.FC = () => {
                                         )}
                                     </>
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-[2.5rem] p-12 border border-gray-100 shadow-sm max-w-3xl mx-auto">
+                                    <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-[2.5rem] p-12 border border-gray-100 shadow-sm max-w-3xl mx-auto animate-in zoom-in-95 duration-500">
                                         <div className="bg-gray-50 rounded-full p-8 mb-6">
-                                            <Compass className="w-16 h-16 text-gray-300" />
+                                            {showSavedOnly ? (
+                                                <Heart className="w-16 h-16 text-gray-200" />
+                                            ) : (
+                                                <Compass className="w-16 h-16 text-gray-300" />
+                                            )}
                                         </div>
-                                        <h2 className="text-2xl md:text-3xl font-black mb-3 text-gray-900">No deals found</h2>
+                                        <h2 className="text-2xl md:text-3xl font-black mb-3 text-gray-900">
+                                            {showSavedOnly ? "No saved deals yet" : "No deals found"}
+                                        </h2>
                                         <p className="text-gray-500 max-w-md mb-8 text-base md:text-lg">
-                                            We couldn't find any adventures matching your search. Try a different destination or style!
+                                            {showSavedOnly
+                                                ? "Found something you love? Tap the heart icon to save it here for later!"
+                                                : "We couldn't find any adventures matching your search. Try a different destination or style!"}
                                         </p>
                                         <button
-                                            onClick={() => setSearchTerm('')}
-                                            className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-full font-black text-lg transition-all shadow-xl"
+                                            onClick={() => showSavedOnly ? toggleSavedOnly() : setSearchTerm('')}
+                                            className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-full font-black text-lg transition-all shadow-xl active:scale-95"
                                         >
-                                            Clear All Filters
+                                            {showSavedOnly ? "Explore All Deals" : "Clear All Filters"}
                                         </button>
                                     </div>
                                 )}

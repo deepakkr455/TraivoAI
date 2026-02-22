@@ -7,46 +7,76 @@ import { supabase } from '../../../services/supabaseClient';
 // Tavily and Weather domains are now handled by the backend
 
 const THOUGHTS = {
-    PLANNING: [
-        "Analyzing your travel parameters...",
-        "Crafting the perfect route...",
-        "Optimizing for your preferences...",
-        "Structuring the itinerary logic...",
-        "Balancing activity and relaxation...",
-        "Designing your daily flow..."
+    GENERAL: [
+        "Consulting our network of travel experts...",
+        "Deep diving into your travel request...",
+        "Adding some extra magic to your response...",
+        "Polishing your custom travel advice...",
+        "Structuring a perfect response just for you...",
+        "Scanning for the latest travel trends...",
+        "Ensuring every detail is perfectly aligned...",
+        "Wait a moment, I'm thinking of something special for you...",
+        "Almost there! Just finalizing the details...",
+        "Bringing you the best of Traivo travel intelligence..."
     ],
-    SEARCHING: [
-        "Scouring real-time sources...",
-        "Verifying current availability...",
-        "Consulting travel databases...",
-        "Cross-referencing reviews...",
-        "Finding the best rated spots...",
-        "Looking for hidden gems..."
+    TRIP_PLAN: [
+        "Crafting your dream itinerary from scratch...",
+        "Searching for the perfect stays and routes...",
+        "Hand-picking top-rated local experiences...",
+        "Structuring your ideal daily itinerary...",
+        "Optimizing your travel route for comfort...",
+        "Calculating the best flow for your trip...",
+        "Creating your dream travel blueprint...",
+        "Finding the hidden gems for your journey...",
+        "Ensuring your trip is as unique as you are...",
+        "Looking for the most scenic routes and stays..."
     ],
-    SYNTHESIZING: [
-        "Weaving data into a plan...",
-        "Polishing the itinerary details...",
-        "Checking logical consistency...",
-        "Finalizing your travel blueprint...",
-        "Ensuring everything fits together...",
-        "Adding personal touches..."
-    ],
-    IMAGING: [
-        "Visualizing your destination...",
-        "Designing a custom cover image...",
-        "Generating preview assets...",
-        "Capturing the vibe...",
-        "Painting the scene..."
+    DAY_PLAN: [
+        "Mapping out your perfect day adventure...",
+        "Checking logical consistency for activities...",
+        "Ensuring a smooth transition between stops...",
+        "Finalizing your custom day itinerary...",
+        "Designing your daily adventure flow...",
+        "Calculating travel times for your day plan...",
+        "Selecting the best spots for your specific day...",
+        "Making sure every hour of your day is well spent..."
     ],
     WEATHER: [
-        "Consulting meteorological data...",
-        "Checking forecast models...",
-        "Analyzing climate patterns..."
+        "Checking the skies for your next adventure...",
+        "Consulting global meteorological models...",
+        "Checking real-time forecasts for your dates...",
+        "Analyzing local climate patterns...",
+        "Ensuring you're prepared for any condition...",
+        "Finding your perfect weather window...",
+        "Scanning satellite data for accurate updates...",
+        "Making sure you have the perfect gear for the weather..."
     ],
-    TOOL_EXECUTION: [
-        "Coordinating specialized agents...",
-        "Running background tasks...",
-        "Accessing external tools..."
+    SEARCH: [
+        "Scanning the globe for the best results...",
+        "Finding you the absolute best deals...",
+        "Searching for those hidden neighborhood gems...",
+        "Hand-picking the top-rated local spots...",
+        "Scouring for unique local experiences...",
+        "Checking real-time availability for you...",
+        "Comparing the best options available right now...",
+        "Filtering through thousands of possibilities for you..."
+    ],
+    SYNTHESIZING: [
+        "Polishing your custom itinerary...",
+        "Putting the final touches on your plan...",
+        "Ensuring everything is perfectly aligned...",
+        "Synthesizing your dream travel blueprint...",
+        "Adding some extra magic to your trip...",
+        "Organizing all the travel data for you...",
+        "Wrapping up your travel insights..."
+    ],
+    IMAGING: [
+        "Capturing the destination's vibe visually...",
+        "Designing a beautiful cover for your trip...",
+        "Generating a visual preview of your journey...",
+        "Painting a picture of your next adventure...",
+        "Creating a stunning visual for your itinerary...",
+        "Rendering the beauty of your destination..."
     ]
 };
 
@@ -171,7 +201,8 @@ const normalizeWeatherData = (parsedData: any, location: string): WeatherData =>
         projection: getVal(parsedData, ['projection', 'summary', 'overview']) || "No forecast available.",
         travelRecommendations: getVal(parsedData, ['travelrecommendations', 'recommendations', 'travel_recommendations']) || [],
         news: getVal(parsedData, ['news', 'alerts', 'updates']) || [],
-        groundingUrls: parsedData.groundingUrls || []
+        groundingUrls: parsedData.groundingUrls || [],
+        caution: getVal(parsedData, ['caution', 'warning', 'alert', 'safety_notice'])
     };
 };
 
@@ -333,8 +364,8 @@ const uploadBase64Image = async (base64Data: string, fileName: string): Promise<
 };
 
 const handleTripPlan = async (args: any, messages: any[], addAgentThought: (thought: string) => void, personalization?: any): Promise<MessageContent> => {
-    addAgentThought(getRandomThought('PLANNING', `${args.duration} to ${args.destination}`));
-    addAgentThought(getRandomThought('SEARCHING', "Hotels & Transport"));
+    addAgentThought(getRandomThought('TRIP_PLAN', `${args.duration} to ${args.destination}`));
+    addAgentThought(getRandomThought('SEARCH', "Hotels & Transport"));
 
     try {
         const result = await callWanderChat({
@@ -375,7 +406,7 @@ const handleTripPlan = async (args: any, messages: any[], addAgentThought: (thou
 };
 
 const handleSearch = async (args: any, messages: any[], addAgentThought: (thought: string) => void, personalization?: any): Promise<MessageContent> => {
-    addAgentThought(getRandomThought('SEARCHING', args.query));
+    addAgentThought(getRandomThought('SEARCH', args.query));
     const result = await callWanderChat({
         action: 'chat',
         prompt: args.query,
@@ -386,7 +417,7 @@ const handleSearch = async (args: any, messages: any[], addAgentThought: (though
 };
 
 const handleDayPlanMap = async (args: any, messages: any[], addAgentThought: (thought: string) => void, personalization?: any): Promise<MessageContent> => {
-    addAgentThought(getRandomThought('PLANNING', `Day plan for ${args.location}`));
+    addAgentThought(getRandomThought('DAY_PLAN', `Day plan for ${args.location}`));
     const result = await callWanderChat({
         action: 'chat',
         prompt: `Day plan for ${args.location}`,
@@ -407,32 +438,99 @@ export const orchestrateResponse = async (
     forcedTool?: string | null,
     personalization?: any
 ) => {
-    addAgentThought(getRandomThought('SYNTHESIZING', "Context & Intent"));
-    const history = await fetchHistory(userId, sessionId);
-    const openRouterMessages = toOpenRouterHistory(history);
+    // 1. Detect Intent Category for Thoughts
+    const lowPrompt = prompt.toLowerCase();
+    let primaryCategory: keyof typeof THOUGHTS = 'GENERAL';
 
-    const result = await callWanderChat({
-        prompt,
-        messages: openRouterMessages,
-        personalization,
-        forcedTool
-    });
-
-    console.log("[WanderChat] orchestrateResponse RAW Result:", JSON.stringify(result, null, 2));
-
-    if (result.weather) {
-        result.weather = normalizeWeatherData(result.weather, prompt);
+    // Priority 1: Check Forced Tool
+    if (forcedTool === 'get_weather_forecast') {
+        primaryCategory = 'WEATHER';
+    } else if (forcedTool === 'create_trip_plan') {
+        primaryCategory = 'TRIP_PLAN';
+    } else if (forcedTool === 'generate_day_plan') {
+        primaryCategory = 'DAY_PLAN';
+    } else if (forcedTool === 'search_internet' || forcedTool === 'tavily_search') {
+        primaryCategory = 'SEARCH';
     }
-    if (result.dayPlan) {
-        result.dayPlan = normalizeDayPlan(result.dayPlan);
+    // Priority 2: Keyword Matching if still GENERAL
+    else if (lowPrompt.includes('weather') || lowPrompt.includes('forecast') || lowPrompt.includes('temperature') || lowPrompt.includes('climate') || lowPrompt.includes('rain') || lowPrompt.includes('snow') || lowPrompt.includes('sunny') || lowPrompt.includes('hot') || lowPrompt.includes('cold')) {
+        primaryCategory = 'WEATHER';
+    } else if (lowPrompt.includes('trip') || lowPrompt.includes('itinerary') || lowPrompt.includes('travel plan') || lowPrompt.includes('vacation') || lowPrompt.includes('holiday') || lowPrompt.includes('tour') || lowPrompt.includes('visit') || lowPrompt.includes('going to') || lowPrompt.includes('travel to')) {
+        primaryCategory = 'TRIP_PLAN';
+    } else if (lowPrompt.includes('day') || lowPrompt.includes('schedule') || lowPrompt.includes('today') || lowPrompt.includes('daily') || lowPrompt.includes('morning') || lowPrompt.includes('afternoon') || lowPrompt.includes('evening')) {
+        primaryCategory = 'DAY_PLAN';
+    } else if (lowPrompt.includes('search') || lowPrompt.includes('find') || lowPrompt.includes('best') || lowPrompt.includes('hidden gem') || lowPrompt.includes('where to') || lowPrompt.includes('recommend') || lowPrompt.includes('top') || lowPrompt.includes('hotel') || lowPrompt.includes('flight') || lowPrompt.includes('deal') || lowPrompt.includes('cheap') || lowPrompt.includes('luxury')) {
+        primaryCategory = 'SEARCH';
     }
 
-    if (result.tool) {
-        onResult(result);
-        await saveInteraction(userId, sessionId, prompt, result, result.tool);
-    } else {
-        onResult(result);
-        await saveInteraction(userId, sessionId, prompt, result, 'general_query');
+    console.log(`[Thinking] Detected Category: ${primaryCategory} for prompt: "${prompt}" (ForcedTool: ${forcedTool || 'none'})`);
+
+    // fallback rotation categories
+    const categories: (keyof typeof THOUGHTS)[] = primaryCategory === 'GENERAL'
+        ? ['GENERAL', 'SEARCH', 'SYNTHESIZING']
+        : [primaryCategory, 'GENERAL', 'SYNTHESIZING'];
+
+    let currentCatIndex = 0;
+    let currentThoughtIndex = 0;
+
+    const addNextThought = () => {
+        const cat = categories[currentCatIndex];
+        const thoughts = THOUGHTS[cat];
+
+        // Safety check for category existence
+        if (!thoughts || thoughts.length === 0) {
+            addAgentThought(THOUGHTS.GENERAL[0]);
+            return;
+        }
+
+        addAgentThought(thoughts[currentThoughtIndex]);
+
+        // Move to next thought or category
+        currentThoughtIndex++;
+        if (currentThoughtIndex >= thoughts.length) {
+            currentThoughtIndex = 0;
+            currentCatIndex = (currentCatIndex + 1) % categories.length;
+        }
+    };
+
+    // Add first thought immediately
+    addNextThought();
+
+    // Rotate thoughts every 2.5 seconds
+    const interval = setInterval(addNextThought, 2500);
+
+    try {
+        const history = await fetchHistory(userId, sessionId);
+        const openRouterMessages = toOpenRouterHistory(history);
+
+        const result = await callWanderChat({
+            prompt,
+            messages: openRouterMessages,
+            personalization,
+            forcedTool
+        });
+
+        clearInterval(interval); // Stop rotation
+
+        console.log("[WanderChat] orchestrateResponse RAW Result:", JSON.stringify(result, null, 2));
+
+        if (result.weather) {
+            result.weather = normalizeWeatherData(result.weather, prompt);
+        }
+        if (result.dayPlan) {
+            result.dayPlan = normalizeDayPlan(result.dayPlan);
+        }
+
+        if (result.tool) {
+            onResult(result);
+            await saveInteraction(userId, sessionId, prompt, result, result.tool);
+        } else {
+            onResult(result);
+            await saveInteraction(userId, sessionId, prompt, result, 'general_query');
+        }
+    } catch (err) {
+        clearInterval(interval);
+        throw err;
     }
 };
 

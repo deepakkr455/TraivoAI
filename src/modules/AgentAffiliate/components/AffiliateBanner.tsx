@@ -5,27 +5,28 @@ import { AffiliateListing } from '../types';
 interface AffiliateBannerProps {
     bannerType: 'horizontal-banner' | 'vertical-banner' | 'square-banner';
     className?: string;
+    source?: string;
 }
 
-export const AffiliateBanner: React.FC<AffiliateBannerProps> = ({ bannerType, className }) => {
+export const AffiliateBanner: React.FC<AffiliateBannerProps> = ({ bannerType, className, source }) => {
     const [banner, setBanner] = useState<AffiliateListing | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const loadBanner = async () => {
-            console.log(`[AffiliateBanner] Fetching banners for type: ${bannerType}`);
-            const banners = await getAffiliateBanners(bannerType, 5);
+            console.log(`[AffiliateBanner] Fetching banners for type: ${bannerType}${source ? ` (source: ${source})` : ''}`);
+            const banners = await getAffiliateBanners(bannerType, 5, source);
             console.log(`[AffiliateBanner] Fetched ${banners.length} banners for ${bannerType}`, banners);
 
             if (banners.length > 0) {
                 // Randomize
                 const randomIndex = Math.floor(Math.random() * banners.length);
                 const selected = banners[randomIndex];
-                console.log(`[AffiliateBanner] Selected banner:`, selected.title);
+                console.log(`[AffiliateBanner] Selected banner:`, selected.title, `(${selected.banner_type})`);
                 setBanner(selected);
                 incrementAffiliateView(selected.id);
             } else {
-                console.warn(`[AffiliateBanner] No banners found for ${bannerType}`);
+                console.warn(`[AffiliateBanner] No active banners found even with broad fallback.`);
             }
         };
         loadBanner();
@@ -63,9 +64,12 @@ export const AffiliateBanner: React.FC<AffiliateBannerProps> = ({ bannerType, cl
 
     return (
         <div
-            className={`affiliate-banner-container overflow-hidden flex justify-center my-6 min-h-[100px] border border-transparent ${className}`}
+            className={`affiliate-banner-container overflow-hidden flex justify-center border border-transparent ${bannerType === 'horizontal-banner' ? 'my-6' : ''} ${className}`}
             onClick={() => incrementAffiliateClick(banner.id)}
-            style={{ minHeight: '100px' }} // Ensure visibility if script delay
+            style={{
+                minHeight: bannerType === 'vertical-banner' ? '400px' : '100px',
+                height: bannerType === 'vertical-banner' ? '100%' : 'auto'
+            }}
         >
             <div ref={containerRef} className="w-full flex justify-center" />
         </div>

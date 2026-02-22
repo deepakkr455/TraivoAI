@@ -76,7 +76,7 @@ export const CustomerChatSidebar: React.FC<CustomerChatSidebarProps> = ({
     const groupOrder = ['Today', 'Yesterday', 'Previous 7 Days', 'Older'];
 
     return (
-        <div className={`fixed inset-y-0 left-0 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out z-40 w-64 md:w-80 bg-white border-r border-gray-200 flex flex-col`} style={{ height: '100vh' }}>
+        <div className={`fixed inset-y-0 left-0 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out z-40 w-64 md:w-80 bg-white border-r border-gray-200 flex flex-col`} style={{ height: '100dvh' }}>
             <div className="p-3 flex items-center justify-between lg:hidden">
                 <span className="font-bold text-base text-gray-800">History</span>
                 <button onClick={onClose} className="p-1 text-gray-500 hover:bg-gray-100 rounded-full">
@@ -94,7 +94,7 @@ export const CustomerChatSidebar: React.FC<CustomerChatSidebarProps> = ({
                 </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-3 py-2 space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
+            <div className="flex-1 overflow-y-auto px-3 py-2 pb-20 space-y-6 scrollbar-hide">
                 {sessions.length > 0 ? (
                     groupOrder.map(group => {
                         const groupSessions = groupedSessions[group];

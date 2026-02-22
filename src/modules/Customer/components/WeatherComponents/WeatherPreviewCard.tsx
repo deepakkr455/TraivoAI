@@ -17,6 +17,7 @@ export const WeatherPreviewCard: React.FC<WeatherPreviewCardProps> = ({ data, on
       <div
         className="block hover:opacity-90 transition-opacity cursor-pointer"
         onClick={(e) => {
+          e.stopPropagation();
           e.preventDefault();
           onViewClick?.();
         }}

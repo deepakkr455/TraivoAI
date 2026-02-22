@@ -11,7 +11,7 @@ import { orchestrateResponse } from '../services/geminiService';
 import TravelFlyerEditor from '../components/TravelFlyer/TravelFlyerEditor';
 import { generateTripPlanHtml } from '../services/htmlGenerator';
 import { tripStorageService } from '../services/tripStorage';
-import { X, Map, Search, ArrowUp, ChevronDown, Heart, ChevronLeft, ChevronRight, MessageSquare, Sparkles } from 'lucide-react';
+import { X, Map, Search, ArrowUp, ArrowLeft, ChevronDown, Heart, ChevronLeft, ChevronRight, MessageSquare, Sparkles } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { plansService } from '../services/plansService';
 import { proposalsService } from '../services/proposalsService';
@@ -201,11 +201,31 @@ const WanderChatPage: React.FC = () => {
     }
   };
 
-  // Smooth background logic - New Unsplash Image
-  // Using a high quality travel image
-  const bgClass = isChatStarted
-    ? 'bg-white'
-    : 'bg-cover bg-center bg-[url("https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop")]';
+  // Background Carousel State
+  const BACKGROUND_IMAGES = [
+    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2070&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=2070&auto=format&fit=crop'
+  ];
+  const [bgIndex, setBgIndex] = useState(0);
+
+  useEffect(() => {
+    if (isChatStarted) return;
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length);
+    }, 5000); // Change every 5 seconds
+    return () => clearInterval(interval);
+  }, [isChatStarted, BACKGROUND_IMAGES.length]);
+
+  // Image Pre-loading Effect
+  useEffect(() => {
+    BACKGROUND_IMAGES.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -219,6 +239,7 @@ const WanderChatPage: React.FC = () => {
 
   const handleResult = (result: MessageContent) => {
     setForcedTool(null);
+    setAgentThoughts([]); // Hide thoughts as soon as we get the response
     const newModelMessage: Message = {
       id: uuidv4(),
       role: 'model',
@@ -264,7 +285,33 @@ const WanderChatPage: React.FC = () => {
     }
 
     // Always start chat/close sidebar on any query attempt
-    if (!isChatStarted) setIsChatStarted(true);
+    let activeSid = currentActiveSessionId || user.sessionId;
+
+    if (!isChatStarted) {
+      setIsChatStarted(true);
+
+      // Create a fresh session for the first message from welcome screen
+      const SESSION_TITLES = [
+        "Adventure Awaits", "Dream Vacation", "City Explorer", "Beach Paradise",
+        "Mountain Retreat", "Cultural Journey", "Foodie Tour", "Hidden Gems",
+        "Road Trip", "Weekend Getaway", "Nature Escape", "Historic Wonders"
+      ];
+      const title = SESSION_TITLES[Math.floor(Math.random() * SESSION_TITLES.length)];
+      const newId = uuidv4();
+
+      try {
+        const newSession = await createCustomerChatSession(user.id, title, newId);
+        if (newSession) {
+          activeSid = newId;
+          setCurrentActiveSessionId(newId);
+          localStorage.setItem('sessionId', newId);
+          loadSessions();
+        }
+      } catch (err) {
+        console.error("Failed to lazily create session:", err);
+      }
+    }
+
     setIsSidebarOpen(false); // Auto-collapse on send (Mobile)
     setLimitMessage(null); // Clear any previous limit message
 
@@ -307,8 +354,6 @@ const WanderChatPage: React.FC = () => {
     setIsLoading(true);
     setAgentThoughts([]);
 
-    const activeSid = currentActiveSessionId || user.sessionId;
-
     try {
       await orchestrateResponse(prompt, user.id, activeSid, addAgentThought, handleResult, forcedTool, user.personalization);
     } catch (error) {
@@ -343,6 +388,19 @@ const WanderChatPage: React.FC = () => {
   const closePlanView = () => {
     setActivePlanView(null);
     setActiveRightPanel(null);
+    setWeatherData(null);
+    setDayPlanData(null);
+    setIsWeatherExpanded(false);
+    setIsMapExpanded(false);
+  };
+
+  const closeRightPanel = () => {
+    setActiveRightPanel(null);
+    setActivePlanView(null);
+    setWeatherData(null);
+    setDayPlanData(null);
+    setIsWeatherExpanded(false);
+    setIsMapExpanded(false);
   };
 
   const handleAction = (action: 'plan' | 'weather' | 'map' | 'flyer') => {
@@ -578,11 +636,28 @@ const WanderChatPage: React.FC = () => {
   }
 
   return (
-    <div className={`flex flex-col h-[100dvh] w-full ${bgClass} ${isChatStarted ? 'text-gray-800' : 'text-white'} transition-all duration-500 ease-in-out overflow-hidden`}>
-      <div className={`flex flex-col h-full w-full transition-all duration-700 ${showSmartWelcome ? 'blur-xl scale-[0.98] brightness-50 pointer-events-none' : ''}`}>
+    <div className={`flex flex-col h-[100dvh] w-full ${isChatStarted ? 'bg-white' : ''} ${isChatStarted ? 'text-gray-800' : 'text-white'} transition-all duration-500 ease-in-out overflow-hidden relative`}>
+
+      {/* Dynamic Background Layers for Smooth Cross-fade */}
+      {!isChatStarted && (
+        <div className="absolute inset-0 z-0">
+          {BACKGROUND_IMAGES.map((img, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${bgIndex === idx ? 'opacity-100' : 'opacity-0'
+                }`}
+              style={{ backgroundImage: `url("${img}")` }}
+            />
+          ))}
+          {/* Dark overlay for better text visibility (lighter) */}
+          <div className="absolute inset-0 bg-black/20 transition-opacity duration-500" />
+        </div>
+      )}
+
+      <div className={`flex flex-col h-full w-full relative z-10 transition-all duration-700 ${showSmartWelcome ? 'blur-xl scale-[0.98] brightness-50 pointer-events-none' : ''}`}>
         {/* Header */}
         <div
-          className={`relative z-20 transition-all duration-700 ${isChatStarted || viewMode === 'recommendations' ? 'backdrop-blur-md shadow-sm border-b border-gray-100/50 text-gray-800' : 'text-white'}`}
+          className={`relative z-50 transition-all duration-700 ${isChatStarted || viewMode === 'recommendations' ? 'backdrop-blur-md shadow-sm border-b border-gray-100/50 text-gray-800' : 'text-white'}`}
           style={{ backgroundColor: (isChatStarted || viewMode === 'recommendations') ? 'rgb(255 255 255 / 0.9)' : 'transparent' }}
         >
           <Header
@@ -619,13 +694,13 @@ const WanderChatPage: React.FC = () => {
             {user && (isChatStarted || isSidebarOpen) && (
               <div className={`transition-all duration-300 ease-in-out border-gray-200 overflow-hidden 
                 ${isChatStarted
-                  ? `absolute inset-y-0 left-0 z-40 lg:relative lg:border-r ${isSidebarCollapsed ? 'lg:w-0 lg:border-none' : 'w-full md:w-80'}`
+                  ? `absolute inset-y-0 left-0 z-40 lg:relative lg:border-r ${isSidebarCollapsed ? 'lg:w-0 lg:border-none' : 'w-full md:w-80'} ${!isSidebarOpen ? 'pointer-events-none lg:pointer-events-auto' : 'pointer-events-auto'}`
                   : 'fixed inset-y-0 left-0 z-50 h-full shadow-2xl bg-white w-full md:w-80'
                 }
             `}>
                 <CustomerChatSidebar
                   sessions={sessions}
-                  currentSessionId={currentActiveSessionId}
+                  currentSessionId={isChatStarted && messages.length > 0 ? currentActiveSessionId : null}
                   onSelectSession={handleSelectSession}
                   onNewChat={handleNewChat}
                   onDeleteSession={handleDeleteSession}
@@ -638,12 +713,12 @@ const WanderChatPage: React.FC = () => {
 
             {/* Desktop Toggle Button - Positioned relative to the flex container */}
             {user && isChatStarted && (
-              <div className="hidden lg:flex flex-col justify-center relative z-30 -ml-3">
+              <div className={`hidden lg:flex flex-col justify-center relative z-[60] transition-all duration-300 ${isSidebarCollapsed ? '-ml-0 -translate-x-1/2' : '-ml-4'}`}>
                 <button
                   onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                  className="bg-white border border-gray-200 p-1 rounded-full shadow-md text-gray-500 hover:text-teal-500 transition-transform hover:scale-110"
+                  className={`bg-white border border-gray-200 shadow-md text-gray-500 hover:text-teal-500 transition-all hover:scale-110 flex items-center min-h-[32px] rounded-full ${isSidebarCollapsed ? 'min-w-[40px] pl-5' : 'min-w-[32px] p-1.5 justify-center'}`}
                 >
-                  {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+                  {isSidebarCollapsed ? <ChevronRight className="w-4 h-4 ml-auto mr-1" /> : <ChevronLeft className="w-4 h-4" />}
                 </button>
               </div>
             )}
@@ -651,7 +726,7 @@ const WanderChatPage: React.FC = () => {
 
             <div className="flex-1 flex overflow-hidden relative">
               <div className={`flex flex-col transition-all duration-500 ease-in-out ${activeRightPanel ? 'hidden lg:flex lg:w-1/2' : 'w-full'} ${(isWeatherExpanded && activeRightPanel === 'weather') || (isMapExpanded && activeRightPanel === 'map') ? '!hidden' : ''}`}>
-                <main ref={chatContainerRef} className={`flex-1 overflow-y-auto w-full px-4 scroll-smooth ${isChatStarted ? 'pt-20' : ''}`}>
+                <main ref={chatContainerRef} className={`flex-1 overflow-y-auto w-full px-4 scroll-smooth scrollbar-hide ${isChatStarted ? 'pt-20' : ''}`}>
                   {!isChatStarted ? (
                     <div className="flex flex-col items-center justify-start md:justify-center h-full text-center px-4 pt-10 md:pt-0">
                       <h1 className="text-3xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg mb-1 md:mb-2">Hey I'm TraivoAI,</h1>
@@ -684,8 +759,7 @@ const WanderChatPage: React.FC = () => {
                                 navigate('/login', { state: { from: location } });
                                 return;
                               }
-                              setIsChatStarted(true);
-                              setIsSidebarOpen(true);
+                              handleNewChat();
                             }}
                             className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-4 py-2.5 md:px-6 md:py-3 rounded-full font-medium transition-all border border-white/20 shadow-lg text-sm md:text-base"
                           >
@@ -730,6 +804,18 @@ const WanderChatPage: React.FC = () => {
                         <span className="text-[10px] md:text-sm font-bold uppercase tracking-widest shadow-black drop-shadow-md">Scroll for Recommendations</span>
                         <ChevronDown className="w-6 h-6 md:w-8 md:h-8 drop-shadow-md" />
                       </button>
+
+                      {/* Carousel Indicators */}
+                      <div className="mt-8 flex justify-center gap-2">
+                        {BACKGROUND_IMAGES.map((_, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => setBgIndex(idx)}
+                            className={`h-1.5 transition-all duration-500 rounded-full cursor-pointer ${bgIndex === idx ? 'w-8 bg-teal-400' : 'w-2 bg-white/40 hover:bg-white/60'
+                              }`}
+                          />
+                        ))}
+                      </div>
                     </div>
                   ) : (
                     <div className="space-y-2 pb-4 max-w-4xl mx-auto">
@@ -749,9 +835,11 @@ const WanderChatPage: React.FC = () => {
                               message={msg}
                               onPlanClick={(plan) => {
                                 if (activeRightPanel === 'plan' && activePlanView?.id === msg.id) {
-                                  setActivePlanView(null);
-                                  setActiveRightPanel(null);
+                                  closeRightPanel();
                                 } else {
+                                  // Clean up old URL if exists
+                                  if (activePlanView?.url) URL.revokeObjectURL(activePlanView.url);
+
                                   const htmlContent = generateTripPlanHtml(plan);
                                   const blob = new Blob([htmlContent], { type: 'text/html' });
                                   const url = URL.createObjectURL(blob);
@@ -760,15 +848,22 @@ const WanderChatPage: React.FC = () => {
                                 }
                               }}
                               onWeatherClick={(data) => {
-                                // Ensure data is valid before setting
                                 if (!data) return;
-                                setWeatherData(data);
-                                setActiveRightPanel('weather');
+                                if (activeRightPanel === 'weather' && weatherData?.location === data?.location) {
+                                  closeRightPanel();
+                                } else {
+                                  setWeatherData(data);
+                                  setActiveRightPanel('weather');
+                                }
                               }}
                               onMapClick={(dayPlan) => {
                                 if (!dayPlan) return;
-                                setDayPlanData(dayPlan);
-                                setActiveRightPanel('map');
+                                if (activeRightPanel === 'map' && dayPlanData?.locationName === dayPlan?.locationName) {
+                                  closeRightPanel();
+                                } else {
+                                  setDayPlanData(dayPlan);
+                                  setActiveRightPanel('map');
+                                }
                               }}
                             />
                           </div>
@@ -820,7 +915,7 @@ const WanderChatPage: React.FC = () => {
               {activeRightPanel === 'plan' && activePlanView && (
                 <div className="w-full lg:w-1/2 bg-slate-50 relative border-l border-gray-200 animate-slideInRight h-full">
                   <div className="absolute top-4 right-4 z-20 flex flex-col gap-2">
-                    <button onClick={closePlanView} className="bg-white hover:bg-gray-100 rounded-full p-2 shadow-lg transition-colors"><X className="w-6 h-6 text-gray-700" /></button>
+                    <button onClick={closeRightPanel} className="bg-white hover:bg-gray-100 rounded-full p-2 shadow-lg transition-colors"><X className="w-6 h-6 text-gray-700" /></button>
                     {user && (
                       <button onClick={goToMyTrips} className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 shadow-lg transition-colors" title="View All Trips">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
@@ -839,7 +934,7 @@ const WanderChatPage: React.FC = () => {
                 <div className={`transition-all duration-500 bg-white border-l border-gray-200 shadow-2xl relative h-full ${isWeatherExpanded ? 'w-full fixed inset-0 z-50 animate-in zoom-in-95 duration-300' : 'w-full lg:w-1/2 animate-slideInRight'}`}>
                   <WeatherPanel
                     data={weatherData}
-                    onClose={() => setActiveRightPanel(null)}
+                    onClose={closeRightPanel}
                     isExpanded={isWeatherExpanded}
                     onToggleExpand={() => setIsWeatherExpanded(!isWeatherExpanded)}
                   />
@@ -849,7 +944,7 @@ const WanderChatPage: React.FC = () => {
                 <div className={`transition-all duration-500 bg-white border-l border-gray-200 shadow-2xl relative h-full ${isMapExpanded ? 'w-full fixed inset-0 z-50 animate-in zoom-in-95 duration-300' : 'w-full lg:w-1/2 animate-slideInRight'}`}>
                   <MapPanel
                     dayPlan={dayPlanData}
-                    onClose={() => setActiveRightPanel(null)}
+                    onClose={closeRightPanel}
                     isExpanded={isMapExpanded}
                     onToggleExpand={() => setIsMapExpanded(!isMapExpanded)}
                   />
@@ -865,29 +960,20 @@ const WanderChatPage: React.FC = () => {
                         ${viewMode === 'recommendations' ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-100 pointer-events-none'}
                     `}
           >
-            {/* Top Bar for Recommendations */}
-            {/* <div className="bg-white dark:bg-slate-900 shadow-sm border-b border-gray-100 dark:border-gray-800 p-4 sticky top-0 z-40 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            {/* Top Bar / Navigation for Recommendations - Mobile/Tablet only */}
+            <div className="lg:hidden bg-white/90 dark:bg-slate-900 shadow-sm border-b border-gray-100 dark:border-gray-800 p-2 md:p-4 sticky top-0 z-40 flex items-center justify-between backdrop-blur-md">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setViewMode('chat')}
+                  className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-all font-medium text-sm"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Back to Chat</span>
+                </button>
+              </div>
 
+              <div />
             </div>
-
-
-            <div />
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowLikedOnly(!showLikedOnly)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all border ${showLikedOnly ? 'bg-pink-50 border-pink-200 text-pink-600' : 'bg-gray-100 dark:bg-gray-800 border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-200'}`}
-              >
-                <Heart className={`w-5 h-5 ${showLikedOnly ? 'fill-pink-600' : ''}`} />
-                <span className="text-sm font-medium">Saved ({savedCount})</span>
-              </button>
-              <button onClick={goToMyTrips} className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 transition-colors text-gray-800 dark:text-white">
-                <Map className="w-5 h-5" />
-                <span className="text-sm font-medium">My Trips ({myTripsCount})</span>
-              </button>
-            </div>
-          </div> */}
 
             <div
               className="flex-1 overflow-y-auto p-4 md:p-8"
@@ -955,7 +1041,7 @@ const WanderChatPage: React.FC = () => {
 
               {/* Dynamic Banner */}
               {!showLikedOnly && (
-                <AffiliateBanner bannerType="horizontal-banner" className="max-w-7xl mx-auto px-4" />
+                <AffiliateBanner bannerType="horizontal-banner" source="viator" className="max-w-7xl mx-auto px-4" />
               )}
 
               {/* AFFILIATE LISTINGS SECTION */}

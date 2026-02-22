@@ -80,13 +80,13 @@ export const TripProgressBreadcrumb: React.FC<TripProgressBreadcrumbProps> = ({
     if (orientation === 'vertical') {
         return (
             <div className="h-full py-6 px-4">
-                <div className="relative h-full flex flex-col justify-between items-start">
-                    {/* Background Line - Thinner (w-0.5) */}
-                    <div style={{ height: '97%' }} className="absolute top-0 left-[40px]  w-0.5 bg-gray-200 rounded-full" />
+                <div className="relative h-full flex flex-col justify-between items-center">
+                    {/* Background Line */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-full bg-gray-200 rounded-full" />
 
-                    {/* Active Progress Line - Thinner (w-0.5) */}
+                    {/* Active Progress Line */}
                     <div
-                        className="absolute top-0 left-[40px] w-0.5 bg-teal-600 rounded-full transition-all duration-500 ease-out origin-top"
+                        className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 bg-teal-600 rounded-full transition-all duration-500 ease-out origin-top"
                         style={{ height: `${progressPercentage}%` }}
                     />
 
@@ -98,20 +98,20 @@ export const TripProgressBreadcrumb: React.FC<TripProgressBreadcrumbProps> = ({
                         return (
                             <div
                                 key={stage.key}
-                                className=" items-center gap-4 relative z-10 w-full group"
+                                className="flex flex-col items-center gap-1 relative z-10 group cursor-pointer"
                                 onClick={() => handleClick(stage, index)}
                             >
                                 {/* Icon Node */}
-                                <div style={{ position: 'relative', left: '20px' }} className={`
+                                <div className={`
                                     w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0
-                                    transition-all duration-300 border-2
+                                    transition-all duration-300 border-2 z-10
                                     ${state === 'completed'
                                         ? 'bg-teal-600 border-teal-600 text-white'
                                         : state === 'current'
                                             ? 'bg-white border-teal-600 text-teal-600 ring-4 ring-teal-50'
                                             : 'bg-white border-gray-200 text-gray-300'
                                     }
-                                    ${isClickable ? 'cursor-pointer hover:scale-105' : ''}
+                                    ${isClickable ? 'hover:scale-105' : ''}
                                 `}>
                                     {state === 'completed' ? (
                                         <Check className="w-5 h-5" strokeWidth={3} />
@@ -121,8 +121,8 @@ export const TripProgressBreadcrumb: React.FC<TripProgressBreadcrumbProps> = ({
                                 </div>
 
                                 {/* Label */}
-                                <div style={{ textAlign: 'center' }} className={`
-                                    text-sm font-medium transition-colors duration-300
+                                <div className={`
+                                    text-xs font-medium transition-colors duration-300 px-2 bg-white z-20
                                     ${state === 'current' ? 'text-teal-700 font-bold' : state === 'completed' ? 'text-gray-900' : 'text-gray-400'}
                                     ${isClickable ? 'group-hover:text-teal-600' : ''}
                                 `}>
@@ -140,10 +140,10 @@ export const TripProgressBreadcrumb: React.FC<TripProgressBreadcrumbProps> = ({
     return (
         <div className="w-full py-2 px-2">
             <div className="relative">
-                {/* Background Line - Thinner (h-0.5) */}
+                {/* Background Line */}
                 <div className="absolute top-[18px] left-0 w-full h-0.5 bg-gray-200 rounded-full" />
 
-                {/* Active Progress Line - Thinner (h-0.5) */}
+                {/* Active Progress Line */}
                 <div
                     className="absolute top-[18px] left-0 h-0.5 bg-teal-600 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${progressPercentage}%` }}
@@ -177,14 +177,14 @@ export const TripProgressBreadcrumb: React.FC<TripProgressBreadcrumbProps> = ({
                                     {state === 'completed' ? (
                                         <Check className="w-4 h-4" strokeWidth={3} />
                                     ) : (
-                                        // Clone element to adjust size for mobile if needed, or rely on w-5 h-5 from config
                                         React.cloneElement(stage.icon as React.ReactElement, { className: 'w-4 h-4' })
                                     )}
                                 </div>
 
                                 {/* Label - Centered & Multiline if needed */}
                                 <div className={`
-                                    text-[10px] sm:text-xs font-medium text-center leading-tight transition-colors duration-300 px-1
+                                    text-[10px] sm:text-xs font-medium text-center leading-tight transition-colors duration-300 
+                                    px-2 bg-white mt-1 z-20
                                     ${state === 'current' ? 'text-teal-700 font-bold' : state === 'completed' ? 'text-gray-900' : 'text-gray-400'}
                                 `}>
                                     {stage.label}
