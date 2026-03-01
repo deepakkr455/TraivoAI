@@ -172,7 +172,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                 title="Back"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span className="text-[10px] font-black uppercase tracking-widest md:hidden">Back</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest md:hidden">Back</span>
               </button>
 
               <div className="text-center w-full px-2">
@@ -195,7 +195,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                   <div className="bg-gradient-to-r from-teal-50/50 to-blue-50/50 px-8 py-6 border-b border-gray-50/50">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                           <Plane className="w-5 h-5 md:w-6 md:h-6 text-teal-600" />
                           Trip <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600">Information</span>
                         </h2>
@@ -210,8 +210,8 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                         <Plane className="w-6 h-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Trip Name</p>
-                        <p className="text-base font-black text-gray-900 mt-1">{tripTitle}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Trip Name</p>
+                        <p className="text-base font-bold text-gray-900 mt-1">{tripTitle}</p>
                       </div>
                     </div>
 
@@ -220,8 +220,8 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                         <Calendar className="w-6 h-6 text-teal-600" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Planned Start</p>
-                        <p className="text-sm font-black text-gray-900 mt-1">{formatPlannedDate(plannedStartDate)}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Planned Start</p>
+                        <p className="text-sm font-bold text-gray-900 mt-1">{formatPlannedDate(plannedStartDate)}</p>
                       </div>
                     </div>
 
@@ -230,8 +230,8 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                         <Users className="w-6 h-6 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Members</p>
-                        <p className="text-sm font-black text-gray-900 mt-1">{totalMembers} Travelers</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Total Members</p>
+                        <p className="text-sm font-bold text-gray-900 mt-1">{totalMembers} Travelers</p>
                       </div>
                     </div>
                   </div>
@@ -258,21 +258,21 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                     <div>
                       {isOverdue ? (
                         <>
-                          <p className="text-sm font-black uppercase tracking-widest leading-none mb-1 text-red-900">Departure Delayed</p>
+                          <p className="text-sm font-bold uppercase tracking-widest leading-none mb-1 text-red-900">Departure Delayed</p>
                           <p className="text-xs font-medium text-red-700/80">
                             Selected date is {Math.abs(daysDifference)} day{Math.abs(daysDifference) !== 1 ? 's' : ''} after the planned start date.
                           </p>
                         </>
                       ) : daysDifference === 0 ? (
                         <>
-                          <p className="text-sm font-black uppercase tracking-widest leading-none mb-1 text-green-900">On Schedule</p>
+                          <p className="text-sm font-bold uppercase tracking-widest leading-none mb-1 text-green-900">On Schedule</p>
                           <p className="text-xs font-medium text-green-700/80">
                             Departure date matches the planned start date.
                           </p>
                         </>
                       ) : (
                         <>
-                          <p className="text-sm font-black uppercase tracking-widest leading-none mb-1 text-blue-900">Early Departure</p>
+                          <p className="text-sm font-bold uppercase tracking-widest leading-none mb-1 text-blue-900">Early Departure</p>
                           <p className="text-xs font-medium text-blue-700/80">
                             Selected date is {Math.abs(daysDifference)} day{Math.abs(daysDifference) !== 1 ? 's' : ''} before the planned start date.
                           </p>
@@ -288,7 +288,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                     <Info className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-black uppercase tracking-widest leading-none mb-1 text-blue-900">Admin Information</p>
+                    <p className="text-sm font-bold uppercase tracking-widest leading-none mb-1 text-blue-900">Admin Information</p>
                     <p className="text-xs font-medium text-blue-700/80">
                       Once you submit, all members will be notified about the journey start details.
                       Make sure all information is correct before proceeding.
@@ -301,7 +301,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
               <div className="lg:col-span-7">
                 <form onSubmit={handleSubmit} className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md sticky top-8">
                   <div className="bg-gradient-to-r from-purple-50/50 to-pink-50/50 px-8 py-6 border-b border-gray-50/50">
-                    <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                    <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                       <MapPin className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                       Departure <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Details</span>
                     </h2>
@@ -311,7 +311,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                   <div className="p-8 space-y-6">
                     {/* Departure Location */}
                     <div>
-                      <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
+                      <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
                         <MapPin className="w-4 h-4 text-teal-500" />
                         Departure Location
                       </label>
@@ -335,7 +335,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
 
                     {/* Departure City */}
                     <div>
-                      <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
+                      <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
                         <MapPin className="w-4 h-4 text-teal-500" />
                         Departure City
                       </label>
@@ -361,7 +361,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Departure Date */}
                       <div>
-                        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
+                        <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
                           <Calendar className="w-4 h-4 text-purple-500" />
                           Departure Date
                         </label>
@@ -384,7 +384,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
 
                       {/* Departure Time */}
                       <div>
-                        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
+                        <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
                           <Clock className="w-4 h-4 text-purple-500" />
                           Departure Time
                         </label>
@@ -408,7 +408,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
 
                     {/* Joined Members Count */}
                     <div>
-                      <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
+                      <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
                         <Users className="w-4 h-4 text-blue-500" />
                         Number of Members Joining
                       </label>
@@ -424,7 +424,7 @@ export const StartJourney: React.FC<StartJourneyProps> = ({
                             : 'border-gray-200 bg-gray-50/50'
                             } text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all font-medium`}
                         />
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">
                           / {totalMembers}
                         </div>
                       </div>

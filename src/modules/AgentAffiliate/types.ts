@@ -81,6 +81,7 @@ export interface ChatMessage {
     content: string | any;
     media?: MediaUpload[];
     productCard?: Product;
+    imageUrl?: string;
 }
 
 export interface Booking {

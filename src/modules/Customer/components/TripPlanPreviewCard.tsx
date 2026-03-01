@@ -47,7 +47,7 @@ export const TripPlanPreviewCard: React.FC<TripPlanPreviewCardProps> = ({ url, t
       {enableBlogAction && (
         <div className="px-4 pb-4 pt-0 mt-auto">
           <a
-            href={`#/user/blog/${planId}`}
+            href={`/user/blog/${planId}`}
             className="flex items-center justify-center w-full py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-sm font-medium text-white transition-all backdrop-blur-sm"
             onClick={(e) => {
               // Prevent default link behavior if needed

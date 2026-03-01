@@ -102,7 +102,7 @@ export const CustomerChatSidebar: React.FC<CustomerChatSidebarProps> = ({
 
                         return (
                             <div key={group}>
-                                <h3 className="px-3 mb-3 text-[11px] font-bold text-gray-400 uppercase tracking-widest">{group}</h3>
+                                <h3 className="px-3 mb-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">{group}</h3>
                                 <div className="space-y-1">
                                     {groupSessions.map(session => (
                                         <div

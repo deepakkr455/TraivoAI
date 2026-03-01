@@ -1,6 +1,7 @@
 // services/plansService.ts
 import { supabase } from '../../../services/supabaseClient';
 import { TripPlanData } from '../../../types';
+import logger from '../../../utils/logger';
 
 
 export interface SavedPlan {
@@ -83,7 +84,7 @@ class PlansService {
 
       return { success: true, data: savedPlan };
     } catch (error: any) {
-      console.error('Error saving plan:', error);
+      logger.error('Error saving plan:', error);
       return { success: false, error: error.message };
     }
   }
@@ -142,7 +143,7 @@ class PlansService {
         try {
           planData = JSON.parse(plan.plan_json);
         } catch (e) {
-          console.error('Error parsing plan_json:', e);
+          logger.error('Error parsing plan_json:', e);
           planData = {} as TripPlanData;
         }
 
@@ -165,7 +166,7 @@ class PlansService {
 
       return { success: true, data: plans };
     } catch (error: any) {
-      console.error('Error fetching plans:', error);
+      logger.error('Error fetching plans:', error);
       return { success: false, error: error.message };
     }
   }
@@ -219,7 +220,7 @@ class PlansService {
       try {
         planData = JSON.parse(plan.plan_json);
       } catch (e) {
-        console.error('Error parsing plan_json:', e);
+        logger.error('Error parsing plan_json:', e);
         return { success: false, error: 'Invalid plan data' };
       }
 
@@ -241,14 +242,14 @@ class PlansService {
         try {
           tripWithAccess.updatedPlanData = JSON.parse(plan.updated_plan_json);
         } catch (e) {
-          console.error('Error parsing updated_plan_json:', e);
+          logger.error('Error parsing updated_plan_json:', e);
         }
       }
 
       return { success: true, data: tripWithAccess };
 
     } catch (error: any) {
-      console.error('Error fetching plan:', error);
+      logger.error('Error fetching plan:', error);
       return { success: false, error: error.message };
     }
   }
@@ -279,7 +280,7 @@ class PlansService {
         .single();
 
       if (tokenError || !tokenData) {
-        console.error('Token lookup failed:', tokenError || 'Token not found in database');
+        logger.error('Token lookup failed:', tokenError || 'Token not found in database');
         return { success: false, error: tokenError?.message || 'Invalid or expired invitation token' };
       }
 
@@ -297,7 +298,7 @@ class PlansService {
       try {
         planData = JSON.parse(plan.plan_json);
       } catch (e) {
-        console.error('Error parsing plan_json:', e);
+        logger.error('Error parsing plan_json:', e);
         planData = {} as TripPlanData;
       }
 
@@ -344,14 +345,14 @@ class PlansService {
         try {
           tripWithAccess.updatedPlanData = JSON.parse(plan.updated_plan_json);
         } catch (e) {
-          console.error('Error parsing updated_plan_json:', e);
+          logger.error('Error parsing updated_plan_json:', e);
         }
       }
 
       return { success: true, data: tripWithAccess };
 
     } catch (error: any) {
-      console.error('Error fetching plan by token:', error);
+      logger.error('Error fetching plan by token:', error);
       return { success: false, error: error.message };
     }
   }
@@ -395,7 +396,7 @@ class PlansService {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Error updating plan:', error);
+      logger.error('Error updating plan:', error);
       return { success: false, error: error.message };
     }
   }
@@ -422,7 +423,7 @@ class PlansService {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Error deleting plan:', error);
+      logger.error('Error deleting plan:', error);
       return { success: false, error: error.message };
     }
   }
@@ -448,7 +449,7 @@ class PlansService {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Error saving journey data:', error);
+      logger.error('Error saving journey data:', error);
       return { success: false, error: error.message };
     }
   }
@@ -478,7 +479,7 @@ class PlansService {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Error updating plan status:', error);
+      logger.error('Error updating plan status:', error);
       return { success: false, error: error.message };
     }
   }
@@ -508,7 +509,7 @@ class PlansService {
 
       return { success: true };
     } catch (error: any) {
-      console.error('Error setting track_expenses:', error);
+      logger.error('Error setting track_expenses:', error);
       return { success: false, error: error.message };
     }
   }
@@ -550,7 +551,7 @@ class PlansService {
 
       return { success: true, isPublic: newIsPublic };
     } catch (error: any) {
-      console.error('Error toggling public status:', error);
+      logger.error('Error toggling public status:', error);
       return { success: false, error: error.message };
     }
   }
@@ -565,13 +566,13 @@ class PlansService {
         .eq('id', id);
 
       if (error) {
-        console.error('Error updating plan visibility:', error);
+        logger.error('Error updating plan visibility:', error);
         return { success: false, error: error.message };
       }
 
       return { success: true };
     } catch (error) {
-      console.error('Exception updating plan visibility:', error);
+      logger.error('Exception updating plan visibility:', error);
       return { success: false, error: 'Failed' };
     }
   }

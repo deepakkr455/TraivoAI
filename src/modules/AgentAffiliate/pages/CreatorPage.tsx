@@ -9,6 +9,7 @@ import { useAgentData } from '../context/AgentDataContext';
 import { useAuth } from '../context/AuthContext';
 import { useAffiliateSubscription } from '../hooks/useAffiliateSubscription';
 import { ChevronLeftIcon, ChevronRightIcon } from '../components/Icons';
+import { X, Sparkles, Download, Share2 } from 'lucide-react';
 import { Product } from '../types';
 
 const CreatorPage: React.FC = () => {
@@ -18,7 +19,7 @@ const CreatorPage: React.FC = () => {
         messages, isLoading, sendMessage, workspaceProducts, affiliateListings,
         confirmProduct, deleteProduct, chatSessions, currentSessionId,
         setCurrentSessionId, createNewChat, deleteSession, renameSession,
-        updateAffiliateStatus, removeAffiliateListing
+        updateAffiliateStatus, removeAffiliateListing, lastGeneratedImageUrl
     } = useAgentData();
 
     const [isHistoryOpen, setIsHistoryOpen] = useState(true);
@@ -26,11 +27,24 @@ const CreatorPage: React.FC = () => {
     const [isMobileHistoryOpen, setIsMobileHistoryOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [activeImage, setActiveImage] = useState<{ url: string; prompt?: string } | null>(null);
 
     const handleCardClick = (product: Product) => {
         setSelectedProduct(product);
         setIsModalOpen(true);
+        setActiveImage(null); // Clear image if product is clicked
     };
+
+    const handleImageClick = (imageUrl: string, prompt?: string) => {
+        setActiveImage({ url: imageUrl, prompt });
+    };
+
+    // Auto-open image when generated
+    React.useEffect(() => {
+        if (lastGeneratedImageUrl) {
+            setActiveImage({ url: lastGeneratedImageUrl });
+        }
+    }, [lastGeneratedImageUrl]);
 
     return (
         <div className="flex w-full h-full relative">
@@ -87,6 +101,7 @@ const CreatorPage: React.FC = () => {
                     isLoading={isLoading}
                     onSendMessage={sendMessage}
                     onCardClick={handleCardClick}
+                    onImageClick={handleImageClick}
                     isAffiliate={profile?.user_type === 'affiliate_partner'}
                     canSendMessage={canMakeQuery()}
                     quotaInfo={userSubscription?.tier?.query_daily_quota ? `${dailyQueryCount}/${userSubscription.tier.query_daily_quota} messages used today.` : undefined}
@@ -102,7 +117,6 @@ const CreatorPage: React.FC = () => {
                 {isWorkspaceOpen ? <ChevronRightIcon className="w-4 h-4" /> : <ChevronLeftIcon className="w-4 h-4" />}
             </button>
 
-            {/* Workspace */}
             <div className={`hidden lg:block flex-shrink-0 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out ${isWorkspaceOpen ? 'w-[min(400px,25%)] opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
                 <div className="w-full h-full">
                     {profile?.user_type === 'affiliate_partner' ? (
@@ -140,6 +154,47 @@ const CreatorPage: React.FC = () => {
                         sendMessage(`I want to edit the "${selectedProduct.title}" listing.`);
                     }}
                 />
+            )}
+
+            {/* Image Preview Modal */}
+            {activeImage && (
+                <div className="fixed inset-0 bg-white/40 dark:bg-slate-950/40 flex items-center justify-center p-4 md:p-8 z-[100] backdrop-blur-md animate-in fade-in duration-500">
+                    <div className="bg-white dark:bg-gray-950 rounded-[2.5rem] shadow-2xl w-full max-w-4xl h-fit max-h-[90vh] flex flex-col overflow-hidden border border-gray-100 dark:border-gray-800 relative ring-1 ring-black/5">
+                        {/* Top Right Floating Actions */}
+                        <div className="absolute top-6 right-6 z-20 flex gap-3">
+                            <button
+                                onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = activeImage.url;
+                                    link.download = `traivo-agent-${Date.now()}.png`;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }}
+                                className="p-3 bg-teal-500 hover:bg-teal-600 rounded-full transition-all border border-teal-400 text-white shadow-xl group"
+                                title="Download Image"
+                            >
+                                <Download className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                            </button>
+                            <button
+                                onClick={() => setActiveImage(null)}
+                                className="p-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-all border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-xl group"
+                                title="Close"
+                            >
+                                <X className="w-6 h-6 group-hover:rotate-90 transition-all duration-300" />
+                            </button>
+                        </div>
+
+                        {/* Image Container */}
+                        <div className="w-full overflow-hidden flex items-center justify-center p-2 bg-transparent">
+                            <img
+                                src={activeImage.url}
+                                alt="AI Preview"
+                                className="w-full h-auto max-h-[80vh] object-contain rounded-2xl"
+                            />
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

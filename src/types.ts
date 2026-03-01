@@ -198,6 +198,7 @@ export interface ChatInputProps {
   value?: string;
   onChange?: (value: string) => void;
   limitMessage?: string | null;
+  menuPosition?: 'top' | 'bottom';
 }
 
 export interface DailyItineraryItem {

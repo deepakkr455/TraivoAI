@@ -7,14 +7,15 @@ interface SmartWelcomeProps {
     onComplete: (data: PersonalizationData) => void;
     onSkip: () => void;
     isEditing?: boolean;
+    initialData?: PersonalizationData;
 }
 
-export const SmartWelcome: React.FC<SmartWelcomeProps> = ({ userName, onComplete, onSkip, isEditing }) => {
+export const SmartWelcome: React.FC<SmartWelcomeProps> = ({ userName, onComplete, onSkip, isEditing, initialData }) => {
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-0 md:p-6 animate-in fade-in duration-1000">
             {/* Backdrop with extreme glassmorphism and theme tint */}
             <div
-                className="absolute inset-0 bg-[#0f172a]/60 backdrop-blur-3xl"
+                className="absolute inset-0 bg-white/40 backdrop-blur-2xl"
                 onClick={isEditing ? onSkip : undefined}
             />
 
@@ -22,7 +23,7 @@ export const SmartWelcome: React.FC<SmartWelcomeProps> = ({ userName, onComplete
                 {isEditing && (
                     <button
                         onClick={onSkip}
-                        className="absolute -top-12 right-0 md:-right-12 p-3 rounded-full bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all border border-white/5"
+                        className="absolute -top-12 right-0 md:-right-12 p-3 rounded-full bg-white text-slate-400 hover:text-slate-900 shadow-xl transition-all border border-slate-100"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -30,6 +31,7 @@ export const SmartWelcome: React.FC<SmartWelcomeProps> = ({ userName, onComplete
 
                 <div className="relative h-full flex flex-col justify-center">
                     <TravelPersonalization
+                        initialData={initialData}
                         onComplete={onComplete}
                         onCancel={onSkip}
                     />

@@ -89,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNaviga
             <span className="text-teal-500 text-2xl md:text-3xl font-bold tracking-wider">Traivo</span>
             <span className="text-2xl md:text-3xl font-bold tracking-wider bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">AI</span>
           </span> */}
-          <span className="text-2xl sm:text-3xl font-black tracking-tighter">
+          <span className="text-2xl sm:text-3xl font-bold tracking-tighter">
             <span className="text-teal-500">Traivo</span>
             <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">AI</span>
           </span>

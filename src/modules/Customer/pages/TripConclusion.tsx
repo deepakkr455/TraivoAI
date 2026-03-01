@@ -226,7 +226,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                 title="Back"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span className="text-[10px] font-black uppercase tracking-widest md:hidden">Back</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest md:hidden">Back</span>
               </button>
 
               <div className="text-center w-full px-2">
@@ -249,7 +249,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
               <div className="bg-gradient-to-r from-purple-50/50 to-pink-50/50 px-8 py-6 border-b border-gray-50/50">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                    <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                       <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                       AI Journey <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Summary</span>
                     </h2>
@@ -267,7 +267,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                 ) : (
                   <div className="space-y-6">
                     <div className="prose prose-lg prose-slate max-w-none
-                      prose-headings:text-gray-900 prose-headings:font-black prose-headings:tracking-tight
+                      prose-headings:text-gray-900 prose-headings:font-bold prose-headings:tracking-tight
                       prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
                       prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
                       prose-strong:text-gray-900 prose-strong:font-bold
@@ -284,29 +284,29 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                         <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-teal-100 flex items-center justify-center">
                           <Calendar className="w-6 h-6 text-teal-600" />
                         </div>
-                        <p className="text-3xl font-black text-gray-900">{summaryData.totalDays}</p>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Days</p>
+                        <p className="text-3xl font-bold text-gray-900">{summaryData.totalDays}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Days</p>
                       </div>
                       <div className="text-center">
                         <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
                           <MapPin className="w-6 h-6 text-blue-600" />
                         </div>
-                        <p className="text-3xl font-black text-gray-900">{summaryData.visitedPlaces.length}</p>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Places</p>
+                        <p className="text-3xl font-bold text-gray-900">{summaryData.visitedPlaces.length}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Places</p>
                       </div>
                       <div className="text-center">
                         <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
                           <TrendingUp className="w-6 h-6 text-purple-600" />
                         </div>
-                        <p className="text-3xl font-black text-gray-900">{summaryData.activities}</p>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Activities</p>
+                        <p className="text-3xl font-bold text-gray-900">{summaryData.activities}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Activities</p>
                       </div>
                       <div className="text-center">
                         <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
                           <DollarSign className="w-6 h-6 text-green-600" />
                         </div>
-                        <p className="text-3xl font-black text-gray-900">${summaryData.totalExpense.toFixed(0)}</p>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Spent</p>
+                        <p className="text-3xl font-bold text-gray-900">${summaryData.totalExpense.toFixed(0)}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Spent</p>
                       </div>
                     </div>
                   </div>
@@ -320,13 +320,13 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                 <div className="bg-gradient-to-r from-teal-50/50 to-blue-50/50 px-8 py-6 border-b border-gray-50/50">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                      <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                         <Globe className="w-5 h-5 md:w-6 md:h-6 text-teal-600" />
                         Share Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600">Journey</span>
                       </h2>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">Admin Only</p>
                     </div>
-                    <span className="bg-orange-100 text-orange-700 text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider">
+                    <span className="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
                       Admin
                     </span>
                   </div>
@@ -346,7 +346,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                             <CheckCircle className="w-7 h-7 text-green-600" />
                           </div>
                           <div>
-                            <p className="font-black text-gray-900 text-base">Trip is Public</p>
+                            <p className="font-bold text-gray-900 text-base">Trip is Public</p>
                             <p className="text-xs font-medium text-gray-500 mt-0.5 uppercase tracking-wider">Visible to all users</p>
                           </div>
                         </>
@@ -356,7 +356,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                             <Lock className="w-7 h-7 text-gray-600" />
                           </div>
                           <div>
-                            <p className="font-black text-gray-900 text-base">Trip is Private</p>
+                            <p className="font-bold text-gray-900 text-base">Trip is Private</p>
                             <p className="text-xs font-medium text-gray-500 mt-0.5 uppercase tracking-wider">Only visible to members</p>
                           </div>
                         </>
@@ -391,7 +391,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
               <div className="bg-gradient-to-r from-yellow-50/50 to-orange-50/50 px-8 py-6 border-b border-gray-50/50">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                    <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                       <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
                       Trip <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-orange-600">Feedback</span>
                     </h2>
@@ -400,7 +400,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                   {feedbacks.length > 0 && (
                     <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-orange-200/50 shadow-sm">
                       <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                      <span className="font-black text-gray-900 text-lg">{calculateAverageRating()}</span>
+                      <span className="font-bold text-gray-900 text-lg">{calculateAverageRating()}</span>
                       <span className="text-sm text-gray-600 font-medium">({feedbacks.length})</span>
                     </div>
                   )}
@@ -411,11 +411,11 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                 {/* Submit Feedback */}
                 {!hasSubmittedFeedback ? (
                   <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-200">
-                    <h3 className="font-black text-gray-900 mb-6 text-base uppercase tracking-wider">Share Your Experience</h3>
+                    <h3 className="font-bold text-gray-900 mb-6 text-base uppercase tracking-wider">Share Your Experience</h3>
 
                     {/* Rating */}
                     <div className="mb-6">
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
                         Rate this trip
                       </label>
                       {renderStars(userRating, true, setUserRating)}
@@ -423,7 +423,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
 
                     {/* Comment */}
                     <div className="mb-6">
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
                         Comments (optional)
                       </label>
                       <textarea
@@ -459,7 +459,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                     <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <ThumbsUp className="w-5 h-5 text-green-600" />
                     </div>
-                    <p className="text-sm text-green-800 font-black uppercase tracking-wider">
+                    <p className="text-sm text-green-800 font-bold uppercase tracking-wider">
                       Thank you for your feedback! Your input helps improve future trips.
                     </p>
                   </div>
@@ -468,7 +468,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                 {/* Existing Feedbacks */}
                 {feedbacks.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="font-black text-gray-900 flex items-center gap-2 text-base uppercase tracking-wider">
+                    <h3 className="font-bold text-gray-900 flex items-center gap-2 text-base uppercase tracking-wider">
                       <Award className="w-5 h-5 text-teal-600" />
                       Member Reviews ({feedbacks.length})
                     </h3>
@@ -481,12 +481,12 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center">
-                              <span className="text-white font-black text-lg">
+                              <span className="text-white font-bold text-lg">
                                 {feedback.user_name.charAt(0)}
                               </span>
                             </div>
                             <div>
-                              <p className="font-black text-gray-900">{feedback.user_name}</p>
+                              <p className="font-bold text-gray-900">{feedback.user_name}</p>
                               <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">
                                 {new Date(feedback.created_at).toLocaleDateString()}
                               </p>
@@ -514,7 +514,7 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
             <div className="flex justify-center pt-4">
               <button
                 onClick={onFinish}
-                className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-12 py-4 rounded-full font-black text-base transition-all shadow-lg hover:shadow-xl active:scale-95 uppercase tracking-wider"
+                className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-12 py-4 rounded-full font-bold text-base transition-all shadow-lg hover:shadow-xl active:scale-95 uppercase tracking-wider"
               >
                 Return to Dashboard
               </button>

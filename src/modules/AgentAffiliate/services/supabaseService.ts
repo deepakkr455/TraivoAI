@@ -1,6 +1,8 @@
 // supabaseService.ts – centralised Supabase client and helper functions
 import { Product, ChatMessage, MediaUpload } from '../types';
 import { supabase } from '../../../services/supabaseClient';
+import { getSecureImageUrl } from '../../Customer/services/geminiService';
+import logger from '../../../utils/logger';
 
 export { supabase };
 
@@ -13,7 +15,7 @@ export { supabase };
 // ---------------------------------------------------------------------------
 export const addConversationMessage = async (message: ChatMessage, businessId: string, userId?: string, sessionId?: string) => {
     // Log the message payload before we send it to Supabase
-    console.log('🗨️ Sending conversation message to Supabase:', message);
+    logger.info('🗨️ Sending conversation message to Supabase:', message);
 
     const { data, error } = await supabase
         .from('b2b_conversations')
@@ -25,14 +27,14 @@ export const addConversationMessage = async (message: ChatMessage, businessId: s
                 sender: message.sender,
                 content: message.content,
                 product_id: message.productCard?.id || null,
-                media_urls: message.media ? message.media.map(m => m.url) : [],
+                media_urls: message.imageUrl ? [message.imageUrl] : (message.media ? message.media.map(m => m.url) : []),
             },
         ]);
 
     if (error) {
-        console.error('Error saving conversation message:', JSON.stringify(error, null, 2));
+        logger.error('Error saving conversation message:', JSON.stringify(error, null, 2));
     } else {
-        console.log('✅ Conversation message saved. Returned data:', data);
+        logger.info('✅ Conversation message saved. Returned data:', data);
     }
     return data;
 };
@@ -47,7 +49,7 @@ export const saveDeal = async (userId: string, productId: string) => {
         .insert([{ user_id: userId, product_id: productId }]);
 
     if (error) {
-        console.error('Error saving deal:', error);
+        logger.error('Error saving deal:', error);
         throw error;
     }
 };
@@ -59,7 +61,7 @@ export const unsaveDeal = async (userId: string, productId: string) => {
         .match({ user_id: userId, product_id: productId });
 
     if (error) {
-        console.error('Error unsaving deal:', error);
+        logger.error('Error unsaving deal:', error);
         throw error;
     }
 };
@@ -71,7 +73,7 @@ export const getSavedDeals = async (userId: string): Promise<string[]> => {
         .eq('user_id', userId);
 
     if (error) {
-        console.error('Error fetching saved deals:', error);
+        logger.error('Error fetching saved deals:', error);
         return [];
     }
     return data.map((d: any) => d.product_id);
@@ -87,7 +89,7 @@ export const getPublicProfile = async (userId: string) => {
         .maybeSingle();
 
     if (error) {
-        console.error('Error fetching public profile:', error);
+        logger.error('Error fetching public profile:', error);
         return null;
     }
     return data;
@@ -103,13 +105,12 @@ export const uploadMedia = async (file: File, businessId: string): Promise<strin
     const { data, error } = await supabase.storage.from('media').upload(fileName, file);
 
     if (error) {
-        console.error('Error uploading media:', error);
+        logger.error('Error uploading media:', error);
         return null;
     }
 
-    // Get public URL for the uploaded file
-    const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(data.path);
-    return publicUrl;
+    // Get secure local blob URL instead of the public Supabase URL
+    return await getSecureImageUrl('media', data.path);
 };
 
 // ---------------------------------------------------------------------------
@@ -126,21 +127,49 @@ export const addProductListing = async (product: Product) => {
     };
 
     if (!productData.business_id) {
-        console.error('❌ Error: Missing business_id in product data. Cannot save to DB.', productData);
+        logger.error('❌ Error: Missing business_id in product data. Cannot save to DB.', productData);
         return null;
     }
 
-    console.log('📝 Adding/Updating product listing DB. Business ID:', productData.business_id); // Enhanced log
+    // Remove virtual/analytical fields that don't exist in the database schema
+    // and might cause Postgrest errors (like avg_views, total_time_spent, etc.)
+    const {
+        avg_views,
+        unique_visitors,
+        total_time_spent,
+        reviews_count,
+        reviews_source,
+        ...finalProductData
+    } = productData as any;
 
-    const { data, error } = await supabase.from('listed_products').upsert([productData]);
+    logger.info('📝 Adding/Updating product listing DB. Business ID:', finalProductData.business_id); // Enhanced log
+
+    const { data, error } = await supabase.from('listed_products').upsert([finalProductData]);
 
     if (error) {
-        console.error('Error saving product listing:', JSON.stringify(error, null, 2));
+        logger.error('Error saving product listing:', JSON.stringify(error, null, 2));
     } else {
-        console.log('✅ Product listing saved. Returned data:', data);
+        logger.info('✅ Product listing saved. Returned data:', data);
     }
     return data;
 };
+
+// ---------------------------------------------------------------------------
+// Helper: update product listing status
+// ---------------------------------------------------------------------------
+export const updateProductStatus = async (productId: string, isActive: boolean) => {
+    const { data, error } = await supabase
+        .from('listed_products')
+        .update({ is_active: isActive })
+        .eq('id', productId);
+
+    if (error) {
+        logger.error('Error updating product status:', error);
+        throw error;
+    }
+    return data;
+};
+
 // ---------------------------------------------------------------------------
 // Helper: get all listed products
 // ---------------------------------------------------------------------------
@@ -162,11 +191,11 @@ export const getListedProducts = async (businessId?: string): Promise<Product[]>
     const { data, error } = await query;
 
     if (error) {
-        console.error('Error fetching listed products:', error);
+        logger.error('Error fetching listed products:', error);
         return [];
     }
 
-    console.log(`✅ getListedProducts matched ${data?.length} rows`);
+    logger.info(`✅ getListedProducts matched ${data?.length} rows`);
 
     // Transform data back to match Product interface if needed
     return (data || []).map((p: any) => ({
@@ -197,18 +226,22 @@ export const getConversationMessages = async (businessId: string, sessionId?: st
     const { data, error } = await query;
 
     if (error) {
-        console.error('Error fetching conversation messages:', error);
+        logger.error('Error fetching conversation messages:', error);
         return [];
     }
 
     // Reverse to return in chronological order
-    return (data || []).reverse().map((msg: any) => ({
-        id: msg.id,
-        sender: msg.sender,
-        content: msg.content,
-        media: msg.media_urls ? msg.media_urls.map((url: string) => ({ url, type: 'image', name: 'Image' })) : undefined,
-        productCard: msg.product_id ? { id: msg.product_id } as Product : undefined
-    }));
+    return (data || []).reverse().map((msg: any) => {
+        const media = msg.media_urls ? msg.media_urls.map((url: string) => ({ url, type: 'image', name: 'Image' })) : undefined;
+        return {
+            id: msg.id,
+            sender: msg.sender,
+            content: msg.content,
+            media,
+            productCard: msg.product_id ? { id: msg.product_id } as Product : undefined,
+            imageUrl: (media && media.length === 1 && !msg.product_id) ? media[0].url : undefined
+        };
+    });
 };
 
 // New function specifically for Customer Chat
@@ -226,7 +259,7 @@ export const getCustomerConversationMessages = async (userId: string, sessionId?
     const { data, error } = await query;
 
     if (error) {
-        console.error('Error fetching customer conversation messages:', error);
+        logger.error('Error fetching customer conversation messages:', error);
         return [];
     }
 
@@ -267,7 +300,7 @@ export const addCustomerMessage = async (message: ChatMessage, userId: string, s
     // We cannot insert partial messages easily.
     // Since 'geminiService' orchestrates the full turn and saves it, this function is likely obsolete 
     // for the main chat flow. 
-    console.warn('addCustomerMessage is deprecated for user_queries schema. Use geminiService.orchestrateResponse instead.');
+    logger.warn('addCustomerMessage is deprecated for user_queries schema. Use geminiService.orchestrateResponse instead.');
     return null;
 };
 
@@ -289,7 +322,7 @@ export const createChatSession = async (userId: string, title: string, businessI
         .single();
 
     if (error) {
-        console.error('Error creating B2B chat session:', JSON.stringify(error, null, 2));
+        logger.error('Error creating B2B chat session:', JSON.stringify(error, null, 2));
         return null;
     }
     return data;
@@ -303,7 +336,7 @@ export const getChatSessions = async (userId: string) => {
         .order('created_at', { ascending: false });
 
     if (error) {
-        console.error('Error fetching B2B chat sessions:', error);
+        logger.error('Error fetching B2B chat sessions:', error);
         return [];
     }
     return data;
@@ -316,7 +349,7 @@ export const updateChatSessionTitle = async (sessionId: string, title: string) =
         .eq('id', sessionId);
 
     if (error) {
-        console.error('Error updating B2B chat session title:', error);
+        logger.error('Error updating B2B chat session title:', error);
     }
 };
 
@@ -327,7 +360,7 @@ export const deleteChatSession = async (sessionId: string) => {
         .eq('id', sessionId);
 
     if (error) {
-        console.error('Error deleting B2B chat session:', error);
+        logger.error('Error deleting B2B chat session:', error);
     }
 };
 
@@ -347,7 +380,7 @@ export const createCustomerChatSession = async (userId: string, title: string, i
         .single();
 
     if (error) {
-        console.error('Error creating customer chat session:', JSON.stringify(error, null, 2));
+        logger.error('Error creating customer chat session:', JSON.stringify(error, null, 2));
         return null;
     }
     return data;
@@ -361,7 +394,7 @@ export const getCustomerChatSessions = async (userId: string) => {
         .order('created_at', { ascending: false });
 
     if (error) {
-        console.error('Error fetching customer chat sessions:', error);
+        logger.error('Error fetching customer chat sessions:', error);
         return [];
     }
     return data;
@@ -374,7 +407,7 @@ export const updateCustomerChatSessionTitle = async (sessionId: string, title: s
         .eq('id', sessionId);
 
     if (error) {
-        console.error('Error updating customer chat session title:', error);
+        logger.error('Error updating customer chat session title:', error);
     }
 };
 
@@ -385,7 +418,7 @@ export const deleteCustomerChatSession = async (sessionId: string) => {
         .eq('id', sessionId);
 
     if (error) {
-        console.error('Error deleting customer chat session:', error);
+        logger.error('Error deleting customer chat session:', error);
     }
 };
 
@@ -432,7 +465,7 @@ export const incrementProductClick = async (id: string, metadata: any = {}) => {
 
 // Add a new affiliate listing
 export const addAffiliateListing = async (listing: Omit<import('../types').AffiliateListing, 'id' | 'created_at'>) => {
-    console.log('📝 Adding affiliate listing to DB:', listing); // Enhanced log
+    logger.info('📝 Adding affiliate listing to DB:', listing); // Enhanced log
 
     const { data, error } = await supabase
         .from('affiliate_listings')
@@ -465,7 +498,7 @@ export const getAffiliateListings = async (userId?: string): Promise<import('../
     const { data, error } = await query;
 
     if (error) {
-        console.error('Error fetching affiliate listings:', error);
+        logger.error('Error fetching affiliate listings:', error);
         return [];
     }
 
@@ -473,7 +506,7 @@ export const getAffiliateListings = async (userId?: string): Promise<import('../
 };
 
 export const getAffiliateBanners = async (bannerType: string, limit: number = 5, source?: string): Promise<import('../types').AffiliateListing[]> => {
-    console.log(`🔍 [SupabaseService] Entering getAffiliateBanners(type=${bannerType}, source=${source})`);
+    logger.info(`🔍 [SupabaseService] Entering getAffiliateBanners(type=${bannerType}, source=${source})`);
     // Robust Matching: handle vertical-banner vs vertical_banner, etc.
     const typeVariations = [bannerType, bannerType.replace('-', '_'), bannerType.replace('_', '-')];
 
@@ -494,13 +527,13 @@ export const getAffiliateBanners = async (bannerType: string, limit: number = 5,
         .limit(limit);
 
     if (error) {
-        console.error(`Error fetching affiliate banners (${bannerType}${source ? ` - ${source}` : ''}):`, error);
+        logger.error(`Error fetching affiliate banners (${bannerType}${source ? ` - ${source}` : ''}):`, error);
         return [];
     }
 
-    // Fallback: If no categorized banners found, get ANY active and healthy banners for this source
-    if ((!data || data.length === 0) && bannerType !== 'any') {
-        console.warn(`[SupabaseService] No categorized banners found for ${bannerType}/${source}. Trying source-only fallback.`);
+    // Fallback: ONLY if no type was specified or 'any' was requested, get any active banners for this source
+    if ((!data || data.length === 0) && (bannerType === 'any' || !bannerType)) {
+        logger.warn(`[SupabaseService] No categorized banners found and 'any' requested. Trying source-only fallback.`);
         let fallbackQuery = supabase
             .from('affiliate_listings')
             .select('*')
@@ -512,42 +545,41 @@ export const getAffiliateBanners = async (bannerType: string, limit: number = 5,
         }
 
         const { data: fallbackData, error: fallbackError } = await fallbackQuery.limit(limit);
-        if (fallbackError) console.error(`❌ [SupabaseService] Fallback 1 Error:`, fallbackError);
+        if (fallbackError) logger.error(`❌ [SupabaseService] Fallback 1 Error:`, fallbackError);
         if (fallbackData && fallbackData.length > 0) {
-            console.log(`✅ [SupabaseService] Fallback 1 succeeded with ${fallbackData.length} results.`);
+            logger.info(`✅ [SupabaseService] Fallback 1 succeeded with ${fallbackData.length} results.`);
             data = fallbackData;
         }
     }
 
     // Fallback 2: ABSOLUTE PERMISSIVE DEBUG (Ignore all filters except source string)
     if (!data || data.length === 0) {
-        console.warn(`[SupabaseService] STILL 0 results. Running table-wide diagnostic...`);
+        logger.warn(`[SupabaseService] STILL 0 results. Running table-wide diagnostic...`);
 
         // 1. Check ALL rows without ANY filters
         const { data: allRows, error: allErr } = await supabase.from('affiliate_listings').select('*').limit(5);
         if (allErr) {
-            console.error(`❌ [SupabaseService] Table-wide fetch failed:`, allErr);
+            logger.error(`❌ [SupabaseService] Table-wide fetch failed:`, allErr);
         } else if (allRows && allRows.length > 0) {
-            console.log(`✅ [SupabaseService] Success! Found ${allRows.length} rows when ignoring all filters.`);
-            console.log(`📋 [SupabaseService] Sample Sources:`, [...new Set(allRows.map(r => r.affiliate_source))]);
-            console.log(`📋 [SupabaseService] Sample Types:`, [...new Set(allRows.map(r => r.banner_type))]);
-            console.log(`📋 [SupabaseService] One Row:`, allRows[0]);
-
+            logger.info(`✅ [SupabaseService] Success! Found ${allRows.length} rows when ignoring all filters.`);
+            logger.info(`📋 [SupabaseService] Sample Sources:`, [...new Set(allRows.map(r => r.affiliate_source))]);
+            logger.info(`📋 [SupabaseService] Sample Types:`, [...new Set(allRows.map(r => r.banner_type))]);
+            logger.info(`📋 [SupabaseService] One Row:`, allRows[0]);
             // Try to find one that matches our source string even loosely
             if (source) {
                 const search = source.toLowerCase();
                 const match = allRows.find(r => r.affiliate_source?.toLowerCase().includes(search));
-                if (match) console.warn(`⚠️ [SupabaseService] Found a potential match in memory but filters missed it!`, match);
+                if (match) logger.warn(`⚠️ [SupabaseService] Found a potential match in memory but filters missed it!`, match);
             }
         } else {
-            console.error(`💀 [SupabaseService] TABLE IS EMPTY or RLS BLOCKED even for select('*') limit 5`);
+            logger.error(`💀 [SupabaseService] TABLE IS EMPTY or RLS BLOCKED even for select('*') limit 5`);
         }
 
         if (source) {
             let debugQuery = supabase.from('affiliate_listings').select('*').ilike('affiliate_source', `%${source}%`);
             const { data: debugData } = await debugQuery.limit(1);
             if (debugData && debugData.length > 0) {
-                console.warn(`⚠️ [SupabaseService] Found match with broad search:`, debugData[0]);
+                logger.warn(`⚠️ [SupabaseService] Found match with broad search:`, debugData[0]);
                 data = debugData;
             }
         }
@@ -626,7 +658,7 @@ export const updateAffiliateListing = async (id: string, updates: Partial<import
         .select();
 
     if (error) {
-        console.error('Error updating affiliate listing:', error);
+        logger.error('Error updating affiliate listing:', error);
         throw error;
     }
 
@@ -642,7 +674,7 @@ export const deleteAffiliateListing = async (id: string) => {
         .eq('id', id);
 
     if (error) {
-        console.error('Error deleting affiliate listing:', error);
+        logger.error('Error deleting affiliate listing:', error);
         throw error;
     }
 };
@@ -652,17 +684,16 @@ export const deleteAffiliateListing = async (id: string) => {
 // ---------------------------------------------------------------------------
 
 export const deleteProductListing = async (productId: string) => {
-    console.log('🗑️ Deleting product listing:', productId);
+    logger.info('🗑️ Deleting product listing:', productId);
     const { error } = await supabase
         .from('listed_products')
         .delete()
         .eq('id', productId);
-
     if (error) {
-        console.error('Error deleting product listing:', error);
+        logger.error('Error deleting product listing:', error);
         throw error;
     }
-    console.log('✅ Product listing deleted:', productId);
+    logger.info('✅ Product listing deleted:', productId);
 };
 
 
@@ -691,7 +722,7 @@ export const getAffiliateAnalytics = async (userId: string, range: string) => {
         .order('date', { ascending: true });
 
     if (error) {
-        console.error('Error fetching affiliate analytics:', error);
+        logger.error('Error fetching affiliate analytics:', error);
         return {
             impressions: 0,
             clicks: 0,
@@ -774,14 +805,16 @@ export const trackProductInteraction = async (
 
         // Fetch Location Data (Client-side)
         let location_country = null;
+        let location_state = null;
         let location_city = null;
 
         try {
-            // Use db-ip.com as primary (reliable for client-side HTTPS/HTTP)
+            // Use db-ip.com - reliable for client-side HTTPS/HTTP, provides stateProv
             const response = await fetch('https://api.db-ip.com/v2/free/self');
             if (response.ok) {
                 const data = await response.json();
                 location_country = data.countryName;
+                location_state = data.stateProv;
                 location_city = data.city;
             }
         } catch (e) {
@@ -799,6 +832,7 @@ export const trackProductInteraction = async (
                 device_type: deviceType,
                 browser: browser,
                 location_country: location_country,
+                location_state: location_state,
                 location_city: location_city,
                 metadata: metadata
             });
@@ -816,6 +850,7 @@ export const trackProductInteraction = async (
                         device_type: deviceType,
                         browser: browser,
                         location_country: location_country,
+                        location_state: location_state,
                         location_city: location_city,
                         metadata: { ...metadata, original_type: type }
                     });
@@ -899,9 +934,9 @@ export const getProductAnalytics = async (agentId: string, range: number = 30) =
                 deviceCounts[type] = (deviceCounts[type] || 0) + 1;
             }
 
-            // Location
-            const locLabel = pi.location_city && pi.location_country
-                ? `${pi.location_city}, ${pi.location_country}`
+            // Location (State, Country for Analytics distribution)
+            const locLabel = pi.location_state && pi.location_country
+                ? `${pi.location_state}, ${pi.location_country}`
                 : (pi.location_country || 'Unknown');
             if (locLabel !== 'Unknown') {
                 locationCounts[locLabel] = (locationCounts[locLabel] || 0) + 1;
@@ -921,12 +956,12 @@ export const getProductAnalytics = async (agentId: string, range: number = 30) =
 
             // Mapping (leads)
             if (pi.interaction_type === 'inquiry') {
-                const customerCity = pi.location_city || pi.location_country || 'Unknown';
+                const customerLocProv = pi.location_state || pi.location_country || 'Unknown';
                 const tripLocation = pi.listed_products?.location || 'Unknown';
-                if (customerCity !== 'Unknown' && tripLocation !== 'Unknown') {
-                    const key = `${customerCity}-${tripLocation}`;
+                if (customerLocProv !== 'Unknown' && tripLocation !== 'Unknown') {
+                    const key = `${customerLocProv}-${tripLocation}`;
                     if (!mappingMap[key]) {
-                        mappingMap[key] = { customerLoc: customerCity, tripLoc: tripLocation, leads: 0 };
+                        mappingMap[key] = { customerLoc: customerLocProv, tripLoc: tripLocation, leads: 0 };
                     }
                     mappingMap[key].leads += 1;
                 }

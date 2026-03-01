@@ -1,80 +1,17 @@
-
 import React from 'react';
 import { ChatMessage, Product } from '../types';
 import { ProductCard } from './ProductCard';
+import { SocialImagePreviewCard } from '../../../components/SocialImagePreviewCard';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface MessageProps {
     message: ChatMessage;
     onCardClick: (product: Product) => void;
+    onImageClick?: (imageUrl: string, prompt?: string) => void;
 }
 
-// Simple Custom Markdown Renderer
-const FormattedText: React.FC<{ text: string }> = ({ text }) => {
-    if (!text) return null;
-
-    // Check for HTML/Embed code (basic check for div/iframe/script)
-    const hasHtml = /<div|<iframe|<script/i.test(text);
-
-    if (hasHtml) {
-        return (
-            <div
-                className="prose dark:prose-invert max-w-none [&>iframe]:w-full [&>iframe]:rounded-lg [&>div]:w-full"
-                dangerouslySetInnerHTML={{ __html: text }}
-            />
-        );
-    }
-
-    // Split by newlines to handle paragraphs and lists
-    const lines = text.split('\n');
-
-    return (
-        <div className="space-y-2 leading-relaxed">
-            {lines.map((line, index) => {
-                const trimmed = line.trim();
-
-                // Handle Bullet Points
-                if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-                    return (
-                        <div key={index} className="flex gap-2 ml-2">
-                            <span className="text-teal-500 font-bold">•</span>
-                            <span>{parseBold(trimmed.substring(2))}</span>
-                        </div>
-                    );
-                }
-
-                // Handle Numbered Lists
-                const numberedMatch = trimmed.match(/^(\d+)\.\s(.+)/);
-                if (numberedMatch) {
-                    return (
-                        <div key={index} className="flex gap-2 ml-2">
-                            <span className="font-semibold text-teal-600">{numberedMatch[1]}.</span>
-                            <span>{parseBold(numberedMatch[2])}</span>
-                        </div>
-                    );
-                }
-
-                // Empty lines
-                if (!trimmed) return <div key={index} className="h-2" />;
-
-                // Standard Paragraph
-                return <p key={index}>{parseBold(line)}</p>;
-            })}
-        </div>
-    );
-};
-
-// Helper to parse **bold** text
-const parseBold = (text: string) => {
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={i} className="font-bold">{part.slice(2, -2)}</strong>;
-        }
-        return part;
-    });
-};
-
-export const Message: React.FC<MessageProps> = ({ message, onCardClick }) => {
+export const Message: React.FC<MessageProps> = ({ message, onCardClick, onImageClick }) => {
     const isUser = message.sender === 'user';
 
     return (
@@ -92,10 +29,34 @@ export const Message: React.FC<MessageProps> = ({ message, onCardClick }) => {
                         }`}
                 >
                     <div className="text-sm md:text-base leading-relaxed">
-                        <FormattedText text={message.content} />
+                        <div className={`prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-gray-800 prose-pre:text-gray-100 ${isUser ? 'prose-invert !text-white prose-p:text-white prose-headings:text-white prose-li:text-white prose-strong:text-white prose-code:text-white' : 'dark:prose-invert'} `}>
+                            <Markdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    p: ({ node, ...props }) => <p className={`mb-4 last:mb-0 ${isUser ? 'text-white' : ''}`} {...props} />,
+                                    h1: ({ node, ...props }) => <h1 className={`text-xl font-bold mb-4 ${isUser ? 'text-white' : ''}`} {...props} />,
+                                    h2: ({ node, ...props }) => <h2 className={`text-lg font-bold mb-3 ${isUser ? 'text-white' : ''}`} {...props} />,
+                                    h3: ({ node, ...props }) => <h3 className={`text-md font-bold mb-2 ${isUser ? 'text-white' : ''}`} {...props} />,
+                                    ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4" {...props} />,
+                                    ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
+                                    li: ({ node, ...props }) => <li className={`mb-1 ${isUser ? 'text-white' : ''}`} {...props} />,
+                                    table: ({ node, ...props }) => (
+                                        <div className="overflow-x-auto mb-4">
+                                            <table className="min-w-full border-collapse border border-gray-300 rounded-lg overflow-hidden" {...props} />
+                                        </div>
+                                    ),
+                                    thead: ({ node, ...props }) => <thead className="bg-gray-100 dark:bg-gray-700" {...props} />,
+                                    th: ({ node, ...props }) => <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left font-semibold text-gray-900 dark:text-gray-100" {...props} />,
+                                    td: ({ node, ...props }) => <td className={`border border-gray-300 dark:border-gray-600 px-4 py-2 ${isUser ? 'text-white' : ''}`} {...props} />,
+                                    code: ({ node, ...props }) => <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-pink-600 dark:text-pink-400 font-mono text-sm" {...props} />,
+                                }}
+                            >
+                                {message.content}
+                            </Markdown>
+                        </div>
                     </div>
 
-                    {message.media && message.media.length > 0 && (
+                    {message.media && message.media.length > 0 && !message.imageUrl && (
                         <div className="mt-3 flex flex-wrap gap-2">
                             {message.media.map((media, index) => (
                                 <div key={index} className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-200">
@@ -118,10 +79,19 @@ export const Message: React.FC<MessageProps> = ({ message, onCardClick }) => {
                     </div>
                 )}
             </div>
-            {/* Render product card outside the bubble for better layout */}
             {message.productCard && !isUser && (
                 <div className="mt-3 pl-11 w-full max-w-sm">
                     <ProductCard product={message.productCard} onClick={() => onCardClick(message.productCard!)} />
+                </div>
+            )}
+            {message.imageUrl && !isUser && (
+                <div className="mt-3 pl-11 w-full max-w-sm">
+                    <SocialImagePreviewCard
+                        imageUrl={message.imageUrl}
+                        prompt={typeof message.content === 'string' ? message.content : undefined}
+                        title="Your marketing flyer is ready"
+                        onClick={() => onImageClick?.(message.imageUrl!, typeof message.content === 'string' ? message.content : undefined)}
+                    />
                 </div>
             )}
             <style>{`

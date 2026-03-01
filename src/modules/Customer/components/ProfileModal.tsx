@@ -13,7 +13,8 @@ interface ProfileModalProps {
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPersonalization }) => {
     const auth = useAuth() as any;
-    const { user, signOut, personalization } = auth;
+    const { user, logout } = auth;
+    const personalization = user?.personalization;
     const { userSubscription, availablePlans, subscriptionHistory, loading } = useSubscription();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<'subscription' | 'personalization'>('subscription');
@@ -22,15 +23,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
 
     const handleEdit = () => {
         onClose();
-        if (onEditPersonalization) {
-            onEditPersonalization();
-        } else {
-            navigate('/personalize');
-        }
+        onEditPersonalization?.();
     };
 
     const handleLogout = () => {
-        signOut();
+        logout();
         onClose();
         navigate('/');
     };
@@ -71,7 +68,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
                         <div className="flex justify-between items-end mb-6">
                             <div>
                                 <p className="text-gray-400 text-sm mb-1">Current Plan</p>
-                                <p className="text-2xl font-black text-gray-900">{planNameDisplay}</p>
+                                <p className="text-2xl font-bold text-gray-900">{planNameDisplay}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-gray-400 text-sm mb-1">Renews On</p>
@@ -143,7 +140,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
     const PersonalizationTab = () => (
         <div className="space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between">
-                <h3 className="text-gray-900 font-black text-lg flex items-center gap-2">
+                <h3 className="text-gray-900 font-bold text-lg flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-teal-500" /> Your Travel DNA
                 </h3>
                 <button
@@ -157,17 +154,17 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
             {personalization ? (
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100/50">
-                        <p className="text-gray-400 text-[10px] uppercase font-black tracking-widest mb-1">Origin</p>
+                        <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Origin</p>
                         <p className="text-gray-800 font-bold flex items-center gap-1 text-sm">
                             <MapPin className="w-3 h-3 text-teal-500" /> {personalization.city}, {personalization.state}
                         </p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100/50">
-                        <p className="text-gray-400 text-[10px] uppercase font-black tracking-widest mb-1">Frequency</p>
+                        <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Frequency</p>
                         <p className="text-gray-800 font-bold capitalize text-sm">{personalization.travel_frequency?.replace('_', ' ') || 'Occasional'}</p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100/50 col-span-2">
-                        <p className="text-gray-400 text-[10px] uppercase font-black tracking-widest mb-1">Interests</p>
+                        <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Interests</p>
                         <div className="flex flex-wrap gap-2 mt-1">
                             {personalization.interests?.map((interest: string) => (
                                 <span key={interest} className="px-2 py-1 bg-white border border-gray-200 rounded-lg text-[10px] font-bold text-gray-700 capitalize">
@@ -177,12 +174,12 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
                         </div>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100/50">
-                        <p className="text-gray-400 text-[10px] uppercase font-black tracking-widest mb-1">Source</p>
+                        <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Source</p>
                         <p className="text-gray-800 font-bold capitalize text-sm">{personalization.referral_source || 'Search'}</p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100/50">
-                        <p className="text-gray-400 text-[10px] uppercase font-black tracking-widest mb-1">Budget</p>
-                        <p className="text-teal-600 font-black uppercase text-[10px] tracking-widest">{personalization.budget || 'Mid'}</p>
+                        <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Budget</p>
+                        <p className="text-teal-600 font-bold uppercase text-[10px] tracking-widest">{personalization.budget || 'Mid'}</p>
                     </div>
                 </div>
             ) : (
@@ -190,7 +187,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
                     <p className="text-teal-800 font-bold mb-4">You haven't personalized your experience yet!</p>
                     <button
                         onClick={handleEdit}
-                        className="bg-teal-500 text-white px-6 py-3 rounded-xl font-black shadow-lg shadow-teal-500/30 hover:scale-105 transition-all text-sm"
+                        className="bg-teal-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-teal-500/30 hover:scale-105 transition-all text-sm"
                     >
                         Personalize Now
                     </button>
@@ -228,7 +225,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
                                 {user.user_metadata?.avatar_url ? (
                                     <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
-                                    <span className="text-3xl font-black text-gray-400 uppercase">
+                                    <span className="text-3xl font-bold text-gray-400 uppercase">
                                         {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0)}
                                     </span>
                                 )}
@@ -240,7 +237,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
                 {/* Body */}
                 <div className="px-6 pt-12 pb-6 flex-1 overflow-y-auto custom-scrollbar bg-white">
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-black text-gray-900 tracking-tight">{user.user_metadata?.full_name || 'Traveler'}</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{user.user_metadata?.full_name || 'Traveler'}</h2>
                         <p className="text-gray-500 font-medium text-sm">{user.email}</p>
                     </div>
 
@@ -249,8 +246,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
                         <button
                             onClick={() => setActiveTab('subscription')}
                             className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'subscription'
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             Subscription
@@ -258,8 +255,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
                         <button
                             onClick={() => setActiveTab('personalization')}
                             className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'personalization'
-                                    ? 'bg-white text-gray-900 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             Personalization

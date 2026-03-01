@@ -2,9 +2,11 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import supabase from '../services/supabaseClient';
 import isSupabaseConfigured from '../services/supabaseClient';
-import type { User as AppUser } from '../types';
+import { User as AppUser, UserPersonalization } from '../types';
 import type { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
+import { getUserPersonalization, saveUserPersonalization } from '../modules/AgentAffiliate/services/supabaseService';
 import { v4 as uuidv4 } from 'uuid';
+import logger from '../utils/logger';
 
 interface AuthContextType {
   user: AppUser | null;
@@ -41,7 +43,7 @@ const mapSupabaseUserToAppUser = (supabaseUser: SupabaseUser | null): AppUser | 
     email: supabaseUser.email || '',
     name: supabaseUser.user_metadata?.full_name || supabaseUser.email || 'Traivo',
     sessionId: getOrCreateSessionId(),
-    personalization: supabaseUser.user_metadata?.personalization
+    // Personalization will be fetched separately in syncUser
   };
 };
 
@@ -57,7 +59,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     const { data: { session } } = await supabase.auth.getSession();
-    setUser(mapSupabaseUserToAppUser(session?.user ?? null));
+    const appUser = mapSupabaseUserToAppUser(session?.user ?? null);
+
+    if (appUser) {
+      const personalization = await getUserPersonalization(appUser.id);
+      appUser.personalization = personalization;
+    }
+
+    setUser(appUser);
     setLoading(false);
   }, []);
 
@@ -72,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event: AuthChangeEvent, session: Session | null) => {
-        console.log("AuthContext.onAuthStateChange:", _event);
+        logger.info("AuthContext.onAuthStateChange:", _event);
         setUser(mapSupabaseUserToAppUser(session?.user ?? null));
         setLoading(false);
       }
@@ -178,13 +187,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const updatePersonalization = useCallback(async (personalization: any) => {
-    if (!supabase) throw new Error("Supabase is not configured.");
-    const { error } = await supabase.auth.updateUser({
-      data: { personalization }
-    });
-    if (error) throw error;
+    if (!user) return;
+    const success = await saveUserPersonalization(user.id, personalization);
+    if (!success) throw new Error("Failed to save personalization.");
     syncUser();
-  }, [syncUser]);
+  }, [user, syncUser]);
 
   const refreshSession = useCallback(() => {
     localStorage.removeItem('sessionId');

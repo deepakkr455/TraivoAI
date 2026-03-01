@@ -183,13 +183,13 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                 <div className="bg-teal-50 rounded-full p-8 mb-6">
                   <MapPin className="w-16 h-16 text-teal-500" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black mb-3 text-gray-900">No adventures yet</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-3 text-gray-900">No adventures yet</h2>
                 <p className="text-gray-500 max-w-md mb-8 text-base md:text-lg">
                   Your future stories are waiting to be written. Start planning your first getaway today!
                 </p>
                 <button
                   onClick={() => navigate('/user/wanderchat')}
-                  className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-full font-black text-lg transition-all shadow-xl hover:shadow-teal-500/20 transform hover:-translate-y-1"
+                  className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:shadow-teal-500/20 transform hover:-translate-y-1"
                 >
                   Plan Your First Trip
                 </button>
@@ -200,7 +200,7 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                 {heroTrip && !searchTerm && (
                   <div className="space-y-5 md:space-y-8">
                     <div className="flex items-center gap-4">
-                      <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-teal-600">Active Adventure</h2>
+                      <h2 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-teal-600">Active Adventure</h2>
                       <div className="h-px flex-1 bg-teal-100" />
                     </div>
                     <div
@@ -215,7 +215,7 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/10 to-transparent" />
 
                       <div className="absolute top-4 md:top-8 left-4 md:left-8">
-                        <div className="bg-white/20 backdrop-blur-md text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest border border-white/20">
+                        <div className="bg-white/20 backdrop-blur-md text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[10px] md:text-[10px] font-bold uppercase tracking-widest border border-white/20">
                           Upcoming Voyage
                         </div>
                       </div>
@@ -226,9 +226,9 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                             <Calendar className="w-3.5 h-3.5 md:w-5 md:h-5" />
                             <span className="font-bold uppercase tracking-widest text-[10px] md:text-xs">{new Date(heroTrip.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>
                           </div>
-                          <h3 className="text-3xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight">{heroTrip.title}</h3>
+                          <h3 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight">{heroTrip.title}</h3>
                         </div>
-                        <button className="w-full sm:w-auto bg-white text-teal-600 px-8 py-4 rounded-2xl font-black text-sm md:text-base flex items-center justify-center gap-3 hover:bg-teal-50 transition-all shadow-xl active:scale-95 group/btn">
+                        <button className="w-full sm:w-auto bg-white text-teal-600 px-8 py-4 rounded-2xl font-bold text-sm md:text-base flex items-center justify-center gap-3 hover:bg-teal-50 transition-all shadow-xl active:scale-95 group/btn">
                           Explore Itinerary
                           <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
                         </button>
@@ -241,7 +241,7 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                 {(gridUpcoming.length > 0 || (searchTerm && upcomingTrips.length > 0)) && (
                   <div className="space-y-8 md:space-y-12">
                     <div className="flex items-center gap-4">
-                      <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-gray-400">Upcoming Voyages</h2>
+                      <h2 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-gray-400">Upcoming Voyages</h2>
                       <div className="h-px flex-1 bg-gray-100" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10">
@@ -256,7 +256,7 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                 {completedTrips.length > 0 && (
                   <div className="space-y-8 md:space-y-12 opacity-80 hover:opacity-100 transition-opacity duration-500">
                     <div className="flex items-center gap-4">
-                      <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-gray-300">Past Voyages</h2>
+                      <h2 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-gray-300">Past Voyages</h2>
                       <div className="h-px flex-1 bg-gray-100" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10">
@@ -277,8 +277,8 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
 
 const SmallStat = ({ label, value }: { label: string, value: number }) => (
   <div className="flex flex-col items-center">
-    <span className="text-xl md:text-2xl font-black text-teal-900 leading-none">{value}</span>
-    <span className="text-[9px] md:text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-1">{label}</span>
+    <span className="text-xl md:text-2xl font-bold text-teal-900 leading-none">{value}</span>
+    <span className="text-[10px] md:text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-1">{label}</span>
   </div>
 );
 
@@ -336,7 +336,7 @@ const TripExplorerCard = ({ trip, isCompleted, onClick, onDelete }: { trip: Trip
     <div className="p-6 md:p-8 flex flex-col flex-1">
       <div className="flex items-center gap-1.5 mb-3">
         <Calendar className="w-3.5 h-3.5 text-teal-600" />
-        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
           {new Date(trip.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
         </span>
       </div>
@@ -347,13 +347,13 @@ const TripExplorerCard = ({ trip, isCompleted, onClick, onDelete }: { trip: Trip
 
       {/* Minimal Footer */}
       <div className="mt-auto flex items-center justify-between border-t border-gray-50 pt-6">
-        <div className="flex items-center gap-2 text-teal-600 font-black text-xs uppercase tracking-widest group-hover:gap-4 transition-all">
+        <div className="flex items-center gap-2 text-teal-600 font-bold text-xs uppercase tracking-widest group-hover:gap-4 transition-all">
           Explore
           <ArrowLeft className="w-4 h-4 rotate-180" />
         </div>
 
         <a
-          href={`#/user/blog/${trip.id}`}
+          href={`/user/blog/${trip.id}`}
           onClick={(e) => e.stopPropagation()}
           className="p-2.5 bg-gray-50 text-gray-400 hover:bg-teal-600 hover:text-white rounded-xl transition-all border border-gray-100 hover:border-teal-500 shadow-sm"
           title="View Story"

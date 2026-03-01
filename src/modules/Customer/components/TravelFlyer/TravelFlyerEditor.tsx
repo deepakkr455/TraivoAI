@@ -302,7 +302,7 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                         <div className="space-y-4 pt-2">
                             <div className="flex items-center gap-2 px-1">
                                 <Layout className="w-4 h-4 text-indigo-500" />
-                                <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">Templates</h2>
+                                <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Templates</h2>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 {TEMPLATES.map((t) => (
@@ -316,7 +316,7 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                                             <div className={`absolute inset-0 transition-opacity ${activeTemplate === t.id ? 'bg-indigo-900/10' : 'bg-black/0 group-hover:bg-black/5'}`}></div>
                                         </div>
                                         <div className="p-3 bg-white border-t border-slate-100">
-                                            <p className={`text-[10px] font-black uppercase tracking-wider ${activeTemplate === t.id ? 'text-indigo-600' : 'text-slate-600'}`}>{t.name}</p>
+                                            <p className={`text-[10px] font-bold uppercase tracking-wider ${activeTemplate === t.id ? 'text-indigo-600' : 'text-slate-600'}`}>{t.name}</p>
                                         </div>
                                         {activeTemplate === t.id && (
                                             <div className="absolute top-2 right-2 w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-md">
@@ -332,7 +332,7 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                         <div className="space-y-6 pt-4 border-t border-slate-100">
                             <div className="flex items-center gap-2 px-1">
                                 <Sparkles className="w-4 h-4 text-indigo-500" />
-                                <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">Design System</h2>
+                                <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Design System</h2>
                             </div>
 
                             <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 space-y-6">
@@ -343,7 +343,7 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                                         {[
                                             { id: 'sans', name: 'Modern', class: 'font-sans' },
                                             { id: 'serif', name: 'Elegant', class: 'font-serif' },
-                                            { id: 'display', name: 'Bold', class: 'font-black' }
+                                            { id: 'display', name: 'Bold', class: 'font-bold' }
                                         ].map(f => (
                                             <button
                                                 key={f.id}
@@ -408,7 +408,7 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                         <div className="space-y-6 pt-4 border-t border-slate-100">
                             <div className="flex items-center gap-2 px-1">
                                 <FileText className="w-4 h-4 text-indigo-500" />
-                                <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">Content</h2>
+                                <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Content</h2>
                             </div>
 
                             {/* Info */}
@@ -420,20 +420,20 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                                 <div className={`px-4 pb-4 space-y-4 ${expandedSections.info ? 'block' : 'hidden'}`}>
                                     <div className="space-y-3">
                                         <div className="group">
-                                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">Title</label>
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">Title</label>
                                             <input type="text" name="title" value={data.title} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-sm font-bold text-slate-900 focus:border-indigo-500 focus:bg-white outline-none transition-all" />
                                         </div>
                                         <div className="group">
-                                            <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">Subtitle</label>
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">Subtitle</label>
                                             <textarea name="subtitle" value={data.subtitle} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-medium text-slate-900 focus:border-indigo-500 focus:bg-white outline-none transition-all resize-none h-20" />
                                         </div>
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="group">
-                                                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">No. of Days</label>
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">No. of Days</label>
                                                 <input type="text" name="duration" value={data.duration || `${data.itinerary.length} Days`} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold text-slate-900 focus:border-indigo-500 focus:bg-white outline-none transition-all" />
                                             </div>
                                             <div className="group">
-                                                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">Price</label>
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-1 block">Price</label>
                                                 <input type="text" name="priceTotal" value={data.priceTotal} onChange={handleInputChange} className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-sm font-bold text-emerald-700 focus:border-emerald-500 focus:bg-white outline-none transition-all" />
                                             </div>
                                         </div>
@@ -464,7 +464,7 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                                         {data.images.length < 3 && (
                                             <label className="aspect-square border-2 border-dashed border-indigo-200 bg-indigo-50/50 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50 hover:border-indigo-400 text-indigo-400 transition-all group overflow-hidden">
                                                 <Plus className="w-8 h-8 group-hover:scale-110 transition-transform mb-1" />
-                                                <span className="text-[8px] font-black uppercase tracking-wider text-center px-1">Add Photo</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-center px-1">Add Photo</span>
                                                 <input type="file" className="hidden" multiple onChange={handleFileUpload} accept="image/*" />
                                             </label>
                                         )}
@@ -508,7 +508,7 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                                     {/* Smart Import */}
                                     <div className="bg-indigo-50/50 rounded-xl p-3 border border-indigo-100 mb-4">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest flex items-center gap-1">
+                                            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-1">
                                                 <Sparkles className="w-3 h-3" /> AI Importer
                                             </span>
                                         </div>
@@ -541,7 +541,7 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                                                     <Trash2 className="w-3 h-3" />
                                                 </button>
                                                 <div className="flex gap-2 mb-2">
-                                                    <input type="text" value={item.day} onChange={(e) => handleItineraryChange(idx, 'day', e.target.value)} className="w-16 px-2 py-1.5 text-[10px] font-black bg-slate-50 text-slate-700 border border-slate-200 rounded-lg outline-none focus:border-indigo-500" />
+                                                    <input type="text" value={item.day} onChange={(e) => handleItineraryChange(idx, 'day', e.target.value)} className="w-16 px-2 py-1.5 text-[10px] font-bold bg-slate-50 text-slate-700 border border-slate-200 rounded-lg outline-none focus:border-indigo-500" />
                                                     <input type="text" placeholder="Title" value={item.title} onChange={(e) => handleItineraryChange(idx, 'title', e.target.value)} className="flex-1 px-2 py-1.5 text-xs font-bold bg-slate-50 text-slate-900 border border-slate-200 rounded-lg outline-none focus:border-indigo-500" />
                                                 </div>
                                                 <textarea value={item.description} onChange={(e) => handleItineraryChange(idx, 'description', e.target.value)} className="w-full px-2 py-2 text-[10px] text-slate-800 bg-slate-50 border border-slate-200 rounded-lg h-16 resize-none outline-none focus:border-indigo-500 leading-relaxed" />

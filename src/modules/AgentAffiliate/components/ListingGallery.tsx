@@ -83,7 +83,7 @@ export const ListingGallery: React.FC<ListingGalleryProps> = ({ products, onView
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
 
                                     <div className="absolute top-3 right-3 flex gap-2">
-                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide backdrop-blur-md shadow-sm ${product.is_active ? 'bg-green-500/90 text-white' : 'bg-gray-500/90 text-white'}`}>
+                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] backdrop-blur-md shadow-sm ${product.is_active ? 'bg-green-500/90 text-white' : 'bg-gray-500/90 text-white'}`}>
                                             {product.is_active ? 'Active' : 'Inactive'}
                                         </span>
                                     </div>
@@ -107,14 +107,14 @@ export const ListingGallery: React.FC<ListingGalleryProps> = ({ products, onView
                                 <div className="p-5 flex-1 flex flex-col">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex flex-col">
-                                            <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Price</span>
+                                            <span className="text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold mb-1">Price</span>
                                             <span className="text-lg font-bold text-teal-600 dark:text-teal-400">
                                                 Rs. {product.pricing && product.pricing.length > 0 ? Math.min(...product.pricing.map(p => p.cost)).toLocaleString() : 'N/A'}
                                             </span>
                                         </div>
                                         <div className="flex flex-col items-end">
-                                            <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Duration</span>
-                                            <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            <span className="text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold mb-1">Duration</span>
+                                            <div className="flex items-center gap-1 text-sm font-bold text-gray-700 dark:text-gray-300">
                                                 <ClockIcon className="w-4 h-4 text-gray-400" /> {product.duration}
                                             </div>
                                         </div>
@@ -122,15 +122,15 @@ export const ListingGallery: React.FC<ListingGalleryProps> = ({ products, onView
 
                                     <div className="grid grid-cols-3 gap-2 mb-5">
                                         <div className="bg-gray-50 dark:bg-gray-700/50 p-2 rounded-lg text-center">
-                                            <span className="block text-[9px] text-gray-400 uppercase tracking-tight">Visitors</span>
+                                            <span className="block text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold mb-1">Visitors</span>
                                             <span className="block font-bold text-gray-700 dark:text-gray-200 text-sm">{product.unique_visitors || 0}</span>
                                         </div>
                                         <div className="bg-gray-50 dark:bg-gray-700/50 p-2 rounded-lg text-center">
-                                            <span className="block text-[9px] text-gray-400 uppercase tracking-tight">Views</span>
+                                            <span className="block text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold mb-1">Views</span>
                                             <span className="block font-bold text-gray-700 dark:text-gray-200 text-sm">{product.views || 0}</span>
                                         </div>
                                         <div className="bg-gray-50 dark:bg-gray-700/50 p-2 rounded-lg text-center">
-                                            <span className="block text-[9px] text-gray-400 uppercase tracking-tight">Avg Views</span>
+                                            <span className="block text-[10px] text-gray-400 uppercase tracking-[0.3em] font-bold mb-1">Avg Views</span>
                                             <span className="block font-bold text-gray-700 dark:text-gray-200 text-sm">{product.avg_views || 0}</span>
                                         </div>
                                     </div>

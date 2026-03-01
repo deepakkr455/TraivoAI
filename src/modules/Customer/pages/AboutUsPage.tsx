@@ -13,11 +13,11 @@ const AboutUsPage: React.FC = () => {
                 <section className="bg-gradient-to-br from-teal-50 via-white to-indigo-50/30 py-24 px-6 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_120%,rgba(20,184,166,0.1),transparent)]" />
                     <div className="max-w-4xl mx-auto text-center relative z-10">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-100 text-teal-700 text-xs font-black uppercase tracking-widest mb-8 animate-fade-in">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-100 text-teal-700 text-xs font-bold uppercase tracking-widest mb-8 animate-fade-in">
                             <Sparkles className="h-4 w-4" />
                             <span>The Future of Intelligent Travel</span>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black text-gray-900 mb-8 tracking-tighter leading-none">
+                        <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-8 tracking-tighter leading-none">
                             Discover <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 via-cyan-600 to-indigo-600">Traivo AI</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
@@ -30,7 +30,7 @@ const AboutUsPage: React.FC = () => {
                     {/* Mission & Marketplace Section */}
                     <div className="grid lg:grid-cols-2 gap-20 items-center mb-32">
                         <div className="order-2 lg:order-1">
-                            <h2 className="text-4xl font-black mb-8 text-gray-900 tracking-tight">One Platform, <span className="text-teal-600">Infinite Journeys.</span></h2>
+                            <h2 className="text-4xl font-bold mb-8 text-gray-900 tracking-tight">One Platform, <span className="text-teal-600">Infinite Journeys.</span></h2>
                             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
                                 Traivo AI isn't just a tool; it's a bridge. We've created a unique ecosystem where cutting-edge AI technology meets human expertise. Our mission is to empower both the solo explorer and the professional agent with tools that were previously only available to giant travel enterprises.
                             </p>
@@ -56,12 +56,12 @@ const AboutUsPage: React.FC = () => {
                             <div className="relative z-10 flex flex-col gap-6">
                                 <div className="bg-white p-6 rounded-3xl shadow-lg border border-teal-50 transform -rotate-2 hover:rotate-0 transition-transform cursor-default">
                                     <TrendingUp className="text-teal-600 mb-4 h-8 w-8" />
-                                    <h4 className="font-black text-xl mb-2 text-gray-900">Marketplace Synergy</h4>
+                                    <h4 className="font-bold text-xl mb-2 text-gray-900">Marketplace Synergy</h4>
                                     <p className="text-gray-500 text-sm">Agents list exclusive deals while AI optimizes the reach to most relevant travelers.</p>
                                 </div>
                                 <div className="bg-white p-6 rounded-3xl shadow-lg border border-indigo-50 translate-x-10 transform rotate-1 hover:rotate-0 transition-transform cursor-default">
                                     <Zap className="text-indigo-600 mb-4 h-8 w-8" />
-                                    <h4 className="font-black text-xl mb-2 text-gray-900">AI Collaboration</h4>
+                                    <h4 className="font-bold text-xl mb-2 text-gray-900">AI Collaboration</h4>
                                     <p className="text-gray-500 text-sm">Real-time group planning with integrated AI assistance for every decision.</p>
                                 </div>
                             </div>
@@ -71,7 +71,7 @@ const AboutUsPage: React.FC = () => {
                     {/* Best Use Cases Derived from the Platform */}
                     <div className="mb-32">
                         <div className="text-center mb-16">
-                            <h2 className="text-4xl font-black mb-4">Best Ways to Use Traivo AI</h2>
+                            <h2 className="text-4xl font-bold mb-4">Best Ways to Use Traivo AI</h2>
                             <p className="text-gray-500 max-w-2xl mx-auto">Explore the diverse high-impact ways our community is utilizing the platform.</p>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -98,8 +98,8 @@ const AboutUsPage: React.FC = () => {
                                 }
                             ].map((item, i) => (
                                 <div key={i} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-teal-200 transition-all group">
-                                    <span className="inline-block px-3 py-1 bg-teal-50 text-teal-600 text-[10px] font-black uppercase rounded-lg mb-4">{item.tag}</span>
-                                    <h3 className="text-xl font-black mb-3 text-gray-900">{item.title}</h3>
+                                    <span className="inline-block px-3 py-1 bg-teal-50 text-teal-600 text-[10px] font-bold uppercase rounded-lg mb-4">{item.tag}</span>
+                                    <h3 className="text-xl font-bold mb-3 text-gray-900">{item.title}</h3>
                                     <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
                                 </div>
                             ))}
@@ -112,7 +112,7 @@ const AboutUsPage: React.FC = () => {
                         <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-[120px]" />
 
                         <div className="relative z-10">
-                            <h2 className="text-4xl md:text-5xl font-black mb-16 text-center">Tailored Features for <span className="text-teal-400">Everyone</span></h2>
+                            <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center">Tailored Features for <span className="text-teal-400">Everyone</span></h2>
 
                             <div className="grid md:grid-cols-3 gap-12">
                                 {/* Explorers & Readers */}
@@ -157,7 +157,7 @@ const AboutUsPage: React.FC = () => {
                     {/* Why Traivo AI Comparison */}
                     <div className="flex flex-col md:flex-row gap-20 items-center mb-32">
                         <div className="flex-1">
-                            <h2 className="text-4xl font-black mb-8 text-gray-900">Why Traivo AI?</h2>
+                            <h2 className="text-4xl font-bold mb-8 text-gray-900">Why Traivo AI?</h2>
                             <p className="text-gray-600 text-lg mb-8 leading-relaxed">
                                 Unlike general AI chatbots, Traivo AI is built exclusively for travel. We integrate live weather, interactive maps, and a real-world marketplace into a single cohesive experience.
                             </p>
@@ -191,24 +191,24 @@ const AboutUsPage: React.FC = () => {
                         <div className="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
                             <Mail className="text-teal-600 h-8 w-8" />
                         </div>
-                        <h2 className="text-4xl font-black mb-4">Dedicated Support</h2>
+                        <h2 className="text-4xl font-bold mb-4">Dedicated Support</h2>
                         <p className="text-gray-600 mb-8 max-w-xl mx-auto">
                             Have questions or interested in partnership opportunities? Our team is here to help you navigate your journey.
                         </p>
-                        <a href="mailto:info@traivoai.com" className="text-3xl md:text-4xl font-black text-teal-600 hover:text-teal-700 transition-colors underline underline-offset-8">
+                        <a href="mailto:info@traivoai.com" className="text-3xl md:text-4xl font-bold text-teal-600 hover:text-teal-700 transition-colors underline underline-offset-8">
                             info@traivoai.com
                         </a>
                     </div>
 
                     {/* CTA Section */}
                     <div className="text-center py-24 bg-gradient-to-r from-teal-600 to-indigo-600 rounded-[4rem] text-white shadow-2xl shadow-teal-500/20">
-                        <h2 className="text-4xl md:text-6xl font-black mb-4 tracking-tight">Ready to Elevate Your Travel?</h2>
+                        <h2 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">Ready to Elevate Your Travel?</h2>
                         <p className="text-white/80 text-lg mb-12 max-w-xl mx-auto">Join the most advanced AI travel ecosystem today and start exploring like never before.</p>
                         <div className="flex flex-wrap justify-center gap-6">
-                            <Link to="/signup" className="bg-white text-teal-600 px-12 py-5 rounded-full font-black shadow-xl hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 leading-none">
+                            <Link to="/signup" className="bg-white text-teal-600 px-12 py-5 rounded-full font-bold shadow-xl hover:bg-gray-50 transition-all transform hover:scale-105 active:scale-95 leading-none">
                                 Join Traivo AI Now
                             </Link>
-                            <Link to="/user/wanderchat" className="bg-black/20 backdrop-blur-md text-white border border-white/20 px-12 py-5 rounded-full font-black hover:bg-white/10 transition-all transform hover:scale-105 active:scale-95 leading-none">
+                            <Link to="/user/wanderchat" className="bg-black/20 backdrop-blur-md text-white border border-white/20 px-12 py-5 rounded-full font-bold hover:bg-white/10 transition-all transform hover:scale-105 active:scale-95 leading-none">
                                 Try Free AI Planner
                             </Link>
                         </div>
@@ -218,7 +218,7 @@ const AboutUsPage: React.FC = () => {
                 <footer className="border-t border-gray-100 py-16 px-6 bg-gray-50/50">
                     <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
                         <div>
-                            <span className="text-3xl font-black tracking-tighter">
+                            <span className="text-3xl font-bold tracking-tighter">
                                 <span className="text-teal-500">Traivo</span>
                                 <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">AI</span>
                             </span>

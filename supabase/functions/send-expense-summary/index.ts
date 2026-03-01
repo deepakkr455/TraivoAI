@@ -97,7 +97,7 @@ serve(async (req) => {
                 Authorization: `Bearer ${RESEND_API_KEY}`
             },
             body: JSON.stringify({
-                from: "WanderHub <onboarding@resend.dev>", // Or user's domain
+                from: "Traivo AI <onboarding@resend.dev>", // Or user's domain
                 to: memberEmails, // Sends to all
                 subject: `Trip Conclusion: ${tripTitle}`,
                 html: generateEmailHTML(tripTitle, totalExpense, expenseHtml)
@@ -169,7 +169,7 @@ function generateEmailHTML(tripTitle: string, totalExpense: number, expenseTable
     ${expenseTable}
     
     <p style="text-align: center; margin-top: 40px; color: #9ca3af; font-size: 12px;">
-      Sent via WanderHub
+      Sent via Traivo AI
     </p>
   </div>
 </body>

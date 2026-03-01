@@ -1,6 +1,6 @@
 import { supabase } from '../../../services/supabaseClient';
-
 import { TripSummaryData } from './conclusionService';
+import logger from '../../../utils/logger';
 
 export const emailService = {
     /**
@@ -22,7 +22,7 @@ export const emailService = {
             report += `- ${m.name}: $${m.totalExpense.toFixed(2)}\n`;
         });
 
-        report += `\nCheck the full details on WanderHub!`;
+        report += `\nCheck the full details on Traivo AI!`;
 
         return report;
     },
@@ -34,9 +34,9 @@ export const emailService = {
      * 2. (Optional) Check 'profiles' if available (future proofing)
      */
     async getMemberEmails(tripId: string): Promise<string[]> {
-        console.log("emailService: getMemberEmails called for", tripId);
+        logger.info("emailService: getMemberEmails called for", tripId);
         if (!supabase) {
-            console.error("Supabase client missing");
+            logger.error("Supabase client missing");
             return [];
         }
 
@@ -49,16 +49,16 @@ export const emailService = {
                 .eq('status', 'accepted');
 
             if (error) {
-                console.error('Error fetching member emails:', error);
+                logger.error('Error fetching member emails:', error);
                 return [];
             }
 
-            console.log("emailService: fetched invites:", invites);
+            logger.info("emailService: fetched invites:", invites);
 
             const emails = invites?.map(i => i.invited_email) || [];
             return [...new Set(emails)]; // Deduplicate
         } catch (err) {
-            console.error('Exception fetching emails:', err);
+            logger.error('Exception fetching emails:', err);
             return [];
         }
     }

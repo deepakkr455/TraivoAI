@@ -209,7 +209,7 @@ const BestDealsPage: React.FC = () => {
                             {heroDeal && !searchTerm && !showSavedOnly && (
                                 <div className="space-y-5 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                                     <div className="flex items-center gap-4">
-                                        <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-teal-600">Deal of the Week</h2>
+                                        <h2 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-teal-600">Deal of the Week</h2>
                                         <div className="h-px flex-1 bg-teal-100" />
                                     </div>
                                     <div
@@ -224,7 +224,7 @@ const BestDealsPage: React.FC = () => {
                                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/95 via-gray-900/20 to-transparent" />
 
                                         <div className="absolute top-4 md:top-8 left-4 md:left-8">
-                                            <div className="bg-white/20 backdrop-blur-md text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[8px] md:text-[10px] font-black uppercase tracking-widest border border-white/20 flex items-center gap-2">
+                                            <div className="bg-white/20 backdrop-blur-md text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[10px] md:text-[10px] font-bold uppercase tracking-widest border border-white/20 flex items-center gap-2">
                                                 <Zap className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                                                 Boosted Deal
                                             </div>
@@ -236,13 +236,13 @@ const BestDealsPage: React.FC = () => {
                                                     <Tag className="w-3.5 h-3.5 md:w-5 md:h-5" />
                                                     <span className="font-bold uppercase tracking-widest text-[10px] md:text-xs">{heroDeal.package_type} • {heroDeal.duration}</span>
                                                 </div>
-                                                <h3 className="text-3xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight">{heroDeal.title}</h3>
+                                                <h3 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight">{heroDeal.title}</h3>
                                                 <div className="flex items-center gap-1 mt-2 text-yellow-400">
                                                     {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                                                     <span className="text-white ml-2 text-sm font-bold">Recommended</span>
                                                 </div>
                                             </div>
-                                            <button className="w-full sm:w-auto bg-white text-teal-600 px-8 py-4 rounded-2xl font-black text-sm md:text-base flex items-center justify-center gap-3 hover:bg-teal-50 transition-all shadow-xl active:scale-95 group/btn">
+                                            <button className="w-full sm:w-auto bg-white text-teal-600 px-8 py-4 rounded-2xl font-bold text-sm md:text-base flex items-center justify-center gap-3 hover:bg-teal-50 transition-all shadow-xl active:scale-95 group/btn">
                                                 View Deal Details
                                                 <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
                                             </button>
@@ -254,7 +254,7 @@ const BestDealsPage: React.FC = () => {
                             {/* Grid of Deals */}
                             <div className="space-y-8 md:space-y-12" ref={gridRef}>
                                 <div className="flex items-center gap-4">
-                                    <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-gray-400">
+                                    <h2 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-gray-400">
                                         {searchTerm
                                             ? `Search Results for "${searchTerm}"`
                                             : showSavedOnly
@@ -331,7 +331,7 @@ const BestDealsPage: React.FC = () => {
                                                 <Compass className="w-16 h-16 text-gray-300" />
                                             )}
                                         </div>
-                                        <h2 className="text-2xl md:text-3xl font-black mb-3 text-gray-900">
+                                        <h2 className="text-2xl md:text-3xl font-bold mb-3 text-gray-900">
                                             {showSavedOnly ? "No saved deals yet" : "No deals found"}
                                         </h2>
                                         <p className="text-gray-500 max-w-md mb-8 text-base md:text-lg">
@@ -341,7 +341,7 @@ const BestDealsPage: React.FC = () => {
                                         </p>
                                         <button
                                             onClick={() => showSavedOnly ? toggleSavedOnly() : setSearchTerm('')}
-                                            className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-full font-black text-lg transition-all shadow-xl active:scale-95"
+                                            className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-4 rounded-full font-bold text-lg transition-all shadow-xl active:scale-95"
                                         >
                                             {showSavedOnly ? "Explore All Deals" : "Clear All Filters"}
                                         </button>

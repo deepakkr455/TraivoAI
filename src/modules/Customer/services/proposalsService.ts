@@ -1,5 +1,6 @@
 import { supabase } from '../../../services/supabaseClient';
 import { TripPlanData } from '../../../types';
+import logger from '../../../utils/logger';
 
 
 export interface Proposal {
@@ -35,7 +36,7 @@ export const proposalsService = {
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error fetching proposals:', error);
+        logger.error('Error fetching proposals:', error);
         return { success: false, error: error.message };
       }
 
@@ -44,11 +45,11 @@ export const proposalsService = {
         ...p,
         details: p.details ? JSON.parse(p.details) : undefined,
       }));
-      console.log("parsedData:", parsedData);
+      logger.info("parsedData:", parsedData);
 
       return { success: true, data: parsedData };
     } catch (err) {
-      console.error('Exception fetching proposals:', err);
+      logger.error('Exception fetching proposals:', err);
       return { success: false, error: 'Failed to fetch proposals' };
     }
   },
@@ -70,24 +71,24 @@ export const proposalsService = {
         .single();
 
       if (error) {
-        console.error('Error adding proposal:', error);
+        logger.error('Error adding proposal:', error);
         return { success: false, error: error.message };
       }
 
       return { success: true, data };
     } catch (err) {
-      console.error('Exception adding proposal:', err);
+      logger.error('Exception adding proposal:', err);
       return { success: false, error: 'Failed to add proposal' };
     }
   },
 
   async seedProposals(planId: string, ownerId: string, planData: TripPlanData): Promise<{ success: boolean; error?: string }> {
     try {
-      console.log('🌱 Seeding initial proposals from plan data for plan:', planId);
+      logger.info('🌱 Seeding initial proposals from plan data for plan:', planId);
 
       // 1. Seed Dates
       if (planData.dates) {
-        console.log('📅 Processing dates:', planData.dates);
+        logger.info('📅 Processing dates:', planData.dates);
         const dateStr = planData.dates.trim();
         let startDate: string | null = null;
         let endDate: string | null = null;
@@ -116,27 +117,23 @@ export const proposalsService = {
               startDate = checkAndFixYear(startDate);
               endDate = checkAndFixYear(endDate);
             }
-
-            console.log('✅ Parsed dates from string:', { startDate, endDate });
+            logger.info('✅ Parsed dates from string:', { startDate, endDate });
           }
         }
-
         // If dates are not in the expected format (e.g., "Flexible 5-Day Plan"), create a default proposal
         if (!startDate || !endDate) {
-          console.log('⚠️ Dates not in expected format, creating default dates');
+          logger.info('⚠️ Dates not in expected format, creating default dates');
           // Create a default date range starting 30 days from now
           const today = new Date();
           const defaultStart = new Date(today);
           defaultStart.setDate(today.getDate() + 30);
           const defaultEnd = new Date(defaultStart);
           defaultEnd.setDate(defaultStart.getDate() + 5); // Default 5-day trip
-
           startDate = defaultStart.toISOString().split('T')[0];
           endDate = defaultEnd.toISOString().split('T')[0];
-          console.log('📆 Generated default dates:', { startDate, endDate });
+          logger.info('📆 Generated default dates:', { startDate, endDate });
         }
-
-        console.log('💾 Inserting date proposal:', { startDate, endDate });
+        logger.info('💾 Inserting date proposal:', { startDate, endDate });
         const dateResult = await this.addProposal(
           planId,
           ownerId,
@@ -145,9 +142,9 @@ export const proposalsService = {
           `${startDate} - ${endDate}`,
           { startDate, endDate }
         );
-        console.log('Date proposal result:', dateResult);
+        logger.info('Date proposal result:', dateResult);
       } else {
-        console.log('⚠️ No dates found in planData');
+        logger.info('⚠️ No dates found in planData');
       }
 
       // 2. Seed Accommodations
@@ -211,10 +208,10 @@ export const proposalsService = {
         }
       }
 
-      console.log('✅ Seeding complete for plan:', planId);
+      logger.info('✅ Seeding complete for plan:', planId);
       return { success: true };
     } catch (err) {
-      console.error('Exception seeding proposals:', err);
+      logger.error('Exception seeding proposals:', err);
       return { success: false, error: 'Failed to seed proposals' };
     }
   },
@@ -261,7 +258,7 @@ export const votesService = {
             .eq('user_id', userId);
 
           if (deleteError) {
-            console.error('Error removing vote:', deleteError);
+            logger.error('Error removing vote:', deleteError);
             return { success: false, error: deleteError.message };
           }
         } else {
@@ -273,7 +270,7 @@ export const votesService = {
             .eq('user_id', userId);
 
           if (updateError) {
-            console.error('Error updating vote:', updateError);
+            logger.error('Error updating vote:', updateError);
             return { success: false, error: updateError.message };
           }
         }
@@ -284,14 +281,14 @@ export const votesService = {
           .insert({ proposal_id: proposalId, user_id: userId, type: voteType });
 
         if (insertError) {
-          console.error('Error adding vote:', insertError);
+          logger.error('Error adding vote:', insertError);
           return { success: false, error: insertError.message };
         }
       }
 
       return { success: true };
     } catch (err) {
-      console.error('Exception voting:', err);
+      logger.error('Exception voting:', err);
       return { success: false, error: 'Failed to vote' };
     }
   },
@@ -304,13 +301,13 @@ export const votesService = {
         .eq('proposal_id', proposalId);
 
       if (error) {
-        console.error('Error fetching votes:', error);
+        logger.error('Error fetching votes:', error);
         return { success: false, error: error.message };
       }
 
       return { success: true, data: data || [] };
     } catch (err) {
-      console.error('Exception fetching votes:', err);
+      logger.error('Exception fetching votes:', err);
       return { success: false, error: 'Failed to fetch votes' };
     }
   },

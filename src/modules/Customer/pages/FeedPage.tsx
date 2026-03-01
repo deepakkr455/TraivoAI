@@ -5,6 +5,7 @@ import { MessageCircleIcon } from '../../../components/icons/MessageCircleIcon';
 import { MapPinIcon } from '../../../components/icons/MapPinIcon';
 
 import { supabase } from '../../../services/supabaseClient';
+import { getSecureImageUrl } from '../services/geminiService';
 
 
 /* --------------------------------------------------------------------
@@ -44,10 +45,10 @@ const PostCard: React.FC<{
     };
 
     return (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
             {/* Header */}
             <div className="p-4 flex items-center space-x-3">
-                <img src={post.author.avatarUrl} alt={post.author.name} className="w-12 h-12 rounded-full object-cover" />
+                <img src={post.author.avatarUrl} alt={post.author.name} className="w-10 h-10 rounded-full object-cover" />
                 <div>
                     <p className="font-semibold text-gray-800">{post.author.name}</p>
                     <div className="flex items-center text-xs text-gray-500">
@@ -56,7 +57,7 @@ const PostCard: React.FC<{
                             <>
                                 <span className="mx-1">·</span>
                                 <span className="flex items-center">
-                                    <MapPinIcon size={14} className="inline mr-1" />
+                                    <MapPinIcon size={12} className="inline mr-1" />
                                     {post.location}
                                 </span>
                             </>
@@ -67,13 +68,13 @@ const PostCard: React.FC<{
 
             {/* Body */}
             <div className="px-4 pb-3">
-                <p className="text-gray-700">{post.content}</p>
+                <p className="text-gray-700 whitespace-pre-wrap">{post.content}</p>
             </div>
 
-            {post.imageUrl && <img src={post.imageUrl} alt="" className="w-full object-cover" />}
+            {post.imageUrl && <img src={post.imageUrl} alt="" className="w-full object-cover max-h-[500px]" />}
 
             {/* Actions */}
-            <div className="px-4 py-2 flex items-center justify-between text-gray-600">
+            <div className="px-4 py-2 flex items-center justify-between text-gray-600 border-t border-gray-50 mt-2">
                 <button
                     onClick={() => onLike(post.id)}
                     className={`flex items-center space-x-1 transition-colors ${post.isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
@@ -94,23 +95,23 @@ const PostCard: React.FC<{
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder="Add a comment…"
-                    className="flex-1 p-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="flex-1 p-2 text-sm border border-gray-100 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:bg-white transition-all"
                 />
-                <button type="submit" className="px-3 py-1 bg-teal-500 text-white rounded-md text-sm hover:bg-teal-600">
+                <button type="submit" className="px-3 py-1 bg-teal-500 text-white rounded-lg text-sm font-medium hover:bg-teal-600 transition-colors">
                     Post
                 </button>
             </form>
 
             {/* Comments List */}
             {post.comments.length > 0 && (
-                <div className="px-4 pb-3 space-y-2">
+                <div className="px-4 pb-4 space-y-3 bg-gray-50/50 pt-2">
                     {post.comments.map((c) => (
                         <div key={c.id} className="flex space-x-2 text-sm">
-                            <img src={c.author.avatarUrl} alt={c.author.name} className="w-7 h-7 rounded-full" />
-                            <div>
-                                <p className="font-medium">{c.author.name}</p>
+                            <img src={c.author.avatarUrl} alt={c.author.name} className="w-8 h-8 rounded-full" />
+                            <div className="flex-1 bg-white p-2 rounded-lg border border-gray-100">
+                                <p className="font-semibold text-xs text-gray-900">{c.author.name}</p>
                                 <p className="text-gray-700">{c.text}</p>
-                                <p className="text-xs text-gray-500">{c.timestamp}</p>
+                                <p className="text-[10px] text-gray-400 mt-1">{c.timestamp}</p>
                             </div>
                         </div>
                     ))}
@@ -151,32 +152,52 @@ const CreatePost: React.FC<{
     };
 
     return (
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <form onSubmit={submit} className="space-y-3">
+        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <form onSubmit={submit} className="space-y-4">
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     rows={3}
                     placeholder="Share your latest adventure…"
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+                    className="w-full p-3 border border-gray-100 rounded-xl bg-gray-50 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all resize-none"
                 />
-                <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Location (optional)"
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
-                />
-                <div>
-                    <label htmlFor="img" className="cursor-pointer text-sm text-teal-600">
-                        Add photo
-                    </label>
-                    <input id="img" type="file" accept="image/*" className="hidden" onChange={handleFile} />
+                <div className="flex items-center gap-3">
+                    <div className="relative flex-1">
+                        <MapPinIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="Location (optional)"
+                            className="w-full pl-9 p-2 border border-gray-100 rounded-lg bg-gray-50 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="img" className="cursor-pointer px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors inline-block">
+                            Add photo
+                        </label>
+                        <input id="img" type="file" accept="image/*" className="hidden" onChange={handleFile} />
+                    </div>
                 </div>
-                {preview && <img src={preview} alt="preview" className="max-h-48 rounded-lg" />}
-                <div className="flex justify-end">
-                    <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600">
-                        Post
+                {preview && (
+                    <div className="relative inline-block mt-2">
+                        <img src={preview} alt="preview" className="max-h-48 rounded-xl border border-gray-100" />
+                        <button
+                            type="button"
+                            onClick={() => { setImageFile(null); setPreview(null); }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600"
+                        >
+                            ×
+                        </button>
+                    </div>
+                )}
+                <div className="flex justify-end pt-2 border-t border-gray-50">
+                    <button
+                        type="submit"
+                        disabled={!content.trim()}
+                        className="px-6 py-2 bg-teal-500 text-white rounded-lg font-medium hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+                    >
+                        Post Adventure
                     </button>
                 </div>
             </form>
@@ -210,17 +231,27 @@ const FeedPage: React.FC = () => {
             return;
         }
 
-        const transformed: Post[] = data.map((p: any) => {
+        const transformed: Post[] = await Promise.all(data.map(async (p: any) => {
             const isLiked = userId ? p.likes.some((l: any) => l.user_id === userId) : false;
+
+            // Resolve secure URL if image exists
+            let secureImageUrl = p.image_url;
+            if (p.image_url && (p.image_url.includes('supabase.co') || !p.image_url.startsWith('blob:'))) {
+                // Heuristic for path extraction
+                const path = p.image_url.split('/object/public/post-images/')[1] || p.image_url.split('/post-images/')[1];
+                if (path) {
+                    secureImageUrl = await getSecureImageUrl('post-images', path) || p.image_url;
+                }
+            }
 
             return {
                 id: String(p.id),
                 author: {
                     name: p.user_id === userId ? 'You' : 'Traveler',
-                    avatarUrl: 'https://picsum.photos/seed/user/200/200',
+                    avatarUrl: `https://ui-avatars.com/api/?name=${p.user_id === userId ? 'You' : 'Traveler'}&background=random`,
                 },
                 content: p.content,
-                imageUrl: p.image_url ?? undefined,
+                imageUrl: secureImageUrl ?? undefined,
                 location: p.location ?? undefined,
                 timestamp: formatTimeAgo(p.created_at),
                 likes: p.likes.length,
@@ -229,13 +260,13 @@ const FeedPage: React.FC = () => {
                     id: String(c.id),
                     author: {
                         name: c.user_id === userId ? 'You' : 'Traveler',
-                        avatarUrl: 'https://picsum.photos/seed/user/200/200',
+                        avatarUrl: `https://ui-avatars.com/api/?name=${c.user_id === userId ? 'You' : 'Traveler'}&background=random`,
                     },
                     text: c.text,
                     timestamp: formatTimeAgo(c.created_at),
                 })),
             };
-        });
+        }));
 
         setPosts(transformed);
     }, []);
@@ -265,7 +296,7 @@ const FeedPage: React.FC = () => {
         // Optimistic UI (show preview)
         const optimisticPost: Post = {
             id: tempId,
-            author: { name: 'You', avatarUrl: 'https://picsum.photos/seed/user/200/200' },
+            author: { name: 'You', avatarUrl: `https://ui-avatars.com/api/?name=You&background=random` },
             content,
             imageUrl: previewUrl,
             location: location || undefined,
@@ -276,13 +307,14 @@ const FeedPage: React.FC = () => {
         };
         setPosts((prev) => [optimisticPost, ...prev]);
 
-        let finalImageUrl: string | null = null;
+        let storagePath: string | null = null;
+        let secureImageUrl: string | null = null;
 
         // ---- 1. Upload image (if any) ----
         if (imageFile) {
             const fileExt = imageFile.name.split('.').pop()?.toLowerCase();
             const fileName = `${Date.now()}.${fileExt}`;
-            const filePath = `${currentUserId}/${fileName}`;  // user-specific folder
+            const filePath = `${currentUserId}/${fileName}`;
 
             const { data, error } = await supabase.storage
                 .from('post-images')
@@ -295,20 +327,22 @@ const FeedPage: React.FC = () => {
                 return;
             }
 
-            const { data: urlData } = supabase.storage
-                .from('post-images')
-                .getPublicUrl(filePath);
-
-            finalImageUrl = urlData.publicUrl;
+            storagePath = data.path;
+            // Get secure local blob URL instead of the public Supabase URL
+            secureImageUrl = await getSecureImageUrl('post-images', storagePath);
         }
 
-        // ---- 2. Insert post with real image URL ----
+        // ---- 2. Insert post with STORAGE PATH (or proxied URL if we must store full URL)
+        // Note: Better to store path, but current schema expects image_url
+        // We will store the full public URL in DB for compatibility, but the UI will ALWAYS use the proxy.
+        const { data: { publicUrl } } = supabase.storage.from('post-images').getPublicUrl(storagePath || '');
+
         const { data: postData, error: postError } = await supabase
             .from('posts')
             .insert({
                 user_id: currentUserId,
                 content,
-                image_url: finalImageUrl,
+                image_url: storagePath ? publicUrl : null,
                 location: location || null,
             })
             .select('id, created_at')
@@ -324,7 +358,7 @@ const FeedPage: React.FC = () => {
         const realPost: Post = {
             ...optimisticPost,
             id: String(postData.id),
-            imageUrl: finalImageUrl ?? undefined,
+            imageUrl: secureImageUrl ?? undefined,
             timestamp: formatTimeAgo(postData.created_at),
         };
 

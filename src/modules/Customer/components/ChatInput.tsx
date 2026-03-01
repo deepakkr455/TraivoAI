@@ -5,7 +5,7 @@ import { Paperclip, Mic, SendHorizonal } from '../../../components/Icons';
 
 
 
-import { Plus, Map, CloudSun, Calendar, FileText, Sparkles } from 'lucide-react';
+import { Plus, Map, CloudSun, Calendar, FileText, Sparkles, Camera } from 'lucide-react';
 
 const PLACEHOLDER_MESSAGES = [
   'Create a new trip',
@@ -20,7 +20,7 @@ const PLACEHOLDER_MESSAGES = [
   'Find romantic destinations'
 ];
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onAction, forcedTool, onSetForcedTool, value, onChange, limitMessage }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onAction, forcedTool, onSetForcedTool, value, onChange, limitMessage, menuPosition = 'top' }) => {
   const [localPrompt, setLocalPrompt] = useState('');
   const prompt = value !== undefined ? value : localPrompt;
 
@@ -127,11 +127,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
         }
       `}</style>
 
-      {/* Plus Menu Popup */}
       {showMenu && (
         <div
           ref={menuRef}
-          className="absolute top-full left-0 mt-3 ml-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-1.5 sm:p-2 min-w-[170px] sm:min-w-[200px] max-h-[280px] sm:max-h-[350px] overflow-y-auto theme-scrollbar z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          className={`absolute ${menuPosition === 'top'
+            ? 'bottom-full mb-3 slide-in-from-bottom-2'
+            : 'top-full mt-3 slide-in-from-top-2'
+            } left-0 ml-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-1.5 sm:p-2 min-w-[170px] sm:min-w-[200px] max-h-[280px] sm:max-h-[350px] overflow-y-auto theme-scrollbar z-50 animate-in fade-in duration-200`}
         >
           <div className="flex flex-col gap-0.5 sm:gap-1">
             <button
@@ -179,6 +181,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
               </div>
               Travel Flyer
             </button>
+            <button
+              onClick={() => { onSetForcedTool?.('generate_social_image'); setShowMenu(false); }}
+              className="flex items-center gap-2.5 sm:gap-3 w-full p-2 sm:p-2.5 hover:bg-pink-50 text-gray-700 hover:text-pink-700 rounded-xl transition-all text-xs sm:text-sm font-medium text-left"
+            >
+              <div className="p-1.5 bg-pink-100/50 rounded-lg text-pink-600">
+                <Camera className="w-4 h-4" />
+              </div>
+              Social Media Post
+            </button>
           </div>
         </div>
       )}
@@ -206,7 +217,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, onActio
             <span>{limitMessage}</span>
           </div>
           <a
-            href="#/user/subscription"
+            href="/user/subscription"
             className="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-lg font-bold transition-colors whitespace-nowrap"
           >
             Upgrade

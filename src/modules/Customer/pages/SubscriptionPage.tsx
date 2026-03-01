@@ -130,8 +130,8 @@ const SubscriptionPage: React.FC = () => {
                         email={user.email}
                         phone={'9999999999'} // Default as we don't store phone yet
                         txnid={pendingPayment.txnid}
-                        surl={`${window.location.origin}/#/payment-status`}
-                        furl={`${window.location.origin}/#/payment-status`}
+                        surl={`${window.location.origin}/TraivoAI/payment-status`}
+                        furl={`${window.location.origin}/TraivoAI/payment-status`}
                         udf2={user.id}
                         udf3={pendingPayment.planName}
                         udf5={pendingPayment.billingCycle}
@@ -171,8 +171,8 @@ const SubscriptionPage: React.FC = () => {
                                         }`}
                                 >
                                     {cycle.charAt(0).toUpperCase() + cycle.slice(1)}
-                                    {cycle === 'quarterly' && <span className="text-[9px] md:text-[10px] ml-1 text-teal-400 font-black">SAVE 10%</span>}
-                                    {cycle === 'yearly' && <span className="text-[9px] md:text-[10px] ml-1 text-teal-400 font-black">SAVE 15%</span>}
+                                    {cycle === 'quarterly' && <span className="text-[10px] md:text-[10px] ml-1 text-teal-400 font-bold">SAVE 10%</span>}
+                                    {cycle === 'yearly' && <span className="text-[10px] md:text-[10px] ml-1 text-teal-400 font-bold">SAVE 15%</span>}
                                 </button>
                             ))}
                         </div>
@@ -188,7 +188,7 @@ const SubscriptionPage: React.FC = () => {
                             >
                                 {plan.name === 'pro' && (
                                     <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10 w-full text-center">
-                                        <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 px-4 py-1.5 text-[10px] font-black tracking-widest uppercase text-white shadow-xl ring-4 ring-white">
+                                        <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white shadow-xl ring-4 ring-white">
                                             <Sparkles className="w-3 h-3" /> Most Popular
                                         </span>
                                     </div>
@@ -196,7 +196,7 @@ const SubscriptionPage: React.FC = () => {
 
                                 <div className="flex-1">
                                     <div className="mb-6">
-                                        <h3 className="text-base font-black text-gray-500 uppercase tracking-widest mb-1">{plan.name}</h3>
+                                        <h3 className="text-base font-bold text-gray-500 uppercase tracking-widest mb-1">{plan.name}</h3>
                                         <p className="text-gray-400 text-[10px] font-bold uppercase tracking-tight">
                                             {plan.name === 'free' ? 'Casual Exploration' : plan.name === 'custom' ? 'Enterprise Travel' : 'Premium Adventure'}
                                         </p>
@@ -204,7 +204,7 @@ const SubscriptionPage: React.FC = () => {
 
                                     <div className="mb-6">
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-4xl font-black text-gray-900 tracking-tight">
+                                            <span className="text-4xl font-bold text-gray-900 tracking-tight">
                                                 {plan.name === 'custom' ? 'Talk' : plan.name === 'free' ? '₹0' : `₹${getPrice(plan)}`}
                                             </span>
                                             {plan.name !== 'custom' && plan.name !== 'free' && (
@@ -240,7 +240,7 @@ const SubscriptionPage: React.FC = () => {
                                 </div>
 
                                 <button
-                                    className={`mt-8 block w-full py-3 px-4 rounded-2xl text-center font-black uppercase tracking-wider text-xs transition-all transform active:scale-95 ${userSubscription?.plan_name === plan.name
+                                    className={`mt-8 block w-full py-3 px-4 rounded-2xl text-center font-bold uppercase tracking-wider text-xs transition-all transform active:scale-95 ${userSubscription?.plan_name === plan.name
                                         ? 'bg-gray-100 text-gray-400 cursor-default'
                                         : plan.name === 'pro'
                                             ? 'bg-teal-600 text-white hover:bg-teal-700 shadow-lg shadow-teal-500/30'

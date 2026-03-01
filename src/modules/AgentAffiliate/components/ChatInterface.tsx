@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage, Product, MediaUpload } from '../types';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Camera, Plus } from 'lucide-react';
 
 import { Message } from './Message';
 import { PaperclipIcon, SendIcon, LoadingIcon } from './Icons';
@@ -10,20 +10,23 @@ import { supabase } from '../services/supabaseService';
 interface ChatInterfaceProps {
     messages: ChatMessage[];
     isLoading: boolean;
-    onSendMessage: (content: string, uploads?: MediaUpload[]) => void;
+    onSendMessage: (content: string, uploads?: MediaUpload[], forcedTool?: string) => void;
     onCardClick: (product: Product) => void;
+    onImageClick?: (imageUrl: string, prompt?: string) => void;
     isAffiliate?: boolean;
     canSendMessage?: boolean;
     quotaInfo?: string;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
-    messages, isLoading, onSendMessage, onCardClick, isAffiliate = false,
+    messages, isLoading, onSendMessage, onCardClick, onImageClick, isAffiliate = false,
     canSendMessage = true, quotaInfo
 }) => {
     const [input, setInput] = useState('');
     const [files, setFiles] = useState<File[]>([]);
     const [isUploading, setIsUploading] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
+    const [selectedTool, setSelectedTool] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -33,6 +36,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     };
 
     useEffect(scrollToBottom, [messages]);
+
+    // Auto-resize textarea
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+    }, [input]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -76,9 +88,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 console.log('Uploads complete:', uploads);
             }
 
-            onSendMessage(input, uploads);
+            onSendMessage(input, uploads, selectedTool || undefined);
             setInput('');
             setFiles([]);
+            setSelectedTool(null);
+            setShowMenu(false);
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
@@ -97,7 +111,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <div className="flex-1 p-4 md:p-6 overflow-y-auto custom-scrollbar">
                 <div className="space-y-6">
                     {messages.map((msg) => (
-                        <Message key={msg.id} message={msg} onCardClick={onCardClick} />
+                        <Message key={msg.id} message={msg} onCardClick={onCardClick} onImageClick={onImageClick} />
                     ))}
                     {(isLoading || isUploading) && (
                         <div className="flex justify-center items-center gap-3 py-4">
@@ -168,6 +182,35 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     {/* We need to import useAuth first. Let's assume we'll add the import at the top. */}
 
                     {/* Actually, let's just conditionally render based on a new prop 'isAffiliate' to be safe and clean */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowMenu(!showMenu)}
+                            className={`p-3 transition-colors rounded-full mb-1 ${showMenu ? 'bg-teal-100 text-teal-600' : 'text-gray-600 dark:text-gray-300 hover:text-teal-500'}`}
+                        >
+                            <Plus className={`w-5 h-5 transition-transform ${showMenu ? 'rotate-45' : ''}`} />
+                        </button>
+
+                        {showMenu && (
+                            <div className="absolute bottom-16 left-0 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-200">
+                                <div className="p-2 mb-1">
+                                    <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2">AI Tools</p>
+                                </div>
+                                <button
+                                    onClick={() => { setSelectedTool('generate_social_image'); setShowMenu(false); }}
+                                    className="flex items-center gap-3 w-full p-3 hover:bg-pink-50 dark:hover:bg-pink-900/20 text-gray-700 dark:text-gray-200 hover:text-pink-700 dark:hover:text-pink-300 rounded-xl transition-all text-sm font-medium text-left"
+                                >
+                                    <div className="p-2 bg-pink-100 dark:bg-pink-900/40 rounded-lg text-pink-600 dark:text-pink-400">
+                                        <Camera className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span>Social Media Post</span>
+                                        <span className="text-[10px] opacity-60">Generate viral travel visuals</span>
+                                    </div>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                     {!isAffiliate && (
                         <button
                             onClick={() => fileInputRef.current?.click()}
@@ -178,26 +221,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                         </button>
                     )}
 
-                    <textarea
-                        ref={textareaRef}
-                        value={input}
-                        onChange={(e) => {
-                            setInput(e.target.value);
-                            // Auto-resize
-                            e.target.style.height = 'auto';
-                            e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
-                        }}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                if (!isLoading && !isUploading) handleSendMessage();
-                            }
-                        }}
-                        placeholder={isAffiliate ? "Paste a GetYourGuide or TripAdvisor link..." : "Describe the trip you want to list..."}
-                        className="flex-1 px-4 py-3 md:px-5 border-none rounded-2xl bg-gray-100 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-shadow resize-none min-h-[48px] max-h-120px custom-scrollbar text-sm md:text-base"
-                        style={{ height: '48px' }}
-                        disabled={isLoading || isUploading}
-                    />
+                    <div className="flex-1 relative">
+                        {selectedTool === 'generate_social_image' && (
+                            <div className="absolute -top-10 left-0 bg-pink-50 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 px-3 py-1.5 rounded-t-xl text-[10px] font-bold flex items-center gap-2 border-t border-x border-pink-100 dark:border-pink-800 animate-in fade-in slide-in-from-bottom-2">
+                                <Camera className="w-3 h-3" />
+                                SOCIAL MEDIA MODE
+                                <button onClick={() => setSelectedTool(null)} className="ml-1 hover:bg-pink-200 dark:hover:bg-pink-800 rounded-full p-0.5 font-bold transition-colors">×</button>
+                            </div>
+                        )}
+                        <textarea
+                            ref={textareaRef}
+                            value={input}
+                            onChange={(e) => {
+                                setInput(e.target.value);
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    if (!isLoading && !isUploading) handleSendMessage();
+                                }
+                            }}
+                            placeholder={isAffiliate ? "Paste a GetYourGuide or TripAdvisor link..." : "Describe the trip you want to list..."}
+                            className="w-full px-4 py-3 md:px-5 border-none rounded-2xl bg-gray-100 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 transition-shadow resize-none min-h-[48px] max-h-[120px] custom-scrollbar text-sm md:text-base"
+                            rows={1}
+                            disabled={isLoading || isUploading}
+                        />
+                    </div>
                     <button
                         onClick={handleSendMessage}
                         disabled={isLoading || isUploading || (input.trim() === '' && files.length === 0)}

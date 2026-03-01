@@ -20,6 +20,7 @@ import {
     getAgentProductMetrics,
     getAgentDetailedProductMetrics,
     deleteProductListing,
+    updateProductStatus,
     supabase
 } from '../services/supabaseService';
 import { messageService } from '../../Customer/services/messageService';
@@ -36,7 +37,7 @@ interface AgentDataContextType {
     bookings: Booking[];
     inquiries: CustomerInquiry[];
     setCurrentSessionId: (id: string | null) => void;
-    sendMessage: (content: string, uploads?: MediaUpload[]) => Promise<void>;
+    sendMessage: (content: string, uploads?: MediaUpload[], forcedTool?: string) => Promise<void>;
     confirmProduct: (productId: string) => Promise<void>;
     deleteProduct: (productId: string) => void;
     toggleProductStatus: (productId: string) => void;
@@ -46,6 +47,7 @@ interface AgentDataContextType {
     updateAffiliateStatus: (id: string, status: boolean) => Promise<void>;
     removeAffiliateListing: (id: string) => Promise<void>;
     refreshInquiries: () => Promise<void>;
+    lastGeneratedImageUrl: string | null;
 }
 
 const AgentDataContext = createContext<AgentDataContextType | undefined>(undefined);
@@ -58,6 +60,7 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const [isLoading, setIsLoading] = useState(false);
     const [chatSessions, setChatSessions] = useState<any[]>([]);
     const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+    const [lastGeneratedImageUrl, setLastGeneratedImageUrl] = useState<string | null>(null);
     const [bookings, setBookings] = useState<Booking[]>([
         {
             id: 'b1', customer_name: 'Alice Johnson', customer_avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d', product_title: 'Majestic Manali Escape',
@@ -306,10 +309,39 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             if (session?.user.id && currentSessionId) {
                 await addConversationMessage(aiMessage, session.user.id, session.user.id, currentSessionId);
             }
+        } else if (functionCall.name === 'generate_social_image') {
+            console.log('[AgentData] Handling generate_social_image tool call:', functionCall.args);
+            try {
+                const { data, error } = await supabase.functions.invoke('wanderchat-api', {
+                    body: {
+                        ...functionCall.args,
+                        action: 'generate_social_image'
+                    }
+                });
+
+                if (error) throw error;
+
+                const aiImageMessage: ChatMessage = {
+                    id: crypto.randomUUID(),
+                    sender: 'ai',
+                    content: data.text || `Here is your social media image.`,
+                    imageUrl: data.imageUrl
+                };
+
+                setLastGeneratedImageUrl(data.imageUrl);
+                setMessages(prev => [...prev, aiImageMessage]);
+                conversationHistoryRef.current.push(aiImageMessage);
+
+                if (session?.user.id && currentSessionId) {
+                    await addConversationMessage(aiImageMessage, session.user.id, session.user.id, currentSessionId);
+                }
+            } catch (err) {
+                console.error('[AgentData] Image generation tool failed:', err);
+            }
         }
     }, [session, currentSessionId]);
 
-    const sendMessage = useCallback(async (content: string, uploads: MediaUpload[] = []) => {
+    const sendMessage = useCallback(async (content: string, uploads: MediaUpload[] = [], forcedTool?: string) => {
         // Validation for Agent Affiliate
         if (session?.user.id && profile?.user_type === 'affiliate_partner') {
             try {
@@ -353,25 +385,51 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
 
         try {
-            const aiResponse = profile?.user_type === 'affiliate_partner'
-                ? await getAffiliateResponse(conversationHistoryRef.current)
-                : await getAgentResponse(conversationHistoryRef.current);
+            if (forcedTool === 'generate_social_image') {
+                const { data, error } = await supabase.functions.invoke('wanderchat-api', {
+                    body: {
+                        prompt: content,
+                        action: 'generate_social_image',
+                        forcedTool: 'generate_social_image'
+                    }
+                });
 
-            if (aiResponse.functionCalls) {
-                for (const fc of aiResponse.functionCalls) {
-                    await processFunctionCall(fc);
-                }
-            } else {
+                if (error) throw error;
+
                 const aiMessage: ChatMessage = {
                     id: crypto.randomUUID(),
                     sender: 'ai',
-                    content: aiResponse.text || '',
+                    content: data.text || `Here's your social media post for "${content}".`,
+                    imageUrl: data.imageUrl
                 };
+                setLastGeneratedImageUrl(data.imageUrl);
                 setMessages(prev => [...prev, aiMessage]);
                 conversationHistoryRef.current.push(aiMessage);
 
                 if (session?.user.id && currentSessionId) {
                     await addConversationMessage(aiMessage, session.user.id, session.user.id, currentSessionId);
+                }
+            } else {
+                const aiResponse = profile?.user_type === 'affiliate_partner'
+                    ? await getAffiliateResponse(conversationHistoryRef.current)
+                    : await getAgentResponse(conversationHistoryRef.current);
+
+                if (aiResponse.functionCalls) {
+                    for (const fc of aiResponse.functionCalls) {
+                        await processFunctionCall(fc);
+                    }
+                } else {
+                    const aiMessage: ChatMessage = {
+                        id: crypto.randomUUID(),
+                        sender: 'ai',
+                        content: aiResponse.text || '',
+                    };
+                    setMessages(prev => [...prev, aiMessage]);
+                    conversationHistoryRef.current.push(aiMessage);
+
+                    if (session?.user.id && currentSessionId) {
+                        await addConversationMessage(aiMessage, session.user.id, session.user.id, currentSessionId);
+                    }
                 }
             }
         } catch (error) {
@@ -409,8 +467,21 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
     };
 
-    const toggleProductStatus = (productId: string) => {
-        setWorkspaceProducts(prev => prev.map(p => p.id === productId ? { ...p, is_active: !p.is_active } : p));
+    const toggleProductStatus = async (productId: string) => {
+        const product = workspaceProducts.find(p => p.id === productId);
+        if (!product) return;
+
+        const newStatus = !product.is_active;
+        // Optimistic update
+        setWorkspaceProducts(prev => prev.map(p => p.id === productId ? { ...p, is_active: newStatus } : p));
+
+        try {
+            await updateProductStatus(productId, newStatus);
+        } catch (e) {
+            console.error('Failed to update product status:', e);
+            // Revert state on error
+            setWorkspaceProducts(prev => prev.map(p => p.id === productId ? { ...p, is_active: product.is_active } : p));
+        }
     };
 
     const createNewChat = async () => {
@@ -471,7 +542,8 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             renameSession,
             updateAffiliateStatus,
             removeAffiliateListing,
-            refreshInquiries
+            refreshInquiries,
+            lastGeneratedImageUrl
         }}>
             {children}
         </AgentDataContext.Provider>

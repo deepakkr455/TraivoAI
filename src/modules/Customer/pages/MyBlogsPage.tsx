@@ -150,7 +150,7 @@ const MyBlogsPage: React.FC = () => {
                                         {/* Content Section */}
                                         <div className="w-full lg:w-2/5 flex flex-col">
                                             <div className="flex items-center gap-4 mb-6">
-                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg">
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg">
                                                     Latest Issue
                                                 </span>
                                                 <div className="h-px w-12 bg-gray-200" />
@@ -159,14 +159,14 @@ const MyBlogsPage: React.FC = () => {
                                                 </span>
                                             </div>
 
-                                            <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-6 leading-[1.1] group-hover:text-indigo-600 transition-colors duration-500">
+                                            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-[1.1] group-hover:text-indigo-600 transition-colors duration-500">
                                                 {blog.title}
                                             </h2>
 
                                             {blog.tags && (
                                                 <div className="flex flex-wrap gap-2 mb-8">
                                                     {blog.tags.slice(0, 3).map(tag => (
-                                                        <span key={tag} className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                                        <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                                                             #{tag}
                                                         </span>
                                                     ))}
@@ -174,7 +174,7 @@ const MyBlogsPage: React.FC = () => {
                                             )}
 
                                             <div className="flex items-center gap-6 group/btn">
-                                                <div className="flex items-center text-indigo-600 font-black text-sm uppercase tracking-[0.2em] border-b-2 border-indigo-600/0 group-hover/btn:border-indigo-600 transition-all pb-1">
+                                                <div className="flex items-center text-indigo-600 font-bold text-sm uppercase tracking-[0.2em] border-b-2 border-indigo-600/0 group-hover/btn:border-indigo-600 transition-all pb-1">
                                                     Explore Story
                                                     <ArrowRight className="ml-3 w-5 h-5 group-hover/btn:translate-x-2 transition-transform duration-500" />
                                                 </div>
@@ -189,7 +189,7 @@ const MyBlogsPage: React.FC = () => {
                                         </div>
 
                                         {/* Floating decorative number for desktop */}
-                                        <span className={`hidden lg:block absolute -z-10 text-[12rem] font-black text-gray-100/50 select-none transition-all duration-1000 group-hover:text-indigo-50 group-hover:scale-110 ${isEven ? '-left-16 -top-16' : '-right-16 -top-16'}`}>
+                                        <span className={`hidden lg:block absolute -z-10 text-[12rem] font-bold text-gray-100/50 select-none transition-all duration-1000 group-hover:text-indigo-50 group-hover:scale-110 ${isEven ? '-left-16 -top-16' : '-right-16 -top-16'}`}>
                                             0{index + 1}
                                         </span>
                                     </div>
@@ -201,7 +201,7 @@ const MyBlogsPage: React.FC = () => {
                         {filteredBlogs.length > 5 && (
                             <div className="my-20 flex flex-col items-center">
                                 <div className="h-20 w-px bg-gradient-to-b from-transparent to-gray-200 mb-8" />
-                                <h3 className="text-sm font-black uppercase tracking-[0.5em] text-gray-400 mb-4">Story Archive</h3>
+                                <h3 className="text-sm font-bold uppercase tracking-[0.5em] text-gray-400 mb-4">Story Archive</h3>
                                 <div className="h-px w-32 bg-gray-200" />
                             </div>
                         )}
@@ -222,12 +222,12 @@ const MyBlogsPage: React.FC = () => {
                                         />
                                     </div>
                                     <div className="flex items-center gap-3 mb-3">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-indigo-500">Archive</span>
-                                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-500">Archive</span>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                             {new Date(blog.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                                         </span>
                                     </div>
-                                    <h4 className="text-xl font-black text-gray-900 mb-4 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                                    <h4 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-indigo-600 transition-colors line-clamp-2">
                                         {blog.title}
                                     </h4>
                                     <div className="flex items-center text-indigo-600 font-bold text-xs uppercase tracking-widest mt-auto">

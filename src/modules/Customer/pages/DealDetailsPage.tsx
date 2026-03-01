@@ -16,7 +16,7 @@ const InfoItem: React.FC<{ icon: React.ReactNode; label: string; value: string; 
     <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-gray-400 dark:text-gray-500">
             <span className="scale-90">{icon}</span>
-            <p className="text-[10px] md:text-[11px] uppercase font-bold tracking-widest">{label}</p>
+            <p className="text-[10px] md:text-[10px] uppercase font-bold tracking-widest">{label}</p>
         </div>
         <p className="font-bold text-base md:text-lg text-gray-900 dark:text-white truncate" title={value}>{value}</p>
     </div>

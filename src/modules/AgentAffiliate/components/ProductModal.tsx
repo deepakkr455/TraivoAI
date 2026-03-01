@@ -40,14 +40,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
                 <header className="flex justify-between items-center px-6 md:px-12 py-2 md:py-3 border-b border-gray-100 dark:border-gray-800/50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md z-30 shrink-0">
                     <div className="flex-1 min-w-0 pr-8">
                         <div className="flex items-center gap-3 mb-1">
-                            <span className="px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 bg-teal-50 dark:bg-teal-900/20 rounded-full border border-teal-100/50 dark:border-teal-800/50">
+                            <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-teal-600 bg-teal-50 dark:bg-teal-900/20 rounded-full border border-teal-100/50 dark:border-teal-800/50">
                                 {product.package_type}
                             </span>
-                            <span className="px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 rounded-full border border-indigo-100/50 dark:border-indigo-800/50">
+                            <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 rounded-full border border-indigo-100/50 dark:border-indigo-800/50">
                                 {product.duration}
                             </span>
                         </div>
-                        <h2 className="text-xl md:text-2xl font-black text-gray-950 dark:text-white leading-tight tracking-tight truncate">
+                        <h2 className="text-xl md:text-2xl font-bold text-gray-950 dark:text-white leading-tight tracking-tight truncate">
                             {product.title}
                         </h2>
                         <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mt-2 font-bold tracking-tight">
@@ -116,7 +116,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
-                                    className={`relative py-6 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 ${activeTab === tab ? 'text-teal-600 dark:text-teal-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                                    className={`relative py-6 text-sm font-bold uppercase tracking-[0.2em] transition-all duration-300 ${activeTab === tab ? 'text-teal-600 dark:text-teal-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
                                 >
                                     {tab}
                                     {activeTab === tab && (
@@ -139,14 +139,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
                                     </div>
 
                                     <section className="bg-white dark:bg-gray-900 p-8 md:p-10 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 shadow-sm">
-                                        <h3 className="text-2xl font-black text-gray-950 dark:text-white mb-8 tracking-tight">Package Overview</h3>
+                                        <h3 className="text-2xl font-bold text-gray-950 dark:text-white mb-8 tracking-tight">Package Overview</h3>
                                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg font-medium">
                                             {product.description}
                                         </p>
                                     </section>
 
                                     <section>
-                                        <h3 className="text-2xl font-black text-gray-950 dark:text-white mb-8 tracking-tight px-2">Trip Highlights</h3>
+                                        <h3 className="text-2xl font-bold text-gray-950 dark:text-white mb-8 tracking-tight px-2">Trip Highlights</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             {(product.things_to_do && product.things_to_do.length > 0) ? (
                                                 product.things_to_do.map((item, i) => (
@@ -170,7 +170,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
                             {/* ITINERARY TAB */}
                             {activeTab === 'itinerary' && (
                                 <div className="animate-fade-in space-y-12">
-                                    <h3 className="text-3xl font-black text-gray-950 dark:text-white mb-10 tracking-tight">Curated Journey</h3>
+                                    <h3 className="text-3xl font-bold text-gray-950 dark:text-white mb-10 tracking-tight">Curated Journey</h3>
                                     <div className="bg-white dark:bg-gray-900 p-8 md:p-12 rounded-[3rem] border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden">
                                         <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 blur-[100px]" />
                                         <ItineraryTimeline itinerary={product.itinerary} />
@@ -183,7 +183,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
                                 <div className="space-y-12 animate-fade-in">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="bg-emerald-50/30 dark:bg-emerald-950/20 p-8 md:p-10 rounded-[2.5rem] border border-emerald-100/50 dark:border-emerald-900/30">
-                                            <h4 className="font-black text-emerald-800 dark:text-emerald-400 mb-8 flex items-center gap-3 text-2xl tracking-tight">
+                                            <h4 className="font-bold text-emerald-800 dark:text-emerald-400 mb-8 flex items-center gap-3 text-2xl tracking-tight">
                                                 What's Included
                                             </h4>
                                             <ul className="space-y-5">
@@ -195,7 +195,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
                                             </ul>
                                         </div>
                                         <div className="bg-rose-50/30 dark:bg-rose-950/20 p-8 md:p-10 rounded-[2.5rem] border border-rose-100/50 dark:border-rose-900/30">
-                                            <h4 className="font-black text-rose-800 dark:text-rose-400 mb-8 flex items-center gap-3 text-2xl tracking-tight">
+                                            <h4 className="font-bold text-rose-800 dark:text-rose-400 mb-8 flex items-center gap-3 text-2xl tracking-tight">
                                                 What's Excluded
                                             </h4>
                                             <ul className="space-y-5">
@@ -210,7 +210,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm rounded-[2.5rem] p-8 md:p-10">
-                                            <h4 className="font-black text-gray-950 dark:text-white mb-6 text-2xl tracking-tight">Cancellation Policy</h4>
+                                            <h4 className="font-bold text-gray-950 dark:text-white mb-6 text-2xl tracking-tight">Cancellation Policy</h4>
                                             <ul className="space-y-4">
                                                 {product.cancellation_policy?.map((p, i) => (
                                                     <li key={i} className="text-gray-500 dark:text-gray-400 flex gap-3 text-base font-medium">
@@ -221,7 +221,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
                                         </div>
 
                                         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm rounded-[2.5rem] p-8 md:p-10">
-                                            <h4 className="font-black text-gray-950 dark:text-white mb-6 text-2xl tracking-tight">Important Terms</h4>
+                                            <h4 className="font-bold text-gray-950 dark:text-white mb-6 text-2xl tracking-tight">Important Terms</h4>
                                             <ul className="space-y-4">
                                                 {product.terms_conditions?.map((t, i) => (
                                                     <li key={i} className="text-gray-500 dark:text-gray-400 flex gap-3 text-base font-medium">
@@ -236,26 +236,26 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
 
                             {/* Branding Footer */}
                             <div className="mt-20 pt-16 border-t border-gray-100 dark:border-gray-800/50">
-                                <h4 className="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-10 text-center">Book with Total Confidence</h4>
+                                <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-gray-400 mb-10 text-center">Book with Total Confidence</h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
                                     <div className="flex flex-col items-center text-center gap-4 group">
                                         <div className="w-16 h-16 rounded-[2rem] bg-teal-50 dark:bg-teal-950 text-teal-600 flex items-center justify-center text-3xl shadow-sm group-hover:scale-110 transition-transform duration-500">🛡️</div>
                                         <div>
-                                            <p className="font-black text-gray-950 dark:text-white text-base tracking-tight mb-1">Identity Verified</p>
+                                            <p className="font-bold text-gray-950 dark:text-white text-base tracking-tight mb-1">Identity Verified</p>
                                             <p className="text-xs font-bold text-gray-400 tracking-wide">Government ID Checked</p>
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-center text-center gap-4 group">
                                         <div className="w-16 h-16 rounded-[2rem] bg-indigo-50 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center text-3xl shadow-sm group-hover:scale-110 transition-transform duration-500">💳</div>
                                         <div>
-                                            <p className="font-black text-gray-950 dark:text-white text-base tracking-tight mb-1">Fortified Payments</p>
+                                            <p className="font-bold text-gray-950 dark:text-white text-base tracking-tight mb-1">Fortified Payments</p>
                                             <p className="text-xs font-bold text-gray-400 tracking-wide">256-bit AES Encryption</p>
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-center text-center gap-4 group">
                                         <div className="w-16 h-16 rounded-[2rem] bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center text-3xl shadow-sm group-hover:scale-110 transition-transform duration-500">📞</div>
                                         <div>
-                                            <p className="font-black text-gray-950 dark:text-white text-base tracking-tight mb-1">Elite Support</p>
+                                            <p className="font-bold text-gray-950 dark:text-white text-base tracking-tight mb-1">Elite Support</p>
                                             <p className="text-xs font-bold text-gray-400 tracking-wide">Concierge Service 24/7</p>
                                         </div>
                                     </div>
@@ -277,14 +277,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onConfirm
                         {/* Premium Action Buttons for Agent */}
                         <div className="p-4 md:p-5 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 space-y-3">
                             <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Admin Controls</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Admin Controls</span>
                                 <div className="flex items-center gap-1.5 px-2 py-0.5 bg-teal-500/10 rounded-full">
                                     <div className="w-1 h-1 rounded-full bg-teal-500 animate-pulse" />
-                                    <span className="text-[9px] font-black uppercase text-teal-600 tracking-widest">Live</span>
+                                    <span className="text-[10px] font-bold uppercase text-teal-600 tracking-widest">Live</span>
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={onConfirm} className="flex-1 px-6 py-3 rounded-2xl text-base font-black bg-gray-950 text-white hover:bg-teal-600 transition-all duration-300 shadow-xl shadow-gray-900/10 flex justify-center items-center gap-2 active:scale-[0.98]">
+                                <button onClick={onConfirm} className="flex-1 px-6 py-3 rounded-2xl text-base font-bold bg-gray-950 text-white hover:bg-teal-600 transition-all duration-300 shadow-xl shadow-gray-900/10 flex justify-center items-center gap-2 active:scale-[0.98]">
                                     <CheckCircleIcon className="w-4 h-4" />
                                     <span className="tracking-tight">Publish Listing</span>
                                 </button>
@@ -314,9 +314,9 @@ const InfoItem: React.FC<{ icon: React.ReactNode; label: string; value: string; 
             <div className="w-10 h-10 flex items-center justify-center bg-white dark:bg-gray-800 shadow-sm rounded-xl group-hover:scale-110 group-hover:bg-teal-500 group-hover:text-white transition-all duration-500">
                 <span className="scale-110">{icon}</span>
             </div>
-            <p className="text-[10px] uppercase font-black tracking-[0.2em] text-gray-400 group-hover:text-teal-600 transition-colors">{label}</p>
+            <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-400 group-hover:text-teal-600 transition-colors">{label}</p>
         </div>
-        <p className="font-black text-lg text-gray-950 dark:text-white truncate pl-1" title={value}>{value}</p>
+        <p className="font-bold text-lg text-gray-950 dark:text-white truncate pl-1" title={value}>{value}</p>
     </div>
 );
 

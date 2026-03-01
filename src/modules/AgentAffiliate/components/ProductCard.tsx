@@ -157,17 +157,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isLi
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                    <h2 className="text-3xl font-extrabold tracking-wider">{formatLocation(product.location)}</h2>
+                    <h2 className="text-3xl font-bold tracking-[0.2em]">{formatLocation(product.location)}</h2>
                     <div className="flex justify-between items-center mt-1">
-                        <p className="text-xs font-semibold tracking-widest opacity-80">{(product.theme_tags || '').toUpperCase().split(',').join(' - ')}</p>
-                        <button className="bg-yellow-400 text-black text-[10px] font-bold px-3 py-1.5 rounded hover:bg-yellow-300 transition-colors shadow-sm">
+                        <p className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-80">{(product.theme_tags || '').toUpperCase().split(',').join(' - ')}</p>
+                        <button className="bg-yellow-400 text-black text-[10px] font-bold px-3 py-1.5 rounded hover:bg-yellow-300 transition-colors shadow-sm tracking-[0.2em]">
                             BOOK NOW
                         </button>
                     </div>
                 </div>
             </div>
             <div className="p-4 flex-1 flex flex-col">
-                <h3 className="font-semibold text-gray-800 dark:text-gray-100 leading-tight text-blue-900 dark:text-blue-300 mb-2">{product.title}</h3>
+                <h3 className="font-bold text-gray-800 dark:text-gray-100 leading-tight text-blue-900 dark:text-blue-300 mb-2">{product.title}</h3>
 
                 <div className="flex items-center my-2">
                     {[...Array(5)].map((_, i) => (

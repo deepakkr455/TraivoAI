@@ -59,7 +59,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
             <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
                 <div>
                     <div className="flex justify-between items-start mb-1">
-                        <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest truncate">
+                        <span className="text-[10px] font-bold text-teal-600 uppercase tracking-widest truncate">
                             {formatLocation(product.location)}
                         </span>
                         <div className="flex items-center">
@@ -88,8 +88,8 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover/chat:scale-110 transition-transform"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
                         </button>
                         <div>
-                            <div className="text-[10px] text-gray-400 uppercase font-black tracking-tighter">Starts at</div>
-                            <div className="text-teal-600 font-black text-sm">₹{startingPrice.toLocaleString()}</div>
+                            <div className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Starts at</div>
+                            <div className="text-teal-600 font-bold text-sm">₹{startingPrice.toLocaleString()}</div>
                         </div>
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import { messageService } from '../../Customer/services/messageService';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../../../services/supabaseClient';
 import { getProductAnalytics, trackProductInteraction } from '../services/supabaseService';
+import { AffiliateBanner } from './AffiliateBanner';
 
 interface DashboardProps {
     currentView: 'dashboard' | 'bookings' | 'messages' | 'gallery';
@@ -198,7 +199,7 @@ const VisitHeatmap: React.FC<{ data: { title: string; views: number; relative_si
                                 title={`${d.title}: ${d.views} views`}
                             >
                                 <span className="text-[10px] font-bold opacity-80 uppercase truncate">{d.views} views</span>
-                                <span className="text-xs font-black leading-tight line-clamp-2">{d.title}</span>
+                                <span className="text-xs font-bold leading-tight line-clamp-2">{d.title}</span>
                             </div>
                         );
                     })}
@@ -582,7 +583,7 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                                     <StarIcon className="w-6 h-6 text-amber-500" />
                                 </div>
                                 <h3 className="text-xl font-bold text-white">Actionable Insights</h3>
-                                <span className="bg-amber-500 text-black text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">Premium Exclusive</span>
+                                <span className="bg-amber-500 text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Premium Exclusive</span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {isLoadingAnalytics ? (
@@ -873,6 +874,10 @@ const MessagesView: React.FC<{ inquiries: CustomerInquiry[]; setInquiries?: (inq
 
     return (
         <div className="h-full flex flex-col md:flex-row gap-6 p-4 lg:p-8 bg-gray-50 dark:bg-gray-900 overflow-hidden font-sans">
+            {/* Vertical Banner Column */}
+            <div className="hidden lg:flex flex-col w-[160px] border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden flex-shrink-0 rounded-2xl shadow-sm">
+                <AffiliateBanner bannerType="vertical-banner" source="viator" className="h-full w-full" />
+            </div>
             <div className={`w-full md:w-80 flex flex-col gap-4 ${selectedId ? 'hidden md:flex' : 'flex'}`}>
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
@@ -900,6 +905,11 @@ const MessagesView: React.FC<{ inquiries: CustomerInquiry[]; setInquiries?: (inq
                             <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{inquiry.last_message}</p>
                         </div>
                     ))}
+
+                    {/* Mobile Banner - Horizontal at bottom of list */}
+                    <div className="md:hidden p-2 flex justify-center bg-gray-100/50 dark:bg-gray-800/50 rounded-xl mt-2">
+                        <AffiliateBanner bannerType="horizontal-banner" source="viator" className="w-full max-w-[320px]" />
+                    </div>
                 </div>
             </div>
 

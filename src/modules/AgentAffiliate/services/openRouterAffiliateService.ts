@@ -61,6 +61,28 @@ const tools = [
                 required: ['embed_code', 'title', 'country', 'city', 'banner_type']
             }
         }
+    },
+    {
+        type: "function" as const,
+        function: {
+            name: "generate_social_image",
+            description: "Generates a stunning, platform-optimized social media image for travel content.",
+            parameters: {
+                type: "object",
+                properties: {
+                    prompt: { type: "string", description: 'Detailed visual description (e.g. "sunset in Bali").' },
+                    category: { type: "string", enum: ["aspirational", "emotional", "practical", "promotional"] },
+                    creator_type: { type: "string", enum: ["traveler", "blogger", "travel_agent", "brand"] },
+                    social_format: { type: "string", enum: ["instagram_feed", "instagram_story", "instagram_reel", "pinterest_pin", "facebook_post", "twitter_post", "linkedin_post", "youtube_thumbnail"] },
+                    photography_style: { type: "string", enum: ["photorealistic", "cinematic_lighting", "candid_shot", "documentary_style", "aerial_view", "drone_shot", "wide_angle", "close_up", "macro_photography", "fisheye_lens", "low_light", "backlit", "hdr", "watercolor_illustration", "vector_art", "minimalist_design", "vintage_travel_poster", "cartoon_style"] },
+                    mood: { type: "string", enum: ["vibrant", "serene", "adventurous", "romantic", "luxurious", "cozy", "festive", "dreamy", "energetic"] },
+                    color_palette: { type: "string", enum: ["warm_tones", "cool_tones", "pastel_palette", "monochromatic", "colorful", "earthy_hues"] },
+                    composition: { type: "string", enum: ["rule_of_thirds", "leading_lines", "depth_of_field", "bokeh_effect", "symmetrical", "asymmetrical_balance"] },
+                    image_quality: { type: "string", enum: ["standard", "high", "ultra"] }
+                },
+                required: ['prompt'],
+            }
+        }
     }
 ];
 
@@ -101,7 +123,7 @@ export const getAffiliateResponse = async (history: ChatMessage[]): Promise<AppC
 
     const formattedHistory = formatConversationHistory(history);
 
-    const { data, error } = await supabase.functions.invoke('openrouter-api', {
+    const { data, error } = await supabase.functions.invoke('wanderchat-api', {
         body: {
             mode: 'affiliate',
             messages: formattedHistory,

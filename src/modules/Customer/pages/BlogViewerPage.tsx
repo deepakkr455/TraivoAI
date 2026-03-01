@@ -218,7 +218,7 @@ const BlogViewerPage: React.FC = () => {
                         <Share2 className="w-12 h-12 text-teal-600" />
                     </div>
                 </div>
-                <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Tell Your Story</h2>
+                <h2 className="text-4xl font-bold text-gray-900 mb-4 tracking-tight">Tell Your Story</h2>
                 <p className="text-gray-600 max-w-lg mb-12 text-lg leading-relaxed">
                     Transform your data-rich itinerary into a premium travel journal.
                     Our AI editor crafts semantic matches and authoritative storytelling in seconds.
@@ -266,7 +266,7 @@ const BlogViewerPage: React.FC = () => {
                 />
                 <div className="absolute inset-x-0 bottom-0 z-20 pb-16 md:pb-24 px-6">
                     <div className="max-w-5xl mx-auto">
-                        <div className="flex items-center space-x-3 text-teal-300 text-xs font-black uppercase tracking-[0.2em] mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <div className="flex items-center space-x-3 text-teal-300 text-xs font-bold uppercase tracking-[0.2em] mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <span className="bg-teal-500/20 backdrop-blur-md px-3 py-1 rounded-full border border-teal-500/30">Premium Travel Journal</span>
                             <span className="opacity-50">•</span>
                             <span>{new Date(blog.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
@@ -305,7 +305,7 @@ const BlogViewerPage: React.FC = () => {
                     </button>
 
                     <article className="prose prose-xl prose-slate max-w-none 
-                        prose-headings:text-slate-900 prose-headings:font-black prose-headings:tracking-tight
+                        prose-headings:text-slate-900 prose-headings:font-bold prose-headings:tracking-tight
                         prose-h1:text-5xl prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-8 prose-h2:pb-4 prose-h2:border-b prose-h2:border-slate-100
                         prose-p:text-slate-600 prose-p:leading-[1.8] prose-p:text-lg
                         prose-blockquote:italic prose-blockquote:text-teal-900 prose-blockquote:bg-teal-50/50 prose-blockquote:border-teal-500 prose-blockquote:rounded-2xl prose-blockquote:p-8
@@ -319,11 +319,11 @@ const BlogViewerPage: React.FC = () => {
                                     <p className="mb-8 leading-[1.8] text-slate-600 text-lg last:mb-0" {...props} />
                                 ),
                                 h1: ({ node, ...props }) => (
-                                    <h1 className="text-4xl font-black text-slate-900 mt-16 mb-8 tracking-tight" {...props} />
+                                    <h1 className="text-4xl font-bold text-slate-900 mt-16 mb-8 tracking-tight" {...props} />
                                 ),
                                 h2: ({ node, ...props }) => (
                                     <h2 className="relative group flex items-center mt-20 mb-10 pt-8" {...props}>
-                                        <span className="absolute -left-8 opacity-0 group-hover:opacity-100 transition-all duration-300 text-teal-400 font-black text-xl translate-x-4 group-hover:translate-x-0">/</span>
+                                        <span className="absolute -left-8 opacity-0 group-hover:opacity-100 transition-all duration-300 text-teal-400 font-bold text-xl translate-x-4 group-hover:translate-x-0">/</span>
                                         <span className="text-slate-900 border-b-4 border-teal-500/10 pb-2">{props.children}</span>
                                     </h2>
                                 ),
@@ -370,7 +370,7 @@ const BlogViewerPage: React.FC = () => {
                                     <thead className="bg-slate-50 border-b border-slate-100" {...props} />
                                 ),
                                 th: ({ node, ...props }) => (
-                                    <th className="px-8 py-5 text-sm font-black uppercase tracking-wider text-slate-900" {...props} />
+                                    <th className="px-8 py-5 text-sm font-bold uppercase tracking-wider text-slate-900" {...props} />
                                 ),
                                 td: ({ node, ...props }) => (
                                     <td className="px-8 py-5 text-slate-600 border-b border-slate-50 last:border-0" {...props} />
@@ -384,7 +384,7 @@ const BlogViewerPage: React.FC = () => {
                     {/* Social Interaction Bar */}
                     <div className="mt-24 pt-10 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6 bg-slate-50/50 p-8 rounded-3xl">
                         <div>
-                            <p className="text-xl font-black text-slate-900 mb-1">Was this guide helpful?</p>
+                            <p className="text-xl font-bold text-slate-900 mb-1">Was this guide helpful?</p>
                             <p className="text-slate-500 font-medium">Share this journey with your fellow adventurers.</p>
                         </div>
                         <div className="flex items-center gap-4">
@@ -437,7 +437,7 @@ const BlogViewerPage: React.FC = () => {
 
                             <div className="relative z-10">
                                 <div className="flex items-center justify-between mb-10">
-                                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Curated Matches</h3>
+                                    <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Curated Matches</h3>
                                     <div className="bg-teal-500 text-white p-2 rounded-xl shadow-lg shadow-teal-500/40">
                                         <Tag className="w-4 h-4" />
                                     </div>
@@ -462,7 +462,7 @@ const BlogViewerPage: React.FC = () => {
                                         </p>
                                         <button
                                             onClick={() => navigate('/user/best-deals')}
-                                            className="w-full py-4 bg-white text-slate-900 border border-slate-200 rounded-xl font-black text-sm hover:bg-slate-50 transition-colors"
+                                            className="w-full py-4 bg-white text-slate-900 border border-slate-200 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors"
                                         >
                                             Explore Everything
                                         </button>
@@ -479,7 +479,7 @@ const BlogViewerPage: React.FC = () => {
                         {/* SEO / Info Card */}
                         <div className="p-8 bg-gray-900 rounded-[2.5rem] text-white overflow-hidden relative group">
                             <div className="absolute bottom-0 right-0 w-48 h-48 bg-teal-500/20 rounded-full -mb-24 -mr-24 blur-3xl group-hover:bg-teal-500/30 transition-all duration-700" />
-                            <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-4 text-teal-400">Authority Note</h4>
+                            <h4 className="text-sm font-bold uppercase tracking-[0.2em] mb-4 text-teal-400">Authority Note</h4>
                             <p className="text-gray-400 text-sm leading-relaxed relative z-10">
                                 This guide is curated using TraivoWriter's semantic engine. All linked deal matches are based on geographic proximity and thematic alignment.
                             </p>

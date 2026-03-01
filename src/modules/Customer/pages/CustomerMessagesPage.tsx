@@ -297,7 +297,7 @@ const CustomerMessagesPage: React.FC = () => {
                                         </div>
                                     ))
                                 )}
-                                {/* Mobile Banner - Horizontal at bottom of users list (Inside scroll) */}
+                                {/* Mobile Banner - Horizontal at bottom of users list */}
                                 <div className="md:hidden p-2 flex justify-center bg-gray-50/50 mt-2">
                                     <AffiliateBanner bannerType="horizontal-banner" source="viator" className="w-full max-w-[320px]" />
                                 </div>
@@ -368,7 +368,7 @@ const CustomerMessagesPage: React.FC = () => {
                                                 )}
                                                 {msg.text && <p className="whitespace-pre-wrap">{msg.text}</p>}
                                             </div>
-                                            <div className={`text-[11px] font-medium mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${msg.sender === 'customer' ? 'text-gray-400 mr-1' : 'text-gray-400 ml-1'}`}>
+                                            <div className={`text-[10px] font-medium mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${msg.sender === 'customer' ? 'text-gray-400 mr-1' : 'text-gray-400 ml-1'}`}>
                                                 {msg.time}
                                             </div>
                                         </div>

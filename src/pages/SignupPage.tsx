@@ -24,7 +24,7 @@ const SignupPage: React.FC = () => {
       await signup(name, email, password);
       setSuccess('Success! Let\'s personalize your experience.');
       setTimeout(() => {
-        navigate('/personalize');
+        navigate('/user/wanderchat');
       }, 2000);
     } catch (err) {
       setError('Failed to create an account. The email may already be in use.');

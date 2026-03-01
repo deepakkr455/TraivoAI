@@ -26,65 +26,141 @@ const PolicyPage: React.FC = () => {
                     <section className="mb-10">
                         <h2 className="text-2xl font-semibold mb-4 text-gray-900">1. Introduction</h2>
                         <p className="text-gray-600 leading-relaxed">
-                            Welcome to Traivo AI ("we," "our," or "us"). By accessing or using our AI-powered travel planning platform, you agree to be bound by these Terms of Use and our Privacy Policy. Our services leverage advanced Artificial Intelligence (AI) to provide personalized travel recommendations, itinerary planning, and real-time assistance.
+                            Welcome to Traivo AI ("we," "our," or "us"). By accessing or using our AI-powered travel planning platform (the "Platform"), you agree to be bound by these Terms of Use and our Privacy Policy. Traivo AI provides AI-driven travel recommendations, itinerary planning, and related services to customers and travel agents.
                         </p>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">2. AI Usage & Disclaimer</h2>
-                        <div className="bg-blue-50 p-6 rounded-xl mb-4 border border-blue-100">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">2. Scope of Traivo AI</h2>
+                        <p className="text-gray-600 leading-relaxed mb-4">
+                            Traivo AI is a Software-as-a-Service (SaaS) marketplace designed to support two primary user groups:
+                        </p>
+                        <ul className="list-disc pl-5 space-y-2 text-gray-600 mb-4">
+                            <li><strong>Customers</strong> — individuals who use the Platform to plan, research, manage, or book travel for personal or business purposes.</li>
+                            <li><strong>Travel Agents & Service Providers</strong> — businesses or individuals who list travel packages, services, or offers on the Platform under subscription plans.</li>
+                        </ul>
+                        <p className="text-gray-600 leading-relaxed">
+                            The Platform facilitates connections between customers and travel agents but does not act as a principal travel agent or hold customer payments on behalf of agents. Users must use the Platform for lawful, intended travel purposes.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">3. AI Usage & Disclaimer</h2>
+                        <div className="bg-blue-50 p-6 rounded-xl mb-6 border border-blue-100">
                             <h3 className="font-bold text-blue-800 mb-2">How We Use AI</h3>
                             <p className="text-blue-700 text-sm">
-                                Traivo AI utilizes advanced Generative AI models to synthesize travel data, forecast weather, and generate creative content.
+                                Traivo AI leverages advanced generative AI and machine learning models provided by third-party providers (e.g., OpenRouter AI, Gemini, OpenAI, Tavily etc) to synthesize travel data, forecast weather, estimate prices, and generate creative content.
                             </p>
                         </div>
-                        <ul className="list-disc pl-5 space-y-3 text-gray-600">
-                            <li><strong>Accuracy:</strong> While we strive for precision, AI-generated content (itineraries, weather forecasts, prices) is probabilistic and may occasionally be inaccurate. Always verify critical travel details (visa requirements, flight times, health advisories) with official sources.</li>
-                            <li><strong>Decision Making:</strong> Traivo AI is a planning tool, not a travel agent. We are not liable for any financial loss, missed connections, or dissatisfaction resulting from reliance on AI-generated suggestions.</li>
-                            <li><strong>Unpredictability:</strong> In rare cases, AI may produce "hallucinations" (plausible-sounding but false information). We implement strict safeguards, but users should exercise judgment.</li>
+                        <ul className="list-disc pl-5 space-y-4 text-gray-600">
+                            <li><strong>Accuracy & Probabilistic Nature:</strong> While we strive for precision, AI-generated content is probabilistic and may occasionally be inaccurate. Always verify critical travel details with primary or official sources.</li>
+                            <li><strong>Decision-Making & Liability:</strong> Traivo AI is a planning and recommendation tool — not a licensed travel agent. We are not responsible for financial loss or dissatisfaction resulting from reliance on AI-generated suggestions.</li>
+                            <li><strong>Unpredictability & Hallucinations:</strong> In rare cases, AI may produce "hallucinations" (plausible-sounding but incorrect results). We implement safeguards, but users should exercise judgment.</li>
                         </ul>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">3. Data Privacy & Security</h2>
-                        <p className="text-gray-600 mb-4">
-                            Your data privacy is our top priority. We implement robust security measures to protect your information within our AI ecosystem.
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">4. Data Privacy & Security</h2>
+                        <p className="text-gray-600 mb-6">
+                            Your data privacy and security are top priorities. We deploy robust technical, administrative, and organizational measures to protect your information.
                         </p>
+
                         <div className="bg-amber-50 p-6 rounded-xl mb-6 border border-amber-100">
-                            <h3 className="font-bold text-amber-800 mb-2">Important Security Notice</h3>
-                            <ul className="list-disc pl-5 space-y-3 text-amber-700 text-sm">
-                                <li><strong>No Fine-Tuning:</strong> We do <strong>not</strong> use your personal data, chat history, or trip details to fine-tune or train any AI models. Your data remains your own.</li>
-                                <li><strong>Data Security:</strong> We implement high-encryption standards and secure data handling procedures to ensure your information is protected during every interaction.</li>
-                            </ul>
+                            <h3 className="font-bold text-amber-800 mb-2">No Fine-Tuning on Your PII</h3>
+                            <p className="text-amber-700 text-sm">
+                                Traivo AI does <strong>NOT</strong> use your personal data, chat history, or trip details to fine-tune or train public foundation models. Personal Identifiable Information (PII) is not sold for commercial purposes.
+                            </p>
                         </div>
-                        <ul className="list-disc pl-5 space-y-3 text-gray-600">
-                            <li><strong>Conversation Data:</strong> Your chats with Traivo AI are stored securely to provide context for your session and allow you to revisit your history. We may analyze anonymized query data internally to improve our service quality.</li>
-                            <li><strong>Personal Information:</strong> We do not sell your personal data. Trip details are shared with third-party booking partners (e.g., Skyscanner, Booking.com) <em>only</em> when you explicitly interact with a booking or affiliate link.</li>
-                            <li><strong>Model Training:</strong> Your personal identifiable information (PII) is <strong>not</strong> used to train public foundation models.</li>
-                        </ul>
+
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Personal Data & Usage</h3>
+                                <ul className="list-disc pl-5 space-y-2 text-gray-600">
+                                    <li><strong>Conversation Data:</strong> Chats are stored securely to provide session context. We may analyze anonymized query data to improve service quality.</li>
+                                    <li><strong>Minimal Retention:</strong> We retain minimum necessary information for identity and authenticity checks only.</li>
+                                    <li><strong>Third-Party Integrations:</strong> Affiliate widgets share trip intent only when you explicitly interact with affiliate links.</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Third-Party Models & Processors</h3>
+                                <p className="text-gray-600 text-sm">
+                                    We use third-party AI service providers (e.g., OpenRouter AI, Gemini, OpenAI, Tavily etc) as processors. They may process inputs to generate outputs; please provide personal information cautiously.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Data Security</h3>
+                                <p className="text-gray-600 text-sm">
+                                    We implement industry-standard encryption for data in transit and at rest. While we act to secure data, no system is entirely risk-free.
+                                </p>
+                            </div>
+                        </div>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">4. User Responsibilities</h2>
-                        <p className="text-gray-600">You agree strictly NOT to use Traivo AI for:</p>
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">5. User Accounts, Agents & Verification</h2>
+                        <div className="space-y-4 text-gray-600">
+                            <p><strong>Accounts & Roles:</strong> Users may register as Customers or Travel Agents. Travel Agents may list packages and services under subscription plans.</p>
+                            <p><strong>Agent Verification:</strong> Travel Agents are subject to verification based on internet presence and minimum KYC checks. Verification reduces, but does not eliminate, risk; Traivo AI does not guarantee the accuracy or reliability of any third-party agent.</p>
+                            <p><strong>Payments & Transactions:</strong> Traivo AI operates as a marketplace platform and does NOT hold customers' payments on behalf of agents by default. Transaction terms are agreed between the parties.</p>
+                        </div>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">6. User Responsibilities & Acceptable Use</h2>
+                        <p className="text-gray-600">You agree NOT to use Traivo AI to:</p>
                         <ul className="list-disc pl-5 space-y-2 mt-2 text-gray-600">
-                            <li>Generating illegal, harmful, or fraudulent content.</li>
-                            <li>Attempting to "jailbreak" or manipulate the AI to violate safety policies.</li>
-                            <li>Commercial scraping of our proprietary travel data or AI outputs.</li>
+                            <li>Generate illegal, harmful, or fraudulent content.</li>
+                            <li>Attempt to manipulate, jailbreak, or bypass safety policies.</li>
+                            <li>Perform commercial scraping of proprietary travel data or AI outputs.</li>
                         </ul>
-                    </section>
-
-                    <section className="mb-10">
-                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">5. Subscription & Payments</h2>
-                        <p className="text-gray-600">
-                            Premium features offer enhanced AI capabilities (unlimited queries, complex routing, advanced tools). Subscriptions are billed in advance. Refunds are handled on a case-by-case basis as per statutory rights.
+                        <p className="text-gray-600 mt-4 text-sm font-medium">
+                            Users are responsible for verifying travel information and ensuring compliance with applicable laws and travel regulations.
                         </p>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">6. Limitation of Liability</h2>
-                        <p className="text-gray-600">
-                            To the maximum extent permitted by law, Traivo AI shall not be liable for any indirect, incidental, special, or consequential damages arising out of or in connection with your use of the service.
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">7. Subscriptions, Billing & Refunds</h2>
+                        <p className="text-gray-600 leading-relaxed">
+                            Premium subscription plans provide enhanced AI capabilities (e.g., higher query limits, advanced routing, agent lead prioritization). Subscriptions are billed in advance. Refunds are processed on a case-by-case basis, subject to statutory consumer rights.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">8. Limitation of Liability & Indemnity</h2>
+                        <div className="space-y-4 text-gray-600">
+                            <p>To the maximum extent permitted by applicable law, Traivo AI and its affiliates will NOT be liable for any indirect, incidental, or consequential damages arising from use of the Platform.</p>
+                            <p>Traivo AI does NOT guarantee availability, accuracy, or completeness of listings. The Platform is provided on an "as-is" and "as-available" basis.</p>
+                            <p><strong>Indemnity:</strong> Users agree to indemnify and hold Traivo AI harmless against third-party claims arising from user conduct or breach of these Terms.</p>
+                        </div>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">9. Third-Party Links & Services</h2>
+                        <p className="text-gray-600 leading-relaxed">
+                            The Platform may contain links, widgets, or integrations with third-party services (booking partners, payment processors, map providers). These external services have their own terms and privacy policies; Traivo AI is not responsible for their practices.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">10. Changes to These Terms & Policy</h2>
+                        <p className="text-gray-600 leading-relaxed">
+                            We may update these Terms and Privacy Policy periodically. When significant changes occur, we will provide notice via the Platform. Continued use after changes indicates acceptance of the revised terms.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">11. Governing Law & Dispute Resolution</h2>
+                        <p className="text-gray-600 leading-relaxed">
+                            These Terms are governed by the laws of the jurisdiction in which Traivo AI is incorporated. Users agree to pursue good-faith resolution of disputes and may be required to submit to arbitration or competent courts where legally mandated.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold mb-4 text-gray-900">12. Contact & Support</h2>
+                        <p className="text-gray-600 leading-relaxed">
+                            If you have questions about these Terms or privacy practices, please contact TraivoAI at <strong>info@traivoai.com</strong> or through the Platform's Help & Support channels.
                         </p>
                     </section>
 

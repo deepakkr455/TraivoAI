@@ -225,8 +225,8 @@ const AffiliateSubscriptionPage: React.FC = () => {
                         email={user.email || ''}
                         phone={'9999999999'}
                         txnid={pendingPayment.txnid}
-                        surl={`${window.location.origin}/#/payment-status`}
-                        furl={`${window.location.origin}/#/payment-status`}
+                        surl={`${window.location.origin}/TraivoAI/payment-status`}
+                        furl={`${window.location.origin}/TraivoAI/payment-status`}
                         udf2={user.id}
                         udf3={pendingPayment.planName}
                         udf4="affiliate"
@@ -266,8 +266,8 @@ const AffiliateSubscriptionPage: React.FC = () => {
                                         }`}
                                 >
                                     {cycle.charAt(0).toUpperCase() + cycle.slice(1)}
-                                    {cycle === 'quarterly' && <span className="text-[10px] ml-1 text-teal-400 font-black">SAVE 10%</span>}
-                                    {cycle === 'yearly' && <span className="text-[10px] ml-1 text-teal-400 font-black">SAVE 20%</span>}
+                                    {cycle === 'quarterly' && <span className="text-[10px] ml-1 text-teal-400 font-bold">SAVE 10%</span>}
+                                    {cycle === 'yearly' && <span className="text-[10px] ml-1 text-teal-400 font-bold">SAVE 20%</span>}
                                 </button>
                             ))}
                         </div>
@@ -285,10 +285,10 @@ const AffiliateSubscriptionPage: React.FC = () => {
                                         className="relative p-8 bg-white border border-gray-200 rounded-3xl shadow-sm flex flex-col items-start justify-between min-h-[500px] hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
                                     >
                                         <div className="w-full">
-                                            <h3 className="text-sm font-black text-gray-500 uppercase tracking-widest mb-1">CUSTOM</h3>
+                                            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">CUSTOM</h3>
                                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight mb-8">ENTERPRISE TRAVEL</p>
 
-                                            <h2 className="text-5xl font-black text-gray-900 tracking-tight mb-8">Talk</h2>
+                                            <h2 className="text-5xl font-bold text-gray-900 tracking-tight mb-8">Talk</h2>
 
                                             <div className="w-full h-px bg-gray-100 mb-8"></div>
 
@@ -298,7 +298,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
                                         </div>
 
                                         <button
-                                            className="mt-8 block w-full py-4 px-6 bg-gray-900 text-white rounded-2xl text-center font-black uppercase tracking-wider text-xs hover:bg-black transition-all transform active:scale-95"
+                                            className="mt-8 block w-full py-4 px-6 bg-gray-900 text-white rounded-2xl text-center font-bold uppercase tracking-wider text-xs hover:bg-black transition-all transform active:scale-95"
                                             onClick={() => window.location.href = 'mailto:sales@traivoai.com'}
                                         >
                                             CONTACT US
@@ -317,7 +317,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
                                 >
                                     {tier.name === 'pro' && !isActive && (
                                         <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10 w-full text-center">
-                                            <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 px-4 py-1.5 text-[10px] font-black tracking-widest uppercase text-white shadow-xl ring-4 ring-white">
+                                            <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 px-4 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white shadow-xl ring-4 ring-white">
                                                 <Sparkles className="w-3 h-3" /> Most Popular
                                             </span>
                                         </div>
@@ -325,7 +325,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
 
                                     {isActive && (
                                         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 w-full text-center">
-                                            <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-600 px-6 py-1.5 text-[10px] font-black tracking-widest uppercase text-white shadow-xl ring-4 ring-white">
+                                            <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-600 px-6 py-1.5 text-[10px] font-bold tracking-widest uppercase text-white shadow-xl ring-4 ring-white">
                                                 Current Plan
                                             </span>
                                         </div>
@@ -333,7 +333,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
 
                                     <div className="flex-1">
                                         <div className="mb-6">
-                                            <h3 className="text-base font-black text-gray-500 uppercase tracking-widest mb-1">{tier.name}</h3>
+                                            <h3 className="text-base font-bold text-gray-500 uppercase tracking-widest mb-1">{tier.name}</h3>
                                             <p className="text-gray-400 text-[10px] font-bold uppercase tracking-tight">
                                                 {tier.name === 'base' ? 'Casual Exploration' : 'Premium Growth'}
                                             </p>
@@ -341,7 +341,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
 
                                         <div className="mb-6">
                                             <div className="flex items-baseline gap-1">
-                                                <span className="text-4xl font-black text-gray-900 tracking-tight">
+                                                <span className="text-4xl font-bold text-gray-900 tracking-tight">
                                                     ₹{getPrice(tier)}
                                                 </span>
                                                 <span className="text-base font-bold text-gray-400">{getDurationLabel()}</span>
@@ -372,7 +372,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
                                     </div>
 
                                     <button
-                                        className={`mt-8 block w-full py-3 px-4 rounded-2xl text-center font-black uppercase tracking-wider text-xs transition-all transform active:scale-95 ${isActive
+                                        className={`mt-8 block w-full py-3 px-4 rounded-2xl text-center font-bold uppercase tracking-wider text-xs transition-all transform active:scale-95 ${isActive
                                             ? 'bg-gray-100 text-gray-400 cursor-default shadow-none pointer-events-none'
                                             : 'bg-gray-900 text-white hover:bg-black shadow-lg shadow-gray-900/20'
                                             } ${updating ? 'opacity-50 cursor-wait' : ''}`}

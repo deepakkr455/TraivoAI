@@ -45,5 +45,5 @@ export const THEME_COLORS = [
 export const FONTS = [
     { id: 'sans', name: 'Modern Sans', class: 'font-sans' },
     { id: 'serif', name: 'Elegant Serif', class: 'font-serif' },
-    { id: 'display', name: 'Bold Display', class: 'font-black' },
+    { id: 'display', name: 'Bold Display', class: 'font-bold' },
 ];

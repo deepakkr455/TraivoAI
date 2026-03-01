@@ -24,6 +24,36 @@ export const WeatherPanel: React.FC<WeatherPanelProps> = ({
   isExpanded = false,
   onToggleExpand
 }) => {
+  const handleShare = async () => {
+    if (!data) return;
+
+    const shareText = `🌤️ Weather Report for ${data.location}\n` +
+      `Current: ${data.current.temp}°C, ${data.current.condition}\n` +
+      `High/Low: ${data.current.high}°C / ${data.current.low}°C\n` +
+      `Outlook: ${data.projection}\n\n` +
+      `Powered by TraivoAI`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Weather in ${data.location}`,
+          text: shareText,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log('Share failed or cancelled:', err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${shareText}\n${window.location.href}`);
+        alert('Weather report copied to clipboard!');
+      } catch (err) {
+        console.error('Clipboard failed:', err);
+        alert('Could not copy to clipboard.');
+      }
+    }
+  };
+
   return (
     <div className="h-full w-full bg-gradient-to-br from-slate-50 via-white to-slate-50 text-gray-800 flex flex-col relative overflow-hidden">
 
@@ -51,6 +81,7 @@ export const WeatherPanel: React.FC<WeatherPanelProps> = ({
           </button>
         )}
         <button
+          onClick={handleShare}
           className="bg-teal-500 hover:bg-teal-600 text-white rounded-full p-2 shadow-lg transition-colors border border-teal-400"
           title="Share Forecast"
         >
@@ -102,7 +133,7 @@ export const WeatherPanel: React.FC<WeatherPanelProps> = ({
                     <p className="text-amber-900 text-sm leading-relaxed font-medium">
                       {data.caution}
                     </p>
-                    <p className="mt-4 text-[11px] text-amber-600/80 italic">
+                    <p className="mt-4 text-[10px] text-amber-600/80 italic">
                       ⚠️ <strong>AI-Generated Insights:</strong> This report is synthesized from global data using advanced AI. For safety-critical decisions, we recommend cross-verifying these details with official meteorological services.
                     </p>
                   </div>

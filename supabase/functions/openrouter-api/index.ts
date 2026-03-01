@@ -165,8 +165,8 @@ Deno.serve(async (req) => {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${openRouterApiKey}`,
-                "HTTP-Referer": "https://wanderhub.ai",
-                "X-Title": "WanderHub",
+                "HTTP-Referer": "https://traivoai.com",
+                "X-Title": "Traivo AI",
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({

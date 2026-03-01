@@ -2,6 +2,8 @@
 import { supabase } from '../../../services/supabaseClient';
 import { CustomerInquiry } from '../../../types';
 import { trackProductInteraction } from '../../AgentAffiliate/services/supabaseService';
+import { getSecureImageUrl } from './geminiService';
+import logger from '../../../utils/logger';
 
 export const messageService = {
 
@@ -17,17 +19,15 @@ export const messageService = {
 
             if (uploadError) throw uploadError;
 
-            const { data } = supabase.storage
-                .from('chat-attachments')
-                .getPublicUrl(filePath);
+            const secureUrl = await getSecureImageUrl('chat-attachments', filePath);
 
             let type: 'image' | 'video' | 'pdf' = 'image';
             if (file.type.includes('video')) type = 'video';
             if (file.type.includes('pdf')) type = 'pdf';
 
-            return { url: data.publicUrl, type };
+            return { url: secureUrl || '', type };
         } catch (error) {
-            console.error("Error uploading media:", error);
+            logger.error("Error uploading media:", error);
             return null;
         }
     },
@@ -80,11 +80,11 @@ export const messageService = {
             // Track inquiry interaction
             trackProductInteraction(productId, 'inquiry');
 
-            console.log("DEBUG: Created new inquiry:", newInquiry.id, "for Product:", productId, "Trip:", tripId);
+            logger.info("DEBUG: Created new inquiry:", newInquiry.id, "for Product:", productId, "Trip:", tripId);
             return newInquiry.id;
 
         } catch (error) {
-            console.error("Error in checkOrCreateInquiry:", error);
+            logger.error("Error in checkOrCreateInquiry:", error);
             return null;
         }
     },
@@ -94,7 +94,7 @@ export const messageService = {
      */
     async getCustomerInquiries(customerId: string): Promise<CustomerInquiry[]> {
         try {
-            console.log("DEBUG: getCustomerInquiries for customerId:", customerId);
+            logger.info("DEBUG: getCustomerInquiries for customerId:", customerId);
             const { data, error } = await supabase
                 .from('customer_inquiries')
                 .select(`
@@ -107,7 +107,7 @@ export const messageService = {
                 .order('updated_at', { ascending: false });
 
             if (error) {
-                console.error("DEBUG: Supabase error in getCustomerInquiries:", JSON.stringify(error, null, 2));
+                logger.error("DEBUG: Supabase error in getCustomerInquiries:", JSON.stringify(error, null, 2));
                 return [];
             }
 
@@ -148,7 +148,7 @@ export const messageService = {
                 };
             });
         } catch (err) {
-            console.error("DEBUG: Catch error in getCustomerInquiries:", err);
+            logger.error("DEBUG: Catch error in getCustomerInquiries:", err);
             return [];
         }
     },
@@ -192,7 +192,7 @@ export const messageService = {
 
             return true;
         } catch (error) {
-            console.error("Error sending message:", error);
+            logger.error("Error sending message:", error);
             return false;
         }
     },
@@ -202,7 +202,7 @@ export const messageService = {
      */
     async getAgentInquiries(agentId: string): Promise<CustomerInquiry[]> {
         try {
-            console.log("DEBUG: getAgentInquiries for agentId:", agentId);
+            logger.info("DEBUG: getAgentInquiries for agentId:", agentId);
             const { data, error } = await supabase
                 .from('customer_inquiries')
                 .select(`
@@ -215,14 +215,14 @@ export const messageService = {
                 .order('updated_at', { ascending: false });
 
             if (error) {
-                console.error("DEBUG: Supabase error in getAgentInquiries:", JSON.stringify(error, null, 2));
+                logger.error("DEBUG: Supabase error in getAgentInquiries:", JSON.stringify(error, null, 2));
                 return [];
             }
 
             if (!data) return [];
 
             // DEBUG LOGGING
-            console.log("DEBUG: getAgentInquiries Raw Data Sample:", data.length > 0 ? JSON.stringify(data[0], null, 2) : "No Data");
+            logger.info("DEBUG: getAgentInquiries Raw Data Sample:", data.length > 0 ? JSON.stringify(data[0], null, 2) : "No Data");
 
             return data.map((d: any) => {
                 let tripTitle = "Trip Plan";
@@ -259,7 +259,7 @@ export const messageService = {
                 };
             });
         } catch (err) {
-            console.error("DEBUG: Catch error in getAgentInquiries:", err);
+            logger.error("DEBUG: Catch error in getAgentInquiries:", err);
             return [];
         }
     }

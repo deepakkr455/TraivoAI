@@ -154,12 +154,12 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose })
                                 return (
                                     <div key={idx} className={`relative p-6 rounded-2xl border transition-all duration-300 ${isActive ? 'border-2 border-teal-500 ring-4 ring-teal-500/10 shadow-xl scale-105 z-10' : 'border-gray-200 dark:border-gray-700 shadow-sm'} ${isPro && !isActive ? 'bg-teal-50/10' : 'bg-white dark:bg-gray-800'} flex flex-col`}>
                                         {isPro && !isActive && (
-                                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-600 to-emerald-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center gap-1">
+                                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-600 to-emerald-500 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg flex items-center gap-1">
                                                 <Sparkles className="w-3 h-3" /> Recommended
                                             </div>
                                         )}
                                         {isActive && (
-                                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-teal-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
+                                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-teal-600 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">
                                                 Current Plan
                                             </div>
                                         )}
@@ -179,7 +179,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose })
                                         <button
                                             onClick={() => handleUpgrade(tier)}
                                             disabled={isActive || updating}
-                                            className={`w-full py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all ${isActive ? 'bg-gray-100 text-gray-400 cursor-default' : 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:opacity-90 shadow-lg active:scale-95'} ${updating ? 'opacity-50' : ''}`}
+                                            className={`w-full py-3 rounded-xl font-bold uppercase text-xs tracking-widest transition-all ${isActive ? 'bg-gray-100 text-gray-400 cursor-default' : 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:opacity-90 shadow-lg active:scale-95'} ${updating ? 'opacity-50' : ''}`}
                                         >
                                             {updating ? 'Processing...' : (isActive ? 'Active' : 'Upgrade Now')}
                                         </button>

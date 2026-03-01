@@ -129,10 +129,10 @@ const PaymentStatusPage: React.FC = () => {
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">Payment Successful</h2>
                         <div className="bg-gray-50 p-4 rounded-xl mb-6 space-y-2">
                             <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">Merchant ID</p>
-                            <p className="text-gray-800 font-mono font-black">WHub-{txnid}</p>
+                            <p className="text-gray-800 font-mono font-bold">WHub-{txnid}</p>
                             <div className="border-t border-gray-100 my-2"></div>
                             <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">Gateway Reference (PayU)</p>
-                            <p className="text-gray-800 font-mono font-black">{mihpayid || 'N/A'}</p>
+                            <p className="text-gray-800 font-mono font-bold">{mihpayid || 'N/A'}</p>
                         </div>
                         <div className="flex flex-col gap-3">
                             <button

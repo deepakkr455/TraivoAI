@@ -8,10 +8,11 @@ import { MessageBubble } from '../components/MessageBubble';
 import { AgentThought } from '../components/AgentThought';
 import { Message, TripPlanData, MessageContent, WeatherData, DayPlan } from '../../../types';
 import { orchestrateResponse } from '../services/geminiService';
+import logger from '../../../utils/logger';
 import TravelFlyerEditor from '../components/TravelFlyer/TravelFlyerEditor';
 import { generateTripPlanHtml } from '../services/htmlGenerator';
 import { tripStorageService } from '../services/tripStorage';
-import { X, Map, Search, ArrowUp, ArrowLeft, ChevronDown, Heart, ChevronLeft, ChevronRight, MessageSquare, Sparkles } from 'lucide-react';
+import { X, Map, Search, ArrowUp, ArrowLeft, ChevronDown, Heart, ChevronLeft, ChevronRight, MessageSquare, Sparkles, Download, Share2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { plansService } from '../services/plansService';
 import { proposalsService } from '../services/proposalsService';
@@ -98,8 +99,10 @@ const WanderChatPage: React.FC = () => {
     id: string;
     planData: TripPlanData;
   } | null>(null);
-  const [activeRightPanel, setActiveRightPanel] = useState<'plan' | 'weather' | 'map' | null>(null);
+  const [activeRightPanel, setActiveRightPanel] = useState<'plan' | 'weather' | 'map' | 'image' | null>(null);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
+  const [activeImagePrompt, setActiveImagePrompt] = useState<string | null>(null);
   const [isWeatherExpanded, setIsWeatherExpanded] = useState(false);
   const [dayPlanData, setDayPlanData] = useState<DayPlan | null>(null);
   const [isMapExpanded, setIsMapExpanded] = useState(false);
@@ -134,7 +137,7 @@ const WanderChatPage: React.FC = () => {
   useEffect(() => {
     // Auto-trigger only if missing AND we haven't guarded it this component lifecycle
     if (user && personalization === null && !subscriptionLoading && !sessionOnboardingGuarded) {
-      console.log('🔄 Triggering mandatory onboarding modal');
+      logger.info('🔄 Triggering mandatory onboarding modal');
       setShowSmartWelcome(true);
     }
   }, [user, personalization, subscriptionLoading, sessionOnboardingGuarded]);
@@ -151,7 +154,7 @@ const WanderChatPage: React.FC = () => {
         setMyTripsCount(result.data.length);
       }
     } catch (error) {
-      console.error("Failed to load trip count", error);
+      logger.error("Failed to load trip count", error);
     }
   };
 
@@ -195,7 +198,7 @@ const WanderChatPage: React.FC = () => {
       setDisplayedProducts(sorted);
       setAffiliateListings(affiliatesData);
     } catch (err) {
-      console.error("Failed to load data", err);
+      logger.error("Failed to load data", err);
     } finally {
       setIsRecommendationsLoading(false);
     }
@@ -273,6 +276,12 @@ const WanderChatPage: React.FC = () => {
       setDayPlanData(result.dayPlan);
       setActiveRightPanel('map');
     }
+
+    if (result.imageUrl) {
+      setActiveImageUrl(result.imageUrl);
+      setActiveImagePrompt(result.text || "Your custom journey visual");
+      setActiveRightPanel('image');
+    }
   };
 
   const handleSend = useCallback(async (prompt: string) => {
@@ -308,7 +317,7 @@ const WanderChatPage: React.FC = () => {
           loadSessions();
         }
       } catch (err) {
-        console.error("Failed to lazily create session:", err);
+        logger.error("Failed to lazily create session:", err);
       }
     }
 
@@ -357,7 +366,7 @@ const WanderChatPage: React.FC = () => {
     try {
       await orchestrateResponse(prompt, user.id, activeSid, addAgentThought, handleResult, forcedTool, user.personalization);
     } catch (error) {
-      console.error(error);
+      logger.error("Orchestrate response error:", error);
       const errorMessage: Message = {
         id: 'error-' + uuidv4(),
         role: 'model',
@@ -399,6 +408,8 @@ const WanderChatPage: React.FC = () => {
     setActivePlanView(null);
     setWeatherData(null);
     setDayPlanData(null);
+    setActiveImageUrl(null);
+    setActiveImagePrompt(null);
     setIsWeatherExpanded(false);
     setIsMapExpanded(false);
   };
@@ -467,12 +478,12 @@ const WanderChatPage: React.FC = () => {
 
       // SEED PROPOSALS IMMEDIATELY
       if (user) {
-        console.log('🌱 Starting to seed proposals for plan:', result.data.id);
+        logger.info('🌱 Starting to seed proposals for plan:', result.data.id);
         const seedResult = await proposalsService.seedProposals(result.data.id, user.id, activePlanView.planData);
         if (seedResult.success) {
-          console.log('✅ Proposals seeded successfully');
+          logger.info('✅ Proposals seeded successfully');
         } else {
-          console.error('❌ Failed to seed proposals:', seedResult.error);
+          logger.error('❌ Failed to seed proposals:', seedResult.error);
         }
       }
 
@@ -546,11 +557,11 @@ const WanderChatPage: React.FC = () => {
 
   const handleNewChat = useCallback(async () => {
     if (!user) {
-      console.warn("HandleNewChat: User not found");
+      logger.warn("HandleNewChat: User not found");
       return;
     }
 
-    console.log("HandleNewChat: Starting...");
+    logger.info("HandleNewChat: Starting...");
     setIsLoading(true);
     try {
       const SESSION_TITLES = [
@@ -560,11 +571,11 @@ const WanderChatPage: React.FC = () => {
       ];
       const title = SESSION_TITLES[Math.floor(Math.random() * SESSION_TITLES.length)];
       const newId = uuidv4();
-      console.log("HandleNewChat: Creating session", newId, title);
+      logger.info("HandleNewChat: Creating session", newId, title);
       const newSession = await createCustomerChatSession(user.id, title, newId);
 
       if (newSession) {
-        console.log("HandleNewChat: Session created", newSession);
+        logger.info("HandleNewChat: Session created", newSession);
         setSessions(prev => [newSession, ...prev]);
         setCurrentActiveSessionId(newSession.id);
         setCurrentActiveSessionId(newSession.id);
@@ -606,14 +617,14 @@ const WanderChatPage: React.FC = () => {
   // Handle Smart Welcome completion
   const handleCompleteOnboarding = async (data: PersonalizationData) => {
     if (user) {
-      console.log('💾 Saving personalization data...', data);
+      logger.info('💾 Saving personalization data...', data);
       const success = await saveUserPersonalization(user.id, data);
       if (success) {
         setSessionOnboardingGuarded(true); // Don't re-trigger modal automatically even if sync is slow
         await refreshSession();
         setShowSmartWelcome(false);
       } else {
-        console.error('❌ Failed to save personalization');
+        logger.error('❌ Failed to save personalization');
         alert("We couldn't save your preferences. Please try again.");
       }
     }
@@ -746,6 +757,7 @@ const WanderChatPage: React.FC = () => {
                           value={chatInput}
                           onChange={setChatInput}
                           limitMessage={limitMessage}
+                          menuPosition="bottom"
                         />
 
 
@@ -865,6 +877,15 @@ const WanderChatPage: React.FC = () => {
                                   setActiveRightPanel('map');
                                 }
                               }}
+                              onImageClick={(url, prompt) => {
+                                if (activeRightPanel === 'image' && activeImageUrl === url) {
+                                  closeRightPanel();
+                                } else {
+                                  setActiveImageUrl(url);
+                                  setActiveImagePrompt(prompt || null);
+                                  setActiveRightPanel('image');
+                                }
+                              }}
                             />
                           </div>
                         ))
@@ -890,6 +911,7 @@ const WanderChatPage: React.FC = () => {
                         value={chatInput}
                         onChange={setChatInput}
                         limitMessage={limitMessage}
+                        menuPosition="top"
                       />
                       <div className="flex items-center justify-between mt-2">
                         <p className="text-xs text-white/60">TraivoAI can make mistakes.</p>
@@ -950,6 +972,43 @@ const WanderChatPage: React.FC = () => {
                   />
                 </div>
               )}
+              {activeRightPanel === 'image' && activeImageUrl && (
+                <div className="w-full lg:w-1/2 bg-white relative border-l border-gray-200 animate-slideInRight h-full overflow-hidden flex items-center justify-center">
+                  {/* Floating Action Buttons */}
+                  <div className="absolute top-6 right-6 z-20 flex flex-col gap-3">
+                    <button
+                      onClick={closeRightPanel}
+                      className="bg-gray-100/80 hover:bg-gray-200/80 backdrop-blur-md rounded-full p-3 shadow-xl transition-all border border-gray-200 group"
+                      title="Close"
+                    >
+                      <X className="w-6 h-6 text-gray-700 group-hover:scale-110 transition-transform" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = activeImageUrl;
+                        link.download = `traivo-social-${Date.now()}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                      className="bg-teal-500 hover:bg-teal-600 rounded-full p-3 shadow-xl transition-all border border-teal-400 group"
+                      title="Download Image"
+                    >
+                      <Download className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                    </button>
+                  </div>
+
+                  {/* Centered Image (No Padding) */}
+                  <div className="w-full h-full flex items-center justify-center overflow-hidden">
+                    <img
+                      src={activeImageUrl}
+                      alt="Social Media Preview"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1005,6 +1064,17 @@ const WanderChatPage: React.FC = () => {
                   </p>
                 </div>
 
+                {/* Dynamic Banner - Moved here for better visibility */}
+                {!showLikedOnly && (
+                  <div className="flex justify-center mb-12">
+                    <AffiliateBanner
+                      bannerType="horizontal-banner"
+                      source="viator"
+                      className="w-full max-w-[320px]"
+                    />
+                  </div>
+                )}
+
                 {isRecommendationsLoading ? (
                   <div className="flex justify-center items-center h-64">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500" />
@@ -1038,11 +1108,6 @@ const WanderChatPage: React.FC = () => {
                   </div>
                 )}
               </div>
-
-              {/* Dynamic Banner */}
-              {!showLikedOnly && (
-                <AffiliateBanner bannerType="horizontal-banner" source="viator" className="max-w-7xl mx-auto px-4" />
-              )}
 
               {/* AFFILIATE LISTINGS SECTION */}
               {!showLikedOnly && affiliateListings.length > 0 && (
@@ -1098,6 +1163,7 @@ const WanderChatPage: React.FC = () => {
           onComplete={handleCompleteOnboarding}
           onSkip={() => !personalization ? null : setShowSmartWelcome(false)}
           isEditing={!!personalization}
+          initialData={personalization}
         />
       )}
 

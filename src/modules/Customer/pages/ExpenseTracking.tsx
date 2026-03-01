@@ -406,7 +406,7 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
                 title="Back"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span className="text-[10px] font-black uppercase tracking-widest md:hidden">Back</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest md:hidden">Back</span>
               </button>
 
               <div className="text-center w-full px-2">
@@ -442,7 +442,7 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
                 <div className="bg-gradient-to-r from-purple-50/50 to-pink-50/50 px-8 py-6 border-b border-gray-50/50">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                      <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                         <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                         Report <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Expenses</span>
                       </h2>
@@ -450,7 +450,7 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
                     </div>
                     <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-purple-200/50 shadow-sm">
                       <Sparkles className="w-4 h-4 text-purple-600" />
-                      <span className="text-xs font-black text-gray-700 uppercase tracking-wider">AI</span>
+                      <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">AI</span>
                     </div>
                   </div>
                 </div>
@@ -478,7 +478,7 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
                             }`}
                         >
                           {!isCurrentUser && !isSystem && (
-                            <p className="text-xs font-black uppercase tracking-wider mb-2 text-gray-500">
+                            <p className="text-xs font-bold uppercase tracking-wider mb-2 text-gray-500">
                               {msg.userName}
                             </p>
                           )}
@@ -543,26 +543,26 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
               {/* Right Column - Expense Summary */}
               <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-[calc(100vh-280px)] min-h-[600px]">
                 <div className="bg-gradient-to-r from-teal-50/50 to-blue-50/50 px-8 py-6 border-b border-gray-50/50">
-                  <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                  <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                     <Calculator className="w-5 h-5 md:w-6 md:h-6 text-teal-600" />
                     Expense <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600">Summary</span>
                   </h2>
                   <div className="grid grid-cols-3 gap-4 mt-6">
                     <div className="text-center">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Expected</p>
-                      <p className="text-lg font-black text-gray-900 mt-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Expected</p>
+                      <p className="text-lg font-bold text-gray-900 mt-1">
                         ₹{calculateTotalExpected().toFixed(2)}
                       </p>
                     </div>
                     <div className="text-center">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Actual</p>
-                      <p className="text-lg font-black text-teal-600 mt-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Actual</p>
+                      <p className="text-lg font-bold text-teal-600 mt-1">
                         ₹{calculateTotal().toFixed(2)}
                       </p>
                     </div>
                     <div className="text-center">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Difference</p>
-                      <p className={`text-lg font-black mt-1 ${calculateTotal() > calculateTotalExpected()
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Difference</p>
+                      <p className={`text-lg font-bold mt-1 ${calculateTotal() > calculateTotalExpected()
                         ? 'text-red-600'
                         : 'text-green-600'
                         }`}>
@@ -587,16 +587,16 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-black text-gray-900 text-base">
+                            <h3 className="font-bold text-gray-900 text-base">
                               {member.name}
                               {member.id === currentUserId && (
-                                <span className="ml-2 text-xs bg-teal-600 text-white px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider">
+                                <span className="ml-2 text-xs bg-teal-600 text-white px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
                                   You
                                 </span>
                               )}
                             </h3>
                           </div>
-                          <p className="text-[10px] font-black text-teal-600 uppercase tracking-wider block mt-1">
+                          <p className="text-[10px] font-bold text-teal-600 uppercase tracking-wider block mt-1">
                             Expected Budget: ₹{member.expectedAmount.toFixed(2)}
                           </p>
                         </div>
@@ -627,7 +627,7 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
                             </>
                           ) : (
                             <>
-                              <span className={`text-xl font-black ${member.actualAmount > member.expectedAmount
+                              <span className={`text-xl font-bold ${member.actualAmount > member.expectedAmount
                                 ? 'text-red-600'
                                 : member.actualAmount === member.expectedAmount
                                   ? 'text-green-600'
@@ -677,10 +677,10 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <TrendingUp className="w-6 h-6 text-white" />
-                      <span className="text-lg font-black text-white uppercase tracking-wider">Total</span>
+                      <span className="text-lg font-bold text-white uppercase tracking-wider">Total</span>
                     </div>
                     <div className="text-right">
-                      <p className="text-3xl font-black text-white">
+                      <p className="text-3xl font-bold text-white">
                         ₹{calculateTotal().toFixed(2)}
                       </p>
                       <p className="text-xs text-white/80 mt-1 font-medium">
@@ -698,7 +698,7 @@ export const ExpenseTracking: React.FC<ExpenseTrackingProps> = ({
                 <AlertCircle className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm font-black uppercase tracking-widest leading-none mb-1 text-blue-900">
+                <p className="text-sm font-bold uppercase tracking-widest leading-none mb-1 text-blue-900">
                   AI-Powered Expense Tracking
                 </p>
                 <p className="text-xs font-medium text-blue-700/80">

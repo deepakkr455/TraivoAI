@@ -1,4 +1,5 @@
 import { supabase } from '../../../services/supabaseClient';
+import logger from '../../../utils/logger';
 
 
 export interface TripMember {
@@ -42,7 +43,7 @@ export const conclusionService = {
                 .maybeSingle();
 
             if (error) {
-                console.error('Error fetching conclusion:', error);
+                logger.error('Error fetching conclusion:', error);
                 return { success: false, error: error.message };
             }
 
@@ -62,7 +63,7 @@ export const conclusionService = {
                 }
             };
         } catch (error) {
-            console.error('Exception fetching conclusion:', error);
+            logger.error('Exception fetching conclusion:', error);
             return { success: false, error: 'Failed to fetch conclusion' };
         }
     },
@@ -90,13 +91,13 @@ export const conclusionService = {
                 .upsert(dbData, { onConflict: 'trip_id' });
 
             if (error) {
-                console.error('Error saving conclusion:', error);
+                logger.error('Error saving conclusion:', error);
                 return { success: false, error: error.message };
             }
 
             return { success: true };
         } catch (error) {
-            console.error('Exception saving conclusion:', error);
+            logger.error('Exception saving conclusion:', error);
             return { success: false, error: 'Failed to save conclusion' };
         }
     },
@@ -119,13 +120,13 @@ export const conclusionService = {
                 }, { onConflict: 'trip_id, user_id' }); // Update if exists
 
             if (error) {
-                console.error('Error submitting feedback:', error);
+                logger.error('Error submitting feedback:', error);
                 return { success: false, error: error.message };
             }
 
             return { success: true };
         } catch (error) {
-            console.error('Exception submitting feedback:', error);
+            logger.error('Exception submitting feedback:', error);
             return { success: false, error: 'Failed to submit feedback' };
         }
     },
@@ -141,13 +142,13 @@ export const conclusionService = {
                 .order('created_at', { ascending: false });
 
             if (error) {
-                console.error('Error fetching feedback:', error);
+                logger.error('Error fetching feedback:', error);
                 return { success: false, error: error.message };
             }
 
             return { success: true, data: data || [] };
         } catch (error) {
-            console.error('Exception fetching feedback:', error);
+            logger.error('Exception fetching feedback:', error);
             return { success: false, error: 'Failed to fetch feedback' };
         }
     },
@@ -159,23 +160,23 @@ export const conclusionService = {
         try {
             if (!supabase) throw new Error("Supabase client not initialized");
 
-            console.log("Invoking send-expense-summary for trip:", tripId);
+            logger.info("Invoking send-expense-summary for trip:", tripId);
             const { data, error } = await supabase.functions.invoke('send-expense-summary', {
                 body: { trip_id: tripId }
             });
 
             if (error) {
-                console.error("Error invoking edge function:", error);
+                logger.error("Error invoking edge function:", error);
                 // Don't fail the UI flow just because email failed, but log it.
                 // Or return error to show user.
                 return { success: false, error: error.message };
             }
 
-            console.log("Email function response:", data);
+            logger.info("Email function response:", data);
             return { success: true };
 
         } catch (err) {
-            console.error("Exception triggering email:", err);
+            logger.error("Exception triggering email:", err);
             return { success: false, error: 'Failed to trigger email' };
         }
     }

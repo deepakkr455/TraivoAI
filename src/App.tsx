@@ -1,6 +1,7 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import logger from './utils/logger';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './hooks/useAuth';
 
@@ -44,7 +45,6 @@ import PolicyPage from './modules/Customer/pages/PolicyPage';
 import ContactPage from './modules/Customer/pages/ContactPage';
 import AffiliatesPage from './modules/Customer/pages/AffiliatesPage';
 import PaymentStatusPage from './pages/PaymentStatusPage';
-import TravelPersonalizationPage from './modules/Customer/pages/TravelPersonalizationPage';
 import AboutUsPage from './modules/Customer/pages/AboutUsPage';
 import supabase from './services/supabaseClient';
 import { useNavigate } from 'react-router-dom';
@@ -58,15 +58,15 @@ const AppContent: React.FC = () => {
         if (!supabase) return;
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            console.log("AppContent Auth event:", event);
+            logger.info("AppContent Auth event:", event);
             if (event === 'PASSWORD_RECOVERY') {
                 setProcessingAuth(false);
                 navigate('/reset-password');
             }
             if (event === 'SIGNED_IN' && session) {
                 setProcessingAuth(false);
-                const currentHash = window.location.hash;
-                if (currentHash === '' || currentHash === '#/' || currentHash.includes('login') || currentHash.includes('signup') || currentHash.includes('access_token')) {
+                const currentPath = window.location.pathname;
+                if (currentPath === '/TraivoAI' || currentPath === '/TraivoAI/' || currentPath.includes('login') || currentPath.includes('signup')) {
                     navigate('/user/wanderchat', { replace: true });
                 }
             }
@@ -76,7 +76,7 @@ const AppContent: React.FC = () => {
         const isAuthCallback = hash.includes('access_token=') && !hash.startsWith('#/');
 
         if (isAuthCallback) {
-            console.log("Auth callback detected, pausing routing...");
+            logger.info("Auth callback detected, pausing routing...");
             setProcessingAuth(true);
             const timeout = setTimeout(() => {
                 setProcessingAuth(false);
@@ -119,7 +119,6 @@ const AppContent: React.FC = () => {
                     <Route path="/signup" element={<SignupPage />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password" element={<ResetPasswordPage />} />
-                    <Route path="/personalize" element={<TravelPersonalizationPage />} />
                     <Route path="/" element={<Navigate to="/user/wanderchat" replace />} />
                     <Route path="/payment-status" element={<PaymentStatusPage />} />
 
@@ -181,9 +180,9 @@ const App: React.FC = () => {
     return (
         <AuthProvider>
             <SubscriptionProvider>
-                <HashRouter>
+                <BrowserRouter basename="/TraivoAI">
                     <AppContent />
-                </HashRouter>
+                </BrowserRouter>
             </SubscriptionProvider>
         </AuthProvider>
     );

@@ -1,6 +1,7 @@
 import { TripPlanData, Message, MessageContent, WeatherData, DayPlan } from '../../../types';
 import { ItineraryItem } from '../components/TravelFlyer/types';
 import { supabase } from '../../../services/supabaseClient';
+import logger from '../../../utils/logger';
 
 // OpenRouter models are now handled by the backend wanderchat-api Edge Function for security
 
@@ -77,6 +78,15 @@ const THOUGHTS = {
         "Painting a picture of your next adventure...",
         "Creating a stunning visual for your itinerary...",
         "Rendering the beauty of your destination..."
+    ],
+    SOCIAL_MEDIA: [
+        "Curating the perfect shot for your feed...",
+        "Generating social media magic for you...",
+        "Styling your travel highlights visually...",
+        "Creating a share-worthy travel visual...",
+        "Polishing your social media presence...",
+        "Designing your next viral travel post...",
+        "Capturing the aesthetic of your journey..."
     ]
 };
 
@@ -103,11 +113,51 @@ const callWanderChat = async (params: {
     });
 
     if (error) {
-        console.error("WanderChat Edge Function Error:", error);
+        logger.error("WanderChat Edge Function Error:", error);
         throw new Error(error.message || "Failed to call AI service");
     }
 
     return data;
+};
+
+/**
+ * Securely fetches an image from storage via a proxy and returns a local blob URL.
+ * This hides the original Supabase storage domain from the dev console.
+ */
+export const getSecureImageUrl = async (bucket: string, path: string): Promise<string | null> => {
+    if (!supabase) return null;
+    try {
+        const { data, error } = await supabase.functions.invoke('wanderchat-api', {
+            body: { action: 'proxy_image', bucket, path }
+        });
+
+        if (error) throw error;
+        if (!(data instanceof Blob)) {
+            // If it's not a blob, it might be a response object or already parsed
+            // But invoke usually returns the parsed body. 
+            // In our case, the edge function returns a binary Response.
+            // When using invoke, it might be handled differently depending on the client.
+            // Let's use a standard fetch if invoke doesn't handle binary well.
+        }
+
+        // Alternative if invoke doesn't give us the raw blob directly:
+        const session = await supabase.auth.getSession();
+        const response = await fetch(`${(supabase as any).functionsUrl}/wanderchat-api`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${session.data.session?.access_token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action: 'proxy_image', bucket, path })
+        });
+
+        if (!response.ok) throw new Error("Failed to proxy image");
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+    } catch (e) {
+        logger.error("Error generating secure image URL:", e);
+        return null;
+    }
 };
 
 /**
@@ -256,7 +306,7 @@ export const fetchHistory = async (userId: string, sessionId: string): Promise<M
         });
         return messages;
     } catch (error) {
-        console.error("Error fetching history:", error);
+        logger.error("Error fetching history:", error);
         return [];
     }
 };
@@ -306,7 +356,7 @@ const saveInteraction = async (
 
 
     } catch (error) {
-        console.error("Error saving interaction:", error);
+        logger.error("Error saving interaction:", error);
     }
 };
 
@@ -324,7 +374,7 @@ const trackDataOnlyUsage = async (userId: string, category: string, query: strin
             response_category: category,
         });
     } catch (e) {
-        console.error("Failed to track usage:", e);
+        logger.error("Failed to track usage:", e);
     }
 };
 
@@ -355,10 +405,10 @@ const uploadBase64Image = async (base64Data: string, fileName: string): Promise<
 
         if (error) throw error;
 
-        const { data: { publicUrl } } = supabase.storage.from('Itinerary_images').getPublicUrl(data.path);
-        return publicUrl;
+        // Return a secure local blob URL instead of the public Supabase URL
+        return await getSecureImageUrl('Itinerary_images', data.path);
     } catch (error) {
-        console.error("Error uploading base64 image:", error);
+        logger.error("Error uploading base64 image:", error);
         return null;
     }
 };
@@ -383,7 +433,8 @@ const handleTripPlan = async (args: any, messages: any[], addAgentThought: (thou
                 const assistantMsg = result.heroImage;
                 let extractedUrl = null;
                 if (assistantMsg.images && assistantMsg.images.length > 0) {
-                    extractedUrl = assistantMsg.images[0].url || assistantMsg.images[0].image_url?.url;
+                    const img = assistantMsg.images[0];
+                    extractedUrl = typeof img === 'string' ? img : (img.url || img.image_url?.url || img.b64_json);
                 } else if (typeof assistantMsg.content === 'string') {
                     const content = assistantMsg.content.trim();
                     if (content.startsWith('http') || content.startsWith('data:')) extractedUrl = content;
@@ -400,7 +451,7 @@ const handleTripPlan = async (args: any, messages: any[], addAgentThought: (thou
         }
         return { text: result.text || "Failed to generate plan." };
     } catch (e) {
-        console.error("Trip plan error:", e);
+        logger.error("Trip plan error:", e);
         return { text: "Sorry, I couldn't generate the trip plan. Let's try again." };
     }
 };
@@ -425,7 +476,7 @@ const handleDayPlanMap = async (args: any, messages: any[], addAgentThought: (th
         personalization,
         forcedTool: 'generate_day_plan'
     });
-    console.log("[WanderChat] Frontend Day Plan Received:", JSON.stringify(result.dayPlan, null, 2));
+    logger.info("[WanderChat] Frontend Day Plan Received:", JSON.stringify(result.dayPlan, null, 2));
     return { dayPlan: normalizeDayPlan(result.dayPlan) };
 };
 
@@ -449,21 +500,26 @@ export const orchestrateResponse = async (
         primaryCategory = 'TRIP_PLAN';
     } else if (forcedTool === 'generate_day_plan') {
         primaryCategory = 'DAY_PLAN';
+    } else if (forcedTool === 'generate_social_image') {
+        primaryCategory = 'SOCIAL_MEDIA';
     } else if (forcedTool === 'search_internet' || forcedTool === 'tavily_search') {
         primaryCategory = 'SEARCH';
     }
     // Priority 2: Keyword Matching if still GENERAL
     else if (lowPrompt.includes('weather') || lowPrompt.includes('forecast') || lowPrompt.includes('temperature') || lowPrompt.includes('climate') || lowPrompt.includes('rain') || lowPrompt.includes('snow') || lowPrompt.includes('sunny') || lowPrompt.includes('hot') || lowPrompt.includes('cold')) {
         primaryCategory = 'WEATHER';
+    } else if (lowPrompt.includes('social media') || lowPrompt.includes('instagram') || lowPrompt.includes('pinterest') || lowPrompt.includes('facebook') || lowPrompt.includes('post') || lowPrompt.includes('share') || lowPrompt.includes('aesthetic') || lowPrompt.includes('moody') || lowPrompt.includes('shot')) {
+        primaryCategory = 'SOCIAL_MEDIA';
     } else if (lowPrompt.includes('trip') || lowPrompt.includes('itinerary') || lowPrompt.includes('travel plan') || lowPrompt.includes('vacation') || lowPrompt.includes('holiday') || lowPrompt.includes('tour') || lowPrompt.includes('visit') || lowPrompt.includes('going to') || lowPrompt.includes('travel to')) {
         primaryCategory = 'TRIP_PLAN';
-    } else if (lowPrompt.includes('day') || lowPrompt.includes('schedule') || lowPrompt.includes('today') || lowPrompt.includes('daily') || lowPrompt.includes('morning') || lowPrompt.includes('afternoon') || lowPrompt.includes('evening')) {
+    }
+    else if (lowPrompt.includes('day') || lowPrompt.includes('schedule') || lowPrompt.includes('today') || lowPrompt.includes('daily') || lowPrompt.includes('morning') || lowPrompt.includes('afternoon') || lowPrompt.includes('evening')) {
         primaryCategory = 'DAY_PLAN';
     } else if (lowPrompt.includes('search') || lowPrompt.includes('find') || lowPrompt.includes('best') || lowPrompt.includes('hidden gem') || lowPrompt.includes('where to') || lowPrompt.includes('recommend') || lowPrompt.includes('top') || lowPrompt.includes('hotel') || lowPrompt.includes('flight') || lowPrompt.includes('deal') || lowPrompt.includes('cheap') || lowPrompt.includes('luxury')) {
         primaryCategory = 'SEARCH';
     }
 
-    console.log(`[Thinking] Detected Category: ${primaryCategory} for prompt: "${prompt}" (ForcedTool: ${forcedTool || 'none'})`);
+    logger.info(`[Thinking] Detected Category: ${primaryCategory} for prompt: "${prompt}" (ForcedTool: ${forcedTool || 'none'})`);
 
     // fallback rotation categories
     const categories: (keyof typeof THOUGHTS)[] = primaryCategory === 'GENERAL'
@@ -512,7 +568,7 @@ export const orchestrateResponse = async (
 
         clearInterval(interval); // Stop rotation
 
-        console.log("[WanderChat] orchestrateResponse RAW Result:", JSON.stringify(result, null, 2));
+        logger.info("[WanderChat] orchestrateResponse RAW Result:", JSON.stringify(result, null, 2));
 
         if (result.weather) {
             result.weather = normalizeWeatherData(result.weather, prompt);
@@ -562,10 +618,10 @@ export const fetchWeatherFromGemini = async (location: string): Promise<WeatherD
         }
 
         const normalized = normalizeWeatherData(parsedData, location);
-        console.log("Weather Normalized Data:", normalized);
+        logger.info("Weather Normalized Data:", normalized);
         return normalized;
     } catch (error) {
-        console.error("Weather parse error:", error);
+        logger.error("Weather parse error:", error);
         throw new Error("Failed to fetch weather data.");
     }
 };
@@ -588,7 +644,8 @@ export async function generateTravelImage(prompt: string, userId: string = ''): 
         let extractedUrl = null;
 
         if (assistantMsg.images && assistantMsg.images.length > 0) {
-            extractedUrl = assistantMsg.images[0].url || assistantMsg.images[0].image_url?.url;
+            const img = assistantMsg.images[0];
+            extractedUrl = typeof img === 'string' ? img : (img.url || img.image_url?.url || img.b64_json);
         } else if (typeof assistantMsg.content === 'string') {
             const content = assistantMsg.content.trim();
             if (content.startsWith('http') || content.startsWith('data:')) extractedUrl = content;
@@ -601,7 +658,7 @@ export async function generateTravelImage(prompt: string, userId: string = ''): 
 
         return extractedUrl;
     } catch (error) {
-        console.error("Flyer image generation failed:", error);
+        logger.error("Flyer image generation failed:", error);
         return null;
     }
 }
@@ -640,7 +697,7 @@ export async function parseItineraryWithAI(rawText: string, userId: string = '')
             suggestedSubtitle: data.suggestedSubtitle
         };
     } catch (error) {
-        console.error("AI Itinerary parsing failed:", error);
+        logger.error("AI Itinerary parsing failed:", error);
         return { itinerary: [] };
     }
 }

@@ -86,7 +86,7 @@ const PageWrapper = ({ children, pageNumber, data, onLabelUpdate, isEditable }: 
     return (
         <div className="flex flex-col items-center w-full">
             <div
-                className={`flyer-page w-full bg-white relative overflow-hidden shadow-2xl mb-16 last:mb-0 origin-top transform transition-all duration-300 ${data.fontFamily === 'serif' ? 'font-serif' : data.fontFamily === 'display' ? 'font-black' : 'font-sans'}`}
+                className={`flyer-page w-full bg-white relative overflow-hidden shadow-2xl mb-16 last:mb-0 origin-top transform transition-all duration-300 ${data.fontFamily === 'serif' ? 'font-serif' : data.fontFamily === 'display' ? 'font-bold' : 'font-sans'}`}
                 style={{
                     aspectRatio: '1 / 1.4142',
                     width: '794px',
@@ -98,7 +98,7 @@ const PageWrapper = ({ children, pageNumber, data, onLabelUpdate, isEditable }: 
                 {children}
                 <div className="absolute bottom-8 right-10 flex items-center gap-3 no-print pointer-events-none">
                     <div className="w-12 h-[1px]" style={{ backgroundColor: `${data.colorTheme}40` }}></div>
-                    <span className="text-[8px] font-bold tracking-[0.3em] opacity-40 uppercase" style={{ color: data.colorTheme }}>
+                    <span className="text-[10px] font-bold tracking-[0.3em] opacity-40 uppercase" style={{ color: data.colorTheme }}>
                         <EditableText
                             initialValue={labels.pageLabel || 'Page'}
                             onSave={val => onLabelUpdate?.('pageLabel', val)}
@@ -150,7 +150,7 @@ const ItineraryTimeline = ({
                                 />
                             </div>
                             {showDayBadge && (
-                                <div className="text-[9px] font-black px-2 py-0.5 rounded ml-4 uppercase tracking-wider bg-slate-100 text-slate-500 shrink-0">
+                                <div className="text-[10px] font-bold px-2 py-0.5 rounded ml-4 uppercase tracking-wider bg-slate-100 text-slate-500 shrink-0">
                                     <EditableText
                                         initialValue={item.day}
                                         onSave={val => onItineraryUpdate?.(absIndex, 'day', val)}
@@ -159,7 +159,7 @@ const ItineraryTimeline = ({
                                 </div>
                             )}
                         </div>
-                        <div className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                        <div className="text-[10px] text-slate-600 leading-relaxed font-medium">
                             <EditableText
                                 initialValue={item.description}
                                 onSave={val => onItineraryUpdate?.(absIndex, 'description', val)}
@@ -234,7 +234,7 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                                 </div>
                                                 <div className="flex-1 relative overflow-hidden bg-slate-900 flex items-center justify-center p-6">
                                                     <div className="border border-white/20 w-full h-full flex items-center justify-center">
-                                                        <span className="text-white/40 text-[10px] font-black uppercase tracking-widest text-center">
+                                                        <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-center">
                                                             <EditableText
                                                                 initialValue={labels.visualJournal || 'Visual\nJournal'}
                                                                 onSave={val => handleLabelUpdate('visualJournal', val)}
@@ -260,7 +260,7 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                     <div className="absolute bottom-16 left-12 right-12 z-30">
                                         <div className="flex items-center gap-5 mb-6">
                                             <div className="h-[2px] w-16 shadow-lg" style={{ backgroundColor: themeColor }}></div>
-                                            <p className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90 drop-shadow-md">
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/90 drop-shadow-md">
                                                 <EditableText
                                                     initialValue={labels.heroTag || 'Curated Expedition'}
                                                     onSave={val => handleLabelUpdate('heroTag', val)}
@@ -272,7 +272,7 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                             <EditableText
                                                 initialValue={data.title}
                                                 onSave={val => onUpdate?.('title', val)}
-                                                className="text-6xl md:text-7xl font-black text-white uppercase leading-[0.85] tracking-tighter drop-shadow-2xl block"
+                                                className="text-6xl md:text-7xl font-bold text-white uppercase leading-[0.85] tracking-tighter drop-shadow-2xl block"
                                                 isEditable={isEditable}
                                             />
                                         </div>
@@ -287,14 +287,14 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                                 />
                                             </div>
                                             <div className="flex flex-col items-end">
-                                                <span className="text-[10px] text-white/60 font-black uppercase tracking-widest mb-1">
+                                                <span className="text-[10px] text-white/60 font-bold uppercase tracking-widest mb-1">
                                                     <EditableText
                                                         initialValue={labels.durationLabel || 'Duration'}
                                                         onSave={val => handleLabelUpdate('durationLabel', val)}
                                                         isEditable={isEditable}
                                                     />
                                                 </span>
-                                                <span className="text-xl text-white font-black tracking-tight"><EditableText initialValue={data.duration || `${data.itinerary.length} Days`} onSave={val => onUpdate?.('duration', val)} /></span>
+                                                <span className="text-xl text-white font-bold tracking-tight"><EditableText initialValue={data.duration || `${data.itinerary.length} Days`} onSave={val => onUpdate?.('duration', val)} /></span>
                                             </div>
                                         </div>
                                     </div>
@@ -303,7 +303,7 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                     <div className="flex-1 flex flex-col justify-between">
                                         <div>
                                             <div className="flex items-center justify-between mb-8">
-                                                <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
+                                                <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">
                                                     <EditableText
                                                         initialValue={labels.voyageTitle || 'The Voyage Detail'}
                                                         onSave={val => handleLabelUpdate('voyageTitle', val)}
@@ -324,7 +324,7 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                             <div className="w-4 h-4 rounded-full border border-slate-900 flex items-center justify-center">
                                                 <div className="w-1.5 h-1.5 bg-slate-900 rounded-full"></div>
                                             </div>
-                                            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-900">
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-900">
                                                 <EditableText
                                                     initialValue={labels.officialItinerary || 'Official Itinerary'}
                                                     onSave={val => handleLabelUpdate('officialItinerary', val)}
@@ -336,20 +336,20 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                     <div className="w-[280px] flex flex-col gap-6 pt-4">
                                         <div className="p-8 rounded-[24px] shadow-2xl relative overflow-hidden bg-white border border-slate-100">
                                             <div className="absolute top-0 right-0 w-40 h-40 blur-[60px] opacity-20" style={{ backgroundColor: themeColor }}></div>
-                                            <span className="inline-block px-3 py-1 rounded-full bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-400 mb-6">
+                                            <span className="inline-block px-3 py-1 rounded-full bg-slate-50 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-6">
                                                 <EditableText
                                                     initialValue={labels.investmentTitle || 'Investment'}
                                                     onSave={val => handleLabelUpdate('investmentTitle', val)}
                                                     isEditable={isEditable}
                                                 />
                                             </span>
-                                            <div className="text-4xl font-black tracking-tighter mb-2" style={{ color: themeColor }}>
+                                            <div className="text-4xl font-bold tracking-tighter mb-2" style={{ color: themeColor }}>
                                                 <EditableText initialValue={data.priceTotal} onSave={val => onUpdate?.('priceTotal', val)} isEditable={isEditable} />
                                             </div>
                                             <div className="text-[10px] text-slate-400 font-medium leading-relaxed mb-8">
                                                 <EditableText initialValue={labels.investmentDesc || 'Includes all accommodations and guided excursions.'} onSave={val => handleLabelUpdate('investmentDesc', val)} multiline isEditable={isEditable} />
                                             </div>
-                                            <button className="w-full py-4 rounded-xl text-white text-[10px] font-black uppercase tracking-[0.25em]" style={{ backgroundColor: themeColor }}>
+                                            <button className="w-full py-4 rounded-xl text-white text-[10px] font-bold uppercase tracking-[0.25em]" style={{ backgroundColor: themeColor }}>
                                                 <EditableText initialValue={labels.bookButton || 'Reserve Now'} onSave={val => handleLabelUpdate('bookButton', val)} isEditable={isEditable} />
                                             </button>
                                         </div>
@@ -357,7 +357,7 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                             <img src={images[2] || images[0]} className="w-full h-full object-cover" alt="Mood" />
                                             <div className="absolute inset-0 bg-black/40"></div>
                                             <div className="absolute bottom-6 left-6 text-white">
-                                                <p className="text-[9px] font-black uppercase tracking-widest mb-1 opacity-80">
+                                                <p className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-80">
                                                     <EditableText initialValue={labels.moodTitle || 'Mood'} onSave={val => handleLabelUpdate('moodTitle', val)} isEditable={isEditable} />
                                                 </p>
                                                 <p className="text-xl font-serif italic">
@@ -372,18 +372,18 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                             <div className="h-full flex flex-col px-16 py-14">
                                 <header className="flex justify-between items-start mb-16 border-b border-slate-100 pb-8">
                                     <div className="max-w-[60%]">
-                                        <div className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-3" style={{ color: themeColor }}>
+                                        <div className="text-4xl font-bold text-slate-900 uppercase tracking-tighter leading-none mb-3" style={{ color: themeColor }}>
                                             <EditableText initialValue={data.title} onSave={val => onUpdate?.('title', val)} isEditable={isEditable} />
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <div className="h-px w-8 bg-slate-300"></div>
-                                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
                                                 <EditableText initialValue={labels.detailedSchedule || 'Detailed Schedule'} onSave={val => handleLabelUpdate('detailedSchedule', val)} isEditable={isEditable} />
                                             </p>
                                         </div>
                                     </div>
                                     <div className="text-right flex flex-col items-end">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mb-1">
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-300 mb-1">
                                             <EditableText initialValue={labels.contactTitle || 'Contact'} onSave={val => handleLabelUpdate('contactTitle', val)} isEditable={isEditable} />
                                         </p>
                                         <div className="text-sm font-bold text-slate-900"><EditableText initialValue={data.contactEmail} onSave={val => onUpdate?.('contactEmail', val)} isEditable={isEditable} /></div>
@@ -401,8 +401,8 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                     />
                                 </div>
                                 <footer className="mt-auto pt-8 border-t border-slate-100 flex justify-center">
-                                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] opacity-30">
-                                        <EditableText initialValue={labels.curatedBy || 'Curated by WanderHub'} onSave={val => handleLabelUpdate('curatedBy', val)} isEditable={isEditable} />
+                                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-30">
+                                        <EditableText initialValue={labels.curatedBy || 'Curated by Traivo AI'} onSave={val => handleLabelUpdate('curatedBy', val)} isEditable={isEditable} />
                                     </span>
                                 </footer>
                             </div>

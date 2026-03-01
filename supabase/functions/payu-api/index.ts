@@ -249,7 +249,7 @@ serve(async (req) => {
                                     .slice(0, 3);
 
                                 // d. Build Recommendations HTML
-                                const baseUrl = udf1 ? new URL(udf1).origin : "https://wanderhub.ai";
+                                const baseUrl = udf1 ? new URL(udf1).origin : "https://traivoai.com";
                                 let recsHtml = '';
                                 if (recommendations.length > 0) {
                                     recsHtml = `
@@ -282,12 +282,12 @@ serve(async (req) => {
                                     body: JSON.stringify({
                                         from: "TraivoAI <info@traivoai.com>",
                                         to: [email],
-                                        subject: `Activation Confirmed: Welcome to WanderHub ${u3.toUpperCase()} 🚀`,
+                                        subject: `Activation Confirmed: Welcome to Traivo AI ${u3.toUpperCase()} 🚀`,
                                         html: `
                                             <div style="font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; max-width: 600px; margin: auto; background: #ffffff;">
                                                 <div style="background: #0f172a; padding: 50px 20px; text-align: center; border-radius: 0 0 40px 40px;">
                                                     <div style="background: #0d9488; width: 60px; height: 60px; line-height: 60px; border-radius: 18px; display: inline-block; margin-bottom: 20px; font-size: 30px;">🚀</div>
-                                                    <h1 style="color: white; margin: 0; font-size: 26px; font-weight: 900; letter-spacing: -0.5px; text-transform: uppercase; font-style: italic;">WanderHub</h1>
+                                                    <h1 style="color: white; margin: 0; font-size: 26px; font-weight: 900; letter-spacing: -0.5px; text-transform: uppercase; font-style: italic;">Traivo AI</h1>
                                                     <p style="color: #94a3b8; margin: 10px 0 0; text-transform: uppercase; font-size: 11px; letter-spacing: 3px; font-weight: 700;">Intelligence for Modern Travelers</p>
                                                 </div>
 
@@ -319,8 +319,8 @@ serve(async (req) => {
                                                     ${recsHtml}
 
                                                     <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid #f1f5f9; text-align: center;">
-                                                        <p style="color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0;">WanderHub v1.0 | Travel with Intelligence</p>
-                                                        <p style="color: #cbd5e1; font-size: 10px; margin-top: 10px;">This email confirms your subscription. For support, reach out to help@wanderhub.ai</p>
+                                                        <p style="color: #94a3b8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 0;">Traivo AI v1.0 | Travel with Intelligence</p>
+                                                        <p style="color: #cbd5e1; font-size: 10px; margin-top: 10px;">This email confirms your subscription. For support, reach out to support@traivoai.com</p>
                                                     </div>
                                                 </div>
                                             </div>

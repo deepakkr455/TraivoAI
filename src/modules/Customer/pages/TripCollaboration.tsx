@@ -107,7 +107,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
       <div className="bg-white rounded-[2rem] max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 animate-in zoom-in-95 duration-300">
         <div className="p-8">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-black text-gray-900 tracking-tight">{title}</h3>
+            <h3 className="text-xl font-bold text-gray-900 tracking-tight">{title}</h3>
             <button
               onClick={onClose}
               className="p-2 bg-gray-50 text-gray-400 hover:text-teal-600 rounded-full transition-all active:scale-90"
@@ -151,19 +151,19 @@ const PlanPreviewCard: React.FC<PlanPreviewCardProps> = ({ title, imageText, cre
           alt={title}
           className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
         />
-        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-teal-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
+        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-teal-600 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
           {mode === 'latest' ? '✨ Latest Update' : '📜 Original Plan'}
         </div>
       </div>
       <div className="p-6">
-        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
+        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
           <Calendar className="w-3.5 h-3.5 text-teal-500/50" />
           Plan Created {displayDate}
         </div>
-        <h4 className="text-lg font-black text-gray-900 leading-tight group-hover:text-teal-600 transition-colors">
+        <h4 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-teal-600 transition-colors">
           {title}
         </h4>
-        <div className="mt-4 flex items-center gap-2 text-teal-600 text-[10px] font-black uppercase tracking-widest bg-teal-50/50 w-fit px-3 py-1.5 rounded-full">
+        <div className="mt-4 flex items-center gap-2 text-teal-600 text-[10px] font-bold uppercase tracking-widest bg-teal-50/50 w-fit px-3 py-1.5 rounded-full">
           <span>Click to View Full Details</span>
           <ArrowLeft className="w-3 h-3 rotate-180" />
         </div>
@@ -832,7 +832,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                 title="Back to Collections"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span className="text-[10px] font-black uppercase tracking-widest md:hidden">Back</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest md:hidden">Back</span>
               </button>
 
               <div className="text-center w-full px-2">
@@ -852,24 +852,24 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
             <div className="w-full lg:w-auto px-2 md:px-4 order-2 lg:order-1" >
               <div className="grid grid-cols-3 lg:flex items-center justify-items-center lg:justify-start gap-2 md:gap-10 py-1 sm:py-0 w-full">
                 <div className="flex flex-col items-center sm:items-start group text-center sm:text-left">
-                  <span className="text-[8px] md:text-[10px] font-black uppercase tracking-wider md:tracking-[0.2em] text-gray-400 group-hover:text-teal-500 transition-colors whitespace-nowrap">Total Budget</span>
-                  <span className="text-sm md:text-xl font-black text-gray-900">
+                  <span className="text-[10px] md:text-[10px] font-bold uppercase tracking-wider md:tracking-[0.2em] text-gray-400 group-hover:text-teal-500 transition-colors whitespace-nowrap">Total Budget</span>
+                  <span className="text-sm md:text-xl font-bold text-gray-900">
                     {getDisplayTotalBudget()}
                   </span>
                 </div>
                 <div className="hidden sm:block h-6 w-px bg-gray-100" />
                 <div className="flex flex-col items-center sm:items-start group text-center sm:text-left">
-                  <span className="text-[8px] md:text-[10px] font-black uppercase tracking-wider md:tracking-[0.2em] text-gray-400 group-hover:text-teal-500 transition-colors whitespace-nowrap">Per Person</span>
-                  <span className="text-sm md:text-xl font-black text-gray-900">
+                  <span className="text-[10px] md:text-[10px] font-bold uppercase tracking-wider md:tracking-[0.2em] text-gray-400 group-hover:text-teal-500 transition-colors whitespace-nowrap">Per Person</span>
+                  <span className="text-sm md:text-xl font-bold text-gray-900">
                     {getDisplayPerPersonBudget()}
                   </span>
                 </div>
                 <div className="hidden sm:block h-6 w-px bg-gray-100" />
                 <div className="flex flex-col items-center sm:items-start group text-center sm:text-left">
-                  <span className="text-[8px] md:text-[10px] font-black uppercase tracking-wider md:tracking-[0.2em] text-gray-400 group-hover:text-teal-500 transition-colors">Crew</span>
+                  <span className="text-[10px] md:text-[10px] font-bold uppercase tracking-wider md:tracking-[0.2em] text-gray-400 group-hover:text-teal-500 transition-colors">Crew</span>
                   <div className="flex items-center gap-1.5">
                     <Users className="w-3 h-3 md:w-4 md:h-4 text-teal-500" />
-                    <span className="text-sm md:text-xl font-black text-gray-900">{members.filter((m) => m.status === 'accepted').length}</span>
+                    <span className="text-sm md:text-xl font-bold text-gray-900">{members.filter((m) => m.status === 'accepted').length}</span>
                   </div>
                 </div>
               </div>
@@ -911,7 +911,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                       <AlertCircle className="w-5 h-5 text-yellow-600" />
                     </div>
                     <div>
-                      <p className="text-sm font-black uppercase tracking-widest leading-none mb-1">Voting in Progress</p>
+                      <p className="text-sm font-bold uppercase tracking-widest leading-none mb-1">Voting in Progress</p>
                       <p className="text-xs font-medium text-yellow-700/80">
                         Waiting for all members to vote on the proposed options.
                       </p>
@@ -937,7 +937,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                   <div className="bg-gradient-to-r from-purple-50/50 to-pink-50/50 px-8 py-6 border-b border-gray-50/50">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                           <Calendar className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                           Travel <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Dates</span>
                         </h2>
@@ -946,7 +946,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                       {isAdmin && (
                         <button
                           onClick={() => setShowAddDate(true)}
-                          className="flex items-center gap-2 bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-xs font-black transition-all active:scale-95 border border-purple-100"
+                          className="flex items-center gap-2 bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-xs font-bold transition-all active:scale-95 border border-purple-100"
                         >
                           <Plus className="w-4 h-4" />
                           Suggest Date
@@ -973,7 +973,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div className="flex-1">
                               <div className="flex flex-wrap items-center gap-3 mb-2">
-                                <p className="text-lg md:text-xl font-black text-gray-900 tracking-tight">
+                                <p className="text-lg md:text-xl font-bold text-gray-900 tracking-tight">
                                   {formatDateLabel(dateOption.details.startDate, {
                                     month: 'short',
                                     day: 'numeric',
@@ -985,7 +985,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                                     year: 'numeric',
                                   })}
                                 </p>
-                                <span className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest ${isAI
+                                <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest ${isAI
                                   ? 'bg-blue-100 text-blue-700'
                                   : 'bg-gray-200 text-gray-700'
                                   }`}>
@@ -1000,12 +1000,12 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
 
                             <div className="flex items-center gap-4 w-full sm:w-auto mt-2 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100">
                               <div className="flex flex-col items-center gap-1 min-w-[60px]">
-                                <div className="flex items-center gap-2 text-sm font-black">
+                                <div className="flex items-center gap-2 text-sm font-bold">
                                   <span className="text-teal-600">{upvotes}</span>
                                   <span className="text-gray-200">|</span>
                                   <span className="text-pink-600">{downvotes}</span>
                                 </div>
-                                <span className="text-[8px] font-black uppercase tracking-tighter text-gray-400">Total Votes</span>
+                                <span className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">Total Votes</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {/* <button
@@ -1047,7 +1047,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                   <div className="bg-gradient-to-r from-blue-50/50 to-teal-50/50 px-8 py-6 border-b border-gray-50/50">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                           <MapPin className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                           Accommodation <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-600">Options</span>
                         </h2>
@@ -1056,7 +1056,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                       {isAdmin && (
                         <button
                           onClick={() => setShowAddAccommodation(true)}
-                          className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-xs font-black transition-all active:scale-95 border border-blue-100"
+                          className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-xs font-bold transition-all active:scale-95 border border-blue-100"
                         >
                           <Plus className="w-4 h-4" />
                           Suggest Hotel
@@ -1083,8 +1083,8 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                             <div className="flex-1">
                               <div className="flex flex-wrap items-center gap-3 mb-2">
-                                <h3 className="text-lg md:text-xl font-black text-gray-900 tracking-tight">{acc.title}</h3>
-                                <span className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest ${isAI
+                                <h3 className="text-lg md:text-xl font-bold text-gray-900 tracking-tight">{acc.title}</h3>
+                                <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest ${isAI
                                   ? 'bg-blue-100 text-blue-700'
                                   : 'bg-gray-200 text-gray-700'
                                   }`}>
@@ -1095,7 +1095,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                                 <MapPin className="w-3.5 h-3.5 text-blue-400" />
                                 {acc.details.location}
                               </p>
-                              <div className="flex flex-wrap items-center gap-4 text-[10px] font-black uppercase tracking-widest">
+                              <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
                                 <div className="flex items-center gap-2 mt-4">
                                   <div className="bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100 flex items-center gap-1.5">
                                     <span className="text-teal-600 font-bold">
@@ -1143,12 +1143,12 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
 
                             <div className="flex items-center gap-4 w-full lg:w-auto mt-2 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-gray-100">
                               <div className="flex flex-col items-center gap-1 min-w-[60px]">
-                                <div className="flex items-center gap-2 text-sm font-black">
+                                <div className="flex items-center gap-2 text-sm font-bold">
                                   <span className="text-teal-600">{upvotes}</span>
                                   <span className="text-gray-200">|</span>
                                   <span className="text-pink-600">{downvotes}</span>
                                 </div>
-                                <span className="text-[8px] font-black uppercase tracking-tighter text-gray-400">Total Votes</span>
+                                <span className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">Total Votes</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {/* <button
@@ -1190,7 +1190,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                   <div className="bg-gradient-to-r from-teal-50/50 to-green-50/50 px-8 py-6 border-b border-gray-50/50">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-xl md:text-2xl font-black flex items-center gap-3 text-gray-900">
+                        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray-900">
                           <Clock className="w-5 h-5 md:w-6 md:h-6 text-teal-600" />
                           Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600">Itinerary</span>
                         </h2>
@@ -1199,7 +1199,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                       {isAdmin && (
                         <button
                           onClick={() => setShowAddActivity(true)}
-                          className="flex items-center gap-2 bg-teal-50 hover:bg-teal-100 text-teal-700 px-4 py-2 rounded-full text-xs font-black transition-all active:scale-95 border border-teal-100"
+                          className="flex items-center gap-2 bg-teal-50 hover:bg-teal-100 text-teal-700 px-4 py-2 rounded-full text-xs font-bold transition-all active:scale-95 border border-teal-100"
                         >
                           <Plus className="w-4 h-4" />
                           Add Activity
@@ -1219,11 +1219,11 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                             className={`w-full px-6 py-4 flex items-center justify-between transition-all duration-300 ${expandedDay === day ? 'bg-teal-50/50' : 'bg-gray-50/50 hover:bg-white'}`}
                           >
                             <div className="flex flex-col items-start">
-                              <span className="text-xs font-black uppercase tracking-widest text-teal-600 mb-1">Day {day}</span>
-                              <span className="text-lg font-black text-gray-900">{dayTitle}</span>
+                              <span className="text-xs font-bold uppercase tracking-widest text-teal-600 mb-1">Day {day}</span>
+                              <span className="text-lg font-bold text-gray-900">{dayTitle}</span>
                             </div>
                             <div className="flex items-center gap-4">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
                                 {dayItems.length} Events
                               </span>
                               <div className={`p-2 rounded-xl transition-all duration-300 ${expandedDay === day ? 'bg-teal-100 text-teal-600 rotate-180' : 'bg-white text-gray-400 border border-gray-100'}`}>
@@ -1251,12 +1251,12 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                                     <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                                       <div className="flex-1">
                                         <div className="flex flex-wrap items-center gap-3 mb-2">
-                                          <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border border-gray-100 text-[10px] font-black uppercase tracking-widest text-teal-600 shadow-sm">
+                                          <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border border-gray-100 text-[10px] font-bold uppercase tracking-widest text-teal-600 shadow-sm">
                                             <Clock className="w-3 h-3" />
                                             {item.details.time}
                                           </div>
-                                          <h3 className="text-base font-black text-gray-900 tracking-tight">{item.title}</h3>
-                                          <span className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest ${isAI
+                                          <h3 className="text-base font-bold text-gray-900 tracking-tight">{item.title}</h3>
+                                          <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest ${isAI
                                             ? 'bg-blue-100 text-blue-700'
                                             : 'bg-gray-200 text-gray-700'
                                             }`}>
@@ -1266,7 +1266,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                                         <p className="text-sm text-gray-500 font-medium mb-4 leading-relaxed">
                                           {item.details.description}
                                         </p>
-                                        <div className="flex flex-wrap items-center gap-4 text-[10px] font-black uppercase tracking-widest">
+                                        <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
                                           <div className="flex items-center gap-2 text-gray-400">
                                             <MapPin className="w-3.5 h-3.5 text-blue-400" />
                                             {item.details.location}
@@ -1294,12 +1294,12 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
 
                                       <div className="flex items-center gap-4 w-full md:w-auto mt-2 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
                                         <div className="flex flex-col items-center gap-1 min-w-[60px]">
-                                          <div className="flex items-center gap-2 text-sm font-black">
+                                          <div className="flex items-center gap-2 text-sm font-bold">
                                             <span className="text-teal-600">{upvotes}</span>
                                             <span className="text-gray-200">|</span>
                                             <span className="text-pink-600">{downvotes}</span>
                                           </div>
-                                          <span className="text-[8px] font-black uppercase tracking-tighter text-gray-400">Total Votes</span>
+                                          <span className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">Total Votes</span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                           {/* <button
@@ -1349,14 +1349,14 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                 <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
                   <div className="p-8">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                      <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
                         <Layout className="w-4 h-4 text-teal-600" />
                         Plan Preview
                       </h3>
                       <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
                         <button
                           onClick={() => setPreviewMode('original')}
-                          className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${previewMode === 'original'
+                          className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${previewMode === 'original'
                             ? 'bg-white text-teal-600 shadow-sm'
                             : 'text-gray-500 hover:text-gray-700'
                             }`}
@@ -1365,7 +1365,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                         </button>
                         <button
                           onClick={() => setPreviewMode('latest')}
-                          className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${previewMode === 'latest'
+                          className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${previewMode === 'latest'
                             ? 'bg-white text-teal-600 shadow-sm'
                             : 'text-gray-500 hover:text-gray-700'
                             }`}
@@ -1411,7 +1411,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                         <MessageCircle className="w-5 h-5 text-pink-600" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-black text-gray-900 leading-tight">
+                        <h2 className="text-xl font-bold text-gray-900 leading-tight">
                           Crew <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600">Chat</span>
                         </h2>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Live Crew Chat</p>
@@ -1440,7 +1440,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                           className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'} ${shouldGroup ? 'mt-1' : 'mt-4'} animate-in fade-in slide-in-from-bottom-2 duration-300`}
                         >
                           {!isCurrentUser && !shouldGroup && (
-                            <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-[10px] font-black text-teal-700 mr-2 self-end mb-1">
+                            <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-[10px] font-bold text-teal-700 mr-2 self-end mb-1">
                               {msg.userName.substring(0, 2).toUpperCase()}
                             </div>
                           )}
@@ -1453,7 +1453,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                               } p-3.5 shadow-sm hover:shadow-md transition-shadow`}
                           >
                             {!isCurrentUser && !shouldGroup && (
-                              <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-teal-600">
+                              <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-teal-600">
                                 {msg.userName}
                               </p>
                             )}
@@ -1470,13 +1470,13 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                                 <div className="flex justify-end gap-2">
                                   <button
                                     onClick={() => setEditingMessageId(null)}
-                                    className="text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-white/10 hover:bg-white/20 rounded transition-colors"
+                                    className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-white/10 hover:bg-white/20 rounded transition-colors"
                                   >
                                     Cancel
                                   </button>
                                   <button
                                     onClick={handleUpdateMessage}
-                                    className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-white text-teal-600 rounded shadow-sm hover:bg-teal-50 transition-colors"
+                                    className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-white text-teal-600 rounded shadow-sm hover:bg-teal-50 transition-colors"
                                   >
                                     Save
                                   </button>
@@ -1486,7 +1486,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
                               <>
                                 <p className="text-sm font-medium leading-relaxed">{msg.message}</p>
                                 <div className={`flex items-center justify-between gap-4 mt-1 opacity-0 group-hover:opacity-100 transition-opacity ${isCurrentUser ? 'text-teal-100/70' : 'text-gray-400'}`}>
-                                  <span className="text-[8px] font-bold">
+                                  <span className="text-[10px] font-bold">
                                     {msg.timestamp.toLocaleTimeString('en-US', {
                                       hour: 'numeric',
                                       minute: '2-digit',
@@ -1757,7 +1757,7 @@ export const TripCollaboration: React.FC<TripCollaborationProps> = ({
             <MessageCircle className="w-7 h-7 fill-white/10" />
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full border-2 border-white animate-pulse" />
           </div>
-          <span className="absolute right-[110%] bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl">
+          <span className="absolute right-[110%] bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl">
             Crew Chat
           </span>
         </button>
