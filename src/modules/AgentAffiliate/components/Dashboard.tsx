@@ -4,8 +4,11 @@ import { CheckCircleIcon, UsersIcon, WalletIcon, ChartBarIcon, SearchIcon, Downl
 import { messageService } from '../../Customer/services/messageService';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../../../services/supabaseClient';
-import { getProductAnalytics, trackProductInteraction } from '../services/supabaseService';
+import { getProductAnalytics, trackProductInteraction, acceptTermsAndConditions, updateOnboardingStatus } from '../services/supabaseService';
 import { AffiliateBanner } from './AffiliateBanner';
+import { TandCModal } from './onboarding/TandCModal';
+import { OnboardingModal } from './onboarding/OnboardingModal';
+import { Badge } from './Badge';
 
 interface DashboardProps {
     currentView: 'dashboard' | 'bookings' | 'messages' | 'gallery';
@@ -274,13 +277,45 @@ const ActivityHeatmap: React.FC<{ data: { day: string; hours: number[] }[] }> = 
 };
 
 const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], onBoostClick?: () => void, onToggleStatus?: (id: string) => void }> = ({ products, inquiries, onBoostClick, onToggleStatus }) => {
-    const { session, subscription } = useAuth();
+    const { session, subscription, profile, refreshSession } = useAuth();
     const isActuallyPremium = subscription?.tier_name === 'pro' || subscription?.tier_name === 'custom';
     const [isPremium, setIsPremium] = useState(isActuallyPremium);
     const [spotlightId, setSpotlightId] = useState<string | null>(null);
     const [showPreview, setShowPreview] = useState(false);
     const [analytics, setAnalytics] = useState<any>(null);
     const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true);
+
+    const [showTC, setShowTC] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState(false);
+
+    useEffect(() => {
+        if (profile) {
+            if (!profile.tc_accepted) {
+                setShowTC(true);
+            } else if (profile.onboarding_status === 'pending') {
+                setShowOnboarding(true);
+            }
+        }
+    }, [profile]);
+
+    const handleAcceptTC = async () => {
+        if (session?.user.id) {
+            await acceptTermsAndConditions(session.user.id);
+            await refreshSession();
+            setShowTC(false);
+            if (profile?.onboarding_status === 'pending') {
+                setShowOnboarding(true);
+            }
+        }
+    };
+
+    const handleOnboardingComplete = async (status: string, businessDetails: any, idDetails?: any) => {
+        if (session?.user.id) {
+            await updateOnboardingStatus(session.user.id, status, businessDetails, idDetails);
+            await refreshSession();
+            setShowOnboarding(false);
+        }
+    };
 
     useEffect(() => {
         const fetchRealAnalytics = async () => {
@@ -390,7 +425,10 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
     const healthScore = 88;
 
     return (
-        <div className="h-full overflow-y-auto p-4 lg:p-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans">
+        <div className="h-full overflow-y-auto p-4 lg:p-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans relative">
+            {showTC && <TandCModal onAccept={handleAcceptTC} />}
+            {showOnboarding && <OnboardingModal businessId={session?.user.id || ''} profile={profile} onComplete={handleOnboardingComplete} />}
+
             <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Lead Analytics</h1>

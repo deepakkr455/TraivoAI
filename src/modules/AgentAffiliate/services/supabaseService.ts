@@ -1163,3 +1163,57 @@ export const getUserPersonalization = async (userId: string) => {
         return null;
     }
 };
+/**
+ * Updates the onboarding status for a profile
+ */
+export const updateOnboardingStatus = async (userId: string, status: string, businessDetails?: any, idVerificationDetails?: any) => {
+    try {
+        const updates: any = {
+            onboarding_status: status,
+            updated_at: new Date().toISOString()
+        };
+
+        if (businessDetails) {
+            if (businessDetails.logo_url) updates.avatar_url = businessDetails.logo_url;
+            if (businessDetails.phone) updates.phone_number = businessDetails.phone;
+            if (businessDetails.website) updates.company_website = businessDetails.website;
+            if (businessDetails.social_handle) updates.instagram_page_id = businessDetails.social_handle;
+            // email is usually not updated here as it's the primary identifier
+        }
+
+        if (idVerificationDetails) updates.id_verification_details = idVerificationDetails;
+
+        const { error } = await supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', userId);
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error updating onboarding status:', error);
+        return false;
+    }
+};
+
+/**
+ * Marks Terms and Conditions as accepted for a profile
+ */
+export const acceptTermsAndConditions = async (userId: string) => {
+    try {
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                tc_accepted: true,
+                tc_accepted_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', userId);
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error accepting T&C:', error);
+        return false;
+    }
+};

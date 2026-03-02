@@ -151,12 +151,17 @@ export const getSecureImageUrl = async (bucket: string, path: string): Promise<s
             body: JSON.stringify({ action: 'proxy_image', bucket, path })
         });
 
-        if (!response.ok) throw new Error("Failed to proxy image");
+        if (!response.ok) {
+            logger.warn(`Failed to proxy image from ${bucket}/${path}, falling back to public URL`);
+            const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(path);
+            return publicData.publicUrl;
+        }
         const blob = await response.blob();
         return URL.createObjectURL(blob);
     } catch (e) {
-        logger.error("Error generating secure image URL:", e);
-        return null;
+        logger.error("Error generating secure image URL, falling back to public URL:", e);
+        const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(path);
+        return publicData.publicUrl;
     }
 };
 

@@ -2,20 +2,42 @@
 -- Note: Currently we utilize Supabase Auth user_metadata for simplicity, 
 -- but this schema represents the robust profile-based implementation.
 
--- 1. Profiles Table (Extends Auth.Users)
+-- 1.-- Existing Profiles Table (Aligned with actual Supabase schema)
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  full_name TEXT,
-  avatar_url TEXT,
-  personalization JSONB DEFAULT '{
-    "tripTypes": "",
-    "location": {"country": "India", "state": ""},
-    "excitement": "",
-    "pace": "",
-    "budget": ""
-  }'::JSONB,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+  id uuid not null PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email text not null,
+  full_name text null,
+  user_type text null CHECK (user_type IN ('agent', 'agency', 'affiliate_partner', 'other')),
+  company_name text null,
+  company_size text null,
+  company_website text null,
+  instagram_page_id text null,
+  facebook_id text null,
+  phone_number text null,
+  alternative_number text null,
+  city text null,
+  state text null,
+  
+  -- Additions for Agent Onboarding & Verification
+  avatar_url TEXT NULL, -- Used for Agent Logo
+  onboarding_status TEXT DEFAULT 'pending', -- pending, basic_submitted, basic_verified, id_verified
+  tc_accepted BOOLEAN DEFAULT false,
+  tc_accepted_at TIMESTAMP WITH TIME ZONE NULL,
+  id_verification_details JSONB DEFAULT '{"links": []}'::JSONB,
+  
+  created_at timestamp without time zone not null default now(),
+  updated_at timestamp without time zone not null default now()
 );
+
+-- Safe Alter Script (Run this in Supabase SQL Editor if table already exists)
+/*
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS avatar_url TEXT,
+ADD COLUMN IF NOT EXISTS onboarding_status TEXT DEFAULT 'pending',
+ADD COLUMN IF NOT EXISTS tc_accepted BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS tc_accepted_at TIMESTAMP WITH TIME ZONE,
+ADD COLUMN IF NOT EXISTS id_verification_details JSONB DEFAULT '{"links": []}'::JSONB;
+*/
 
 -- 2. Row Level Security (RLS)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;

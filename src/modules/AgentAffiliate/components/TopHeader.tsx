@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LayoutIcon, ChartBarIcon, MessageSquareIcon, GlobeIcon, WalletIcon, MapIcon, MenuIcon, XIcon, UserIcon } from './Icons';
 import { useAuth } from '../context/AuthContext';
+import { Badge, BadgeState } from './Badge';
 
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
@@ -72,13 +73,30 @@ export const TopHeader: React.FC = () => {
                             onClick={() => setIsProfileOpen(!isProfileOpen)}
                             className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-1.5 rounded-full transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
                         >
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-teal-500 to-blue-500 flex items-center justify-center font-bold text-sm text-white shadow-md">
-                                {user?.email?.charAt(0).toUpperCase() || 'A'}
+                            <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shadow-md">
+                                {profile?.avatar_url ? (
+                                    <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-tr from-teal-500 to-blue-500 flex items-center justify-center font-bold text-sm text-white">
+                                        {user?.email?.charAt(0).toUpperCase() || 'A'}
+                                    </div>
+                                )}
                             </div>
                             <div className="hidden md:block text-left mr-1">
-                                <p className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-200 leading-tight">
-                                    {profile?.full_name?.split(' ')[0] || 'User'}
-                                </p>
+                                <div className="flex items-center gap-1.5 leading-none mb-0.5">
+                                    <p className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-200">
+                                        {profile?.full_name?.split(' ')[0] || 'User'}
+                                    </p>
+                                    {profile?.onboarding_status && profile.onboarding_status !== 'pending' && (
+                                        <Badge
+                                            state={
+                                                profile.onboarding_status === 'id_verified' ? 'blue' :
+                                                    (profile.onboarding_status === 'basic_submitted' && user?.email_confirmed_at) ? 'mustard' :
+                                                        'grey'
+                                            }
+                                        />
+                                    )}
+                                </div>
                                 <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 leading-tight">
                                     {planDisplayName}
                                 </p>
