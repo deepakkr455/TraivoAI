@@ -66,7 +66,7 @@ const AppContent: React.FC = () => {
             if (event === 'SIGNED_IN' && session) {
                 setProcessingAuth(false);
                 const currentPath = window.location.pathname;
-                if (currentPath === '/TraivoAI' || currentPath === '/TraivoAI/' || currentPath.includes('login') || currentPath.includes('signup')) {
+                if (currentPath === '/' || currentPath === '/login' || currentPath.includes('signup')) {
                     navigate('/user/wanderchat', { replace: true });
                 }
             }
@@ -180,7 +180,7 @@ const App: React.FC = () => {
     return (
         <AuthProvider>
             <SubscriptionProvider>
-                <BrowserRouter basename="/TraivoAI">
+                <BrowserRouter>
                     <AppContent />
                 </BrowserRouter>
             </SubscriptionProvider>
