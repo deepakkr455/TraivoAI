@@ -1,6 +1,7 @@
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import supabase, { isSupabaseConfigured } from '../services/supabaseClient';
+import supabase from '../services/supabaseClient';
+import isSupabaseConfigured from '../services/supabaseClient';
 import { User as AppUser, UserPersonalization } from '../types';
 import type { AuthChangeEvent, Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { getUserPersonalization, saveUserPersonalization } from '../modules/AgentAffiliate/services/supabaseService';
