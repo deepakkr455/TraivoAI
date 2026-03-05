@@ -180,7 +180,7 @@ const App: React.FC = () => {
     return (
         <AuthProvider>
             <SubscriptionProvider>
-                <BrowserRouter>
+                <BrowserRouter basename="/TraivoAI">
                     <AppContent />
                 </BrowserRouter>
             </SubscriptionProvider>
