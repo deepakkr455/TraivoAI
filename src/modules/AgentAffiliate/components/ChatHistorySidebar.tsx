@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquareIcon, PlusIcon, TrashIcon, EditIcon } from './Icons';
+import { MessageSquare, Plus, Trash2, Edit2 } from 'lucide-react';
 
 interface ChatSession {
     id: string;
@@ -14,6 +14,7 @@ interface ChatHistorySidebarProps {
     onNewChat: () => void;
     onDeleteSession: (sessionId: string) => void;
     onRenameSession: (sessionId: string, newTitle: string) => void;
+    onClose?: () => void;
 }
 
 export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
@@ -22,10 +23,11 @@ export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     onSelectSession,
     onNewChat,
     onDeleteSession,
-    onRenameSession
+    onRenameSession,
+    onClose
 }) => {
     const [editingId, setEditingId] = useState<string | null>(null);
-    const [editTitle, setEditTitle] = useState('');
+    const [edit_title, setEditTitle] = useState('');
 
     const handleStartEdit = (session: ChatSession, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -34,8 +36,8 @@ export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     };
 
     const handleSaveEdit = () => {
-        if (editingId && editTitle.trim()) {
-            onRenameSession(editingId, editTitle.trim());
+        if (editingId && edit_title.trim()) {
+            onRenameSession(editingId, edit_title.trim());
         }
         setEditingId(null);
     };
@@ -72,18 +74,28 @@ export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
     const groupOrder = ['Today', 'Yesterday', 'Previous 7 Days', 'Older'];
 
     return (
-        <div className="w-full h-full bg-gray-100 dark:bg-gray-950 flex flex-col">
-            <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+        <div className="w-full h-full bg-white dark:bg-gray-950 flex flex-col">
+            {/* Mobile Header */}
+            {onClose && (
+                <div className="p-3 flex items-center justify-between lg:hidden">
+                    <span className="font-bold text-base text-gray-800 dark:text-gray-200">History</span>
+                    <button onClick={onClose} className="p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            )}
+
+            <div className="p-2">
                 <button
                     onClick={onNewChat}
                     className="w-full flex items-center justify-center gap-2 py-3 bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/30 rounded-xl font-semibold transition-all duration-200 border border-teal-100 dark:border-teal-800"
                 >
-                    <PlusIcon className="w-5 h-5" />
+                    <Plus className="w-5 h-5" />
                     New Chat
                 </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto px-3 py-2 pb-20 space-y-6 scrollbar-hide">
                 {sessions.length > 0 ? (
                     groupOrder.map(group => {
                         const groupSessions = groupedSessions[group];
@@ -102,12 +114,12 @@ export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
                                                 }`}
                                             onClick={() => onSelectSession(session.id)}
                                         >
-                                            <MessageSquareIcon className={`w-4 h-4 flex-shrink-0 transition-colors ${currentSessionId === session.id ? 'text-teal-500' : 'text-gray-400 group-hover:text-gray-500'}`} />
+                                            <MessageSquare className={`w-4 h-4 flex-shrink-0 transition-colors ${currentSessionId === session.id ? 'text-teal-500' : 'text-gray-400 group-hover:text-gray-500'}`} />
 
                                             {editingId === session.id ? (
                                                 <input
                                                     type="text"
-                                                    value={editTitle}
+                                                    value={edit_title}
                                                     onChange={(e) => setEditTitle(e.target.value)}
                                                     onBlur={handleSaveEdit}
                                                     onKeyDown={handleKeyDown}
@@ -116,7 +128,7 @@ export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
                                                     onClick={(e) => e.stopPropagation()}
                                                 />
                                             ) : (
-                                                <span className="text-sm md:text-[15px] truncate flex-1 leading-tight">{session.title}</span>
+                                                <span className="text-sm truncate flex-1 leading-tight">{session.title}</span>
                                             )}
 
                                             <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -125,7 +137,7 @@ export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
                                                     className="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-md transition-colors"
                                                     title="Rename"
                                                 >
-                                                    <EditIcon className="w-3.5 h-3.5" />
+                                                    <Edit2 className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
                                                     onClick={(e) => {
@@ -135,7 +147,7 @@ export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
                                                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                                                     title="Delete"
                                                 >
-                                                    <TrashIcon className="w-3.5 h-3.5" />
+                                                    <Trash2 className="w-3.5 h-3.5" />
                                                 </button>
                                             </div>
                                         </div>
@@ -147,7 +159,7 @@ export const ChatHistorySidebar: React.FC<ChatHistorySidebarProps> = ({
                 ) : (
                     <div className="px-4 py-8 text-center">
                         <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <MessageSquareIcon className="text-gray-400 w-6 h-6" />
+                            <MessageSquare className="text-gray-400 w-6 h-6" />
                         </div>
                         <p className="text-xs text-gray-500 font-medium">No chat history yet</p>
                         <p className="text-[10px] text-gray-400 mt-1">Start a new chat to plan your trip</p>

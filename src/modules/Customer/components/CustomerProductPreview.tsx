@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Product } from '../../AgentAffiliate/types';
-import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon, MapIcon, HeartIcon } from '../../AgentAffiliate/components/Icons';
+import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon, MapIcon, HeartIcon, DefaultAvatarIcon } from '../../AgentAffiliate/components/Icons';
 import { ItineraryTimeline } from '../../AgentAffiliate/components/ItineraryTimeline';
 import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../services/messageService';
@@ -316,7 +316,7 @@ export const CustomerProductPreview: React.FC<CustomerProductPreviewProps> = ({ 
                                             {agentProfile?.avatar_url ? (
                                                 <img src={agentProfile.avatar_url} alt="Agent" className="w-full h-full object-cover" />
                                             ) : (
-                                                <span>{agentProfile?.full_name ? agentProfile.full_name.charAt(0).toUpperCase() : (product.business_id ? 'A' : 'T')}</span>
+                                                <DefaultAvatarIcon className="w-full h-full" />
                                             )}
                                         </div>
                                         <div>

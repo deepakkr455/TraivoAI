@@ -4,6 +4,7 @@ import { plansService } from '../modules/Customer/services/plansService';
 import { planMembersService } from '../modules/Customer/services/planMembersService';
 import { invitationsService } from '../modules/Customer/services/invitationsService';
 import { X, Mail, Share2, UserPlus, Users, Trash2 } from 'lucide-react';
+import { DefaultAvatarIcon } from '../modules/AgentAffiliate/components/Icons';
 
 interface ShareTripModalProps {
   tripId: string;
@@ -159,8 +160,8 @@ export const ShareTripModal: React.FC<ShareTripModalProps> = ({
           {message && (
             <div
               className={`p - 4 rounded - lg flex items - start gap - 3 ${message.type === 'success'
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : 'bg-red-50 text-red-800 border border-red-200'
                 } `}
             >
               <span className="text-sm">{message.text}</span>
@@ -209,10 +210,8 @@ export const ShareTripModal: React.FC<ShareTripModalProps> = ({
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                        <span className="text-teal-600 font-medium text-sm">
-                          {member.name.charAt(0).toUpperCase()}
-                        </span>
+                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                        <DefaultAvatarIcon className="w-full h-full" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">{member.name}</p>

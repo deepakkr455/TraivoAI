@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { XIcon, UserCircleIcon, CheckCircleIcon, ClockIcon } from './Icons';
+import { XIcon, UserCircleIcon, CheckCircleIcon, ClockIcon, DefaultAvatarIcon } from './Icons';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { affiliateSubscriptionService } from '../services/subscriptionService';
@@ -16,6 +16,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const [dailyUsage, setDailyUsage] = useState(0);
     const [tiers, setTiers] = useState<AgentTier[]>([]);
     const [loading, setLoading] = useState(true);
+    const [imgError, setImgError] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,10 +61,15 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                     </button>
                     <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                         <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 bg-white dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                            {user?.user_metadata?.avatar_url ? (
-                                <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                            {(profile?.avatar_url || user?.user_metadata?.avatar_url) && !imgError ? (
+                                <img
+                                    src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                                    alt="Profile"
+                                    className="w-full h-full object-cover"
+                                    onError={() => setImgError(true)}
+                                />
                             ) : (
-                                <UserCircleIcon className="w-20 h-20 text-gray-400" />
+                                <DefaultAvatarIcon className="w-20 h-20" />
                             )}
                         </div>
                     </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { ChatMessage, Product } from '../types';
 import { ProductCard } from './ProductCard';
 import { SocialImagePreviewCard } from '../../../components/SocialImagePreviewCard';
+import { DefaultAvatarIcon } from './Icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -18,8 +19,8 @@ export const Message: React.FC<MessageProps> = ({ message, onCardClick, onImageC
         <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} mb-6 animate-fade-in-up px-2 md:px-0`}>
             <div className={`flex items-end gap-2 md:gap-3 ${isUser ? 'justify-end' : 'justify-start'} max-w-[95%] lg:max-w-[80%]`}>
                 {!isUser && (
-                    <div className="w-8 h-8 rounded-full bg-teal-100 border border-teal-200 flex items-center justify-center text-teal-700 font-bold text-xs flex-shrink-0">
-                        AI
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-teal-400 flex items-center justify-center text-white font-bold text-xs flex-shrink-0 shadow-sm border border-white/20">
+                        TA
                     </div>
                 )}
                 <div
@@ -74,8 +75,8 @@ export const Message: React.FC<MessageProps> = ({ message, onCardClick, onImageC
                     )}
                 </div>
                 {isUser && (
-                    <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-200 font-bold text-xs flex-shrink-0">
-                        ME
+                    <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
+                        <DefaultAvatarIcon className="w-full h-full" />
                     </div>
                 )}
             </div>

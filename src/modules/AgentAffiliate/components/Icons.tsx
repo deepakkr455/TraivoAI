@@ -322,3 +322,11 @@ export const UserIcon: React.FC<IconProps> = ({ className, ...props }) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
 );
+
+export const DefaultAvatarIcon: React.FC<IconProps> = ({ className, ...props }) => (
+    <svg viewBox="0 0 100 100" className={className} {...props}>
+        <circle cx="50" cy="50" r="48" fill="#BDBDBD" />
+        <circle cx="50" cy="40" r="18" fill="white" />
+        <path d="M50 63c-15 0-28 8-34 20 6 10 18 17 34 17s28-7 34-17c-6-12-19-20-34-20z" fill="white" />
+    </svg>
+);

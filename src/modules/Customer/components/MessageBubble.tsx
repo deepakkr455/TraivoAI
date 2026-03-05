@@ -7,6 +7,7 @@ import { WeatherPreviewCard } from './WeatherComponents/WeatherPreviewCard';
 import { MapPreviewCard } from './MapPreviewCard';
 import { SocialImagePreviewCard } from '../../../components/SocialImagePreviewCard';
 import { generateTripPlanHtml } from '../services/htmlGenerator';
+import { DefaultAvatarIcon } from '../../AgentAffiliate/components/Icons';
 
 interface MessageBubbleProps {
   message: Message;
@@ -23,8 +24,8 @@ const BotIcon = () => (
 );
 
 const UserIcon = () => (
-  <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-    AS
+  <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+    <DefaultAvatarIcon className="w-full h-full" />
   </div>
 );
 

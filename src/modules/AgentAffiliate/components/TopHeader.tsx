@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { LayoutIcon, ChartBarIcon, MessageSquareIcon, GlobeIcon, WalletIcon, MapIcon, MenuIcon, XIcon, UserIcon } from './Icons';
+import { LayoutIcon, ChartBarIcon, MessageSquareIcon, GlobeIcon, WalletIcon, MapIcon, MenuIcon, XIcon, UserIcon, DefaultAvatarIcon, ClockIcon } from './Icons';
+import { useAgentData } from '../context/AgentDataContext';
 import { useAuth } from '../context/AuthContext';
 import { Badge, BadgeState } from './Badge';
 
@@ -7,10 +8,12 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 
 export const TopHeader: React.FC = () => {
     const { user, profile, subscription, signOut } = useAuth();
+    const { isMobileHistoryOpen, setIsMobileHistoryOpen } = useAgentData();
     const navigate = useNavigate();
     const location = useLocation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [imgError, setImgError] = useState(false);
 
     const planDisplayName = subscription?.tier_name
         ? subscription.tier_name.charAt(0).toUpperCase() + subscription.tier_name.slice(1) + ' Plan'
@@ -30,7 +33,7 @@ export const TopHeader: React.FC = () => {
     ];
 
     return (
-        <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-40 h-16 flex-shrink-0 relative">
+        <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-[70] h-16 flex-shrink-0 relative">
             <div className="max-w-screen-2xl mx-auto px-4 h-full flex items-center justify-between">
 
                 {/* Logo Area */}
@@ -74,12 +77,15 @@ export const TopHeader: React.FC = () => {
                             className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-1.5 rounded-full transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
                         >
                             <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shadow-md">
-                                {profile?.avatar_url ? (
-                                    <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                {profile?.avatar_url && !imgError ? (
+                                    <img
+                                        src={profile.avatar_url}
+                                        alt="Profile"
+                                        className="w-full h-full object-cover"
+                                        onError={() => setImgError(true)}
+                                    />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-tr from-teal-500 to-blue-500 flex items-center justify-center font-bold text-sm text-white">
-                                        {user?.email?.charAt(0).toUpperCase() || 'A'}
-                                    </div>
+                                    <DefaultAvatarIcon className="w-full h-full" />
                                 )}
                             </div>
                             <div className="hidden md:block text-left mr-1">
@@ -141,6 +147,17 @@ export const TopHeader: React.FC = () => {
                             </>
                         )}
                     </div>
+
+                    {/* Mobile History Toggle (Only on Creator Page) */}
+                    {location.pathname === '/agent-portal/creator' && (
+                        <button
+                            onClick={() => setIsMobileHistoryOpen(!isMobileHistoryOpen)}
+                            className="lg:hidden p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                            title="View Chat History"
+                        >
+                            <ClockIcon className="w-6 h-6" />
+                        </button>
+                    )}
 
                     {/* Mobile Menu Toggle */}
                     <button

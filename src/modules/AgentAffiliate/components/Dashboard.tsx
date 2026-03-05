@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage, Product, MediaUpload, Booking, CustomerInquiry } from '../types';
-import { CheckCircleIcon, UsersIcon, WalletIcon, ChartBarIcon, SearchIcon, DownloadIcon, AlertCircleIcon, SendIcon, PaperclipIcon, MessageSquareIcon, FilterIcon, StarIcon, LightningIcon, RocketIcon, EyeOffIcon, BellIcon, LockIcon, MapIcon, CalendarIcon, ChevronDownIcon, ClockIcon } from './Icons';
+import { CheckCircleIcon, UsersIcon, WalletIcon, ChartBarIcon, SearchIcon, DownloadIcon, AlertCircleIcon, SendIcon, PaperclipIcon, MessageSquareIcon, FilterIcon, StarIcon, LightningIcon, RocketIcon, EyeOffIcon, BellIcon, LockIcon, MapIcon, CalendarIcon, ChevronDownIcon, ClockIcon, DefaultAvatarIcon } from './Icons';
 import { messageService } from '../../Customer/services/messageService';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../../../services/supabaseClient';
@@ -956,8 +956,8 @@ const MessagesView: React.FC<{ inquiries: CustomerInquiry[]; setInquiries?: (inq
                     <>
                         <div className="p-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-600">
-                                    {selectedInquiry.customer_name.charAt(0)}
+                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                                    <DefaultAvatarIcon className="w-full h-full" />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-gray-900 dark:text-white">{selectedInquiry.customer_name}</h3>

@@ -8,8 +8,7 @@ import ProductModal from '../components/ProductModal';
 import { useAgentData } from '../context/AgentDataContext';
 import { useAuth } from '../context/AuthContext';
 import { useAffiliateSubscription } from '../hooks/useAffiliateSubscription';
-import { ChevronLeftIcon, ChevronRightIcon } from '../components/Icons';
-import { X, Sparkles, Download, Share2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Sparkles, Download, Share2 } from 'lucide-react';
 import { Product } from '../types';
 
 const CreatorPage: React.FC = () => {
@@ -19,12 +18,12 @@ const CreatorPage: React.FC = () => {
         messages, isLoading, sendMessage, workspaceProducts, affiliateListings,
         confirmProduct, deleteProduct, chatSessions, currentSessionId,
         setCurrentSessionId, createNewChat, deleteSession, renameSession,
-        updateAffiliateStatus, removeAffiliateListing, lastGeneratedImageUrl
+        updateAffiliateStatus, removeAffiliateListing, lastGeneratedImageUrl,
+        isMobileHistoryOpen, setIsMobileHistoryOpen
     } = useAgentData();
 
     const [isHistoryOpen, setIsHistoryOpen] = useState(true);
     const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(true);
-    const [isMobileHistoryOpen, setIsMobileHistoryOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeImage, setActiveImage] = useState<{ url: string; prompt?: string } | null>(null);
@@ -47,19 +46,12 @@ const CreatorPage: React.FC = () => {
     }, [lastGeneratedImageUrl]);
 
     return (
-        <div className="flex w-full h-full relative">
-            {/* Mobile History Drawer Toggle (Floating) */}
-            <button
-                onClick={() => setIsMobileHistoryOpen(true)}
-                className="lg:hidden fixed bottom-24 right-4 z-40 bg-teal-600 text-white p-3 rounded-full shadow-lg"
-            >
-                History
-            </button>
+        <div className="flex w-full h-full relative overflow-hidden">
 
             {/* Mobile History Drawer */}
-            <div className={`fixed inset-0 z-[60] lg:hidden transition-opacity duration-300 ${isMobileHistoryOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+            <div className={`fixed top-16 left-0 right-0 bottom-0 z-[60] lg:hidden transition-opacity duration-300 ${isMobileHistoryOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileHistoryOpen(false)} />
-                <div className={`absolute left-0 top-0 bottom-0 w-full max-w-[320px] bg-gray-100 dark:bg-gray-950 shadow-2xl transform transition-transform duration-300 ${isMobileHistoryOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className={`absolute left-0 top-0 bottom-0 w-64 md:w-80 bg-gray-100 dark:bg-gray-950 shadow-2xl transform transition-transform duration-300 ${isMobileHistoryOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <ChatHistorySidebar
                         sessions={chatSessions}
                         currentSessionId={currentSessionId}
@@ -67,13 +59,14 @@ const CreatorPage: React.FC = () => {
                         onNewChat={() => { createNewChat(); setIsMobileHistoryOpen(false); }}
                         onDeleteSession={deleteSession}
                         onRenameSession={renameSession}
+                        onClose={() => setIsMobileHistoryOpen(false)}
                     />
                 </div>
             </div>
 
             {/* Chat History Sidebar (Desktop) */}
-            <div className={`hidden lg:block border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out ${isHistoryOpen ? 'w-80 opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
-                <div className="w-80 h-full bg-gray-100 dark:bg-gray-950">
+            <div className={`hidden lg:block flex-shrink-0 bg-white dark:bg-gray-950 transition-all duration-300 ease-in-out ${isHistoryOpen ? 'w-64 md:w-80 opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
+                <div className="w-64 md:w-80 h-full">
                     <ChatHistorySidebar
                         sessions={chatSessions}
                         currentSessionId={currentSessionId}
@@ -86,16 +79,17 @@ const CreatorPage: React.FC = () => {
             </div>
 
             {/* Toggle History Button */}
-            <button
-                onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-                className="hidden lg:flex absolute top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-r-md shadow-md text-gray-500 hover:text-teal-500 transition-transform hover:scale-110"
-                style={{ left: isHistoryOpen ? '320px' : '0' }}
-            >
-                {isHistoryOpen ? <ChevronLeftIcon className="w-4 h-4" /> : <ChevronRightIcon className="w-4 h-4" />}
-            </button>
+            <div className={`hidden lg:flex flex-col justify-center absolute top-1/2 -translate-y-1/2 z-[60] transition-all duration-300 ${isHistoryOpen ? 'left-64 md:left-80 -ml-4' : 'left-0 -translate-x-1/2'}`}>
+                <button
+                    onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+                    className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md text-gray-400 hover:text-teal-500 transition-all hover:scale-110 flex items-center h-8 rounded-full ${!isHistoryOpen ? 'min-w-[40px] pl-5' : 'w-8 p-1.5 justify-center'}`}
+                >
+                    {isHistoryOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4 ml-auto mr-1" />}
+                </button>
+            </div>
 
             {/* Chat Interface */}
-            <div className="flex-1 flex flex-col h-full min-w-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm relative">
+            <div className={`flex-1 flex flex-col h-full min-w-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm relative transition-all duration-300 ${isHistoryOpen ? 'lg:border-l' : 'lg:border-l-0'} ${isWorkspaceOpen ? 'lg:border-r' : 'lg:border-r-0'} border-gray-200 dark:border-gray-800`}>
                 <ChatInterface
                     messages={messages}
                     isLoading={isLoading}
@@ -109,15 +103,16 @@ const CreatorPage: React.FC = () => {
             </div>
 
             {/* Toggle Workspace Button */}
-            <button
-                onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
-                className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-1 rounded-l-md shadow-md text-gray-500 hover:text-teal-500 transition-transform hover:scale-110"
-                style={{ right: isWorkspaceOpen ? 'min(400px, 25%)' : '0' }}
-            >
-                {isWorkspaceOpen ? <ChevronRightIcon className="w-4 h-4" /> : <ChevronLeftIcon className="w-4 h-4" />}
-            </button>
+            <div className={`hidden lg:flex flex-col justify-center absolute top-1/2 -translate-y-1/2 z-[60] transition-all duration-300 ${isWorkspaceOpen ? '-mr-4' : 'translate-x-1/2'}`} style={{ right: isWorkspaceOpen ? 'min(400px, 25%)' : '0' }}>
+                <button
+                    onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
+                    className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md text-gray-400 hover:text-teal-500 transition-all hover:scale-110 flex items-center h-8 rounded-full ${!isWorkspaceOpen ? 'min-w-[40px] pr-5' : 'w-8 p-1.5 justify-center'}`}
+                >
+                    {isWorkspaceOpen ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4 mr-auto ml-1" />}
+                </button>
+            </div>
 
-            <div className={`hidden lg:block flex-shrink-0 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out ${isWorkspaceOpen ? 'w-[min(400px,25%)] opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
+            <div className={`hidden lg:block flex-shrink-0 bg-white dark:bg-gray-950 transition-all duration-300 ease-in-out ${isWorkspaceOpen ? 'w-[min(400px,25%)] opacity-100' : 'w-0 opacity-0 overflow-hidden'}`}>
                 <div className="w-full h-full">
                     {profile?.user_type === 'affiliate_partner' ? (
                         <AffiliateWorkspace

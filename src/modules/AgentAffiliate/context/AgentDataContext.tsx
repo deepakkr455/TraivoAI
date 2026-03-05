@@ -48,6 +48,8 @@ interface AgentDataContextType {
     removeAffiliateListing: (id: string) => Promise<void>;
     refreshInquiries: () => Promise<void>;
     lastGeneratedImageUrl: string | null;
+    isMobileHistoryOpen: boolean;
+    setIsMobileHistoryOpen: (isOpen: boolean) => void;
 }
 
 const AgentDataContext = createContext<AgentDataContextType | undefined>(undefined);
@@ -61,6 +63,7 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const [chatSessions, setChatSessions] = useState<any[]>([]);
     const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
     const [lastGeneratedImageUrl, setLastGeneratedImageUrl] = useState<string | null>(null);
+    const [isMobileHistoryOpen, setIsMobileHistoryOpen] = useState(false);
     const [bookings, setBookings] = useState<Booking[]>([
         {
             id: 'b1', customer_name: 'Alice Johnson', customer_avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d', product_title: 'Majestic Manali Escape',
@@ -543,7 +546,9 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             updateAffiliateStatus,
             removeAffiliateListing,
             refreshInquiries,
-            lastGeneratedImageUrl
+            lastGeneratedImageUrl,
+            isMobileHistoryOpen,
+            setIsMobileHistoryOpen
         }}>
             {children}
         </AgentDataContext.Provider>

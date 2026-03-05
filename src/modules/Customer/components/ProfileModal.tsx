@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Mail, MapPin, Sparkles, Edit2, LogOut, CheckCircle, Clock, CreditCard, ChevronRight, User, Loader2 } from 'lucide-react';
+import { DefaultAvatarIcon } from '../../AgentAffiliate/components/Icons';
 import { useAuth } from '../../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useSubscription } from '../../../hooks/useSubscription';
@@ -18,6 +19,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
     const { userSubscription, availablePlans, subscriptionHistory, loading } = useSubscription();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<'subscription' | 'personalization'>('subscription');
+    const [imgError, setImgError] = useState(false);
 
     if (!isOpen || !user) return null;
 
@@ -222,12 +224,15 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onEditPers
                     <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
                         <div className="w-24 h-24 rounded-full bg-white p-1.5 shadow-xl">
                             <div className="w-full h-full rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                                {user.user_metadata?.avatar_url ? (
-                                    <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                {user.user_metadata?.avatar_url && !imgError ? (
+                                    <img
+                                        src={user.user_metadata.avatar_url}
+                                        alt="Profile"
+                                        className="w-full h-full object-cover"
+                                        onError={() => setImgError(true)}
+                                    />
                                 ) : (
-                                    <span className="text-3xl font-bold text-gray-400 uppercase">
-                                        {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0)}
-                                    </span>
+                                    <DefaultAvatarIcon className="w-full h-full" />
                                 )}
                             </div>
                         </div>

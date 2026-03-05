@@ -22,6 +22,7 @@ import {
 import { TripSummaryData, conclusionService, Feedback } from '../services/conclusionService';
 import { generateTripSummary } from '../services/geminiService';
 import { plansService } from '../services/plansService';
+import { DefaultAvatarIcon } from '../../AgentAffiliate/components/Icons';
 
 interface TripConclusionProps {
   tripTitle: string;
@@ -480,10 +481,8 @@ export const TripConclusion: React.FC<TripConclusionProps> = ({
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center">
-                              <span className="text-white font-bold text-lg">
-                                {feedback.user_name.charAt(0)}
-                              </span>
+                            <div className="w-12 h-12 bg-gradient-to-br from-teal-50 to-blue-50 border border-teal-100/50 rounded-full flex items-center justify-center overflow-hidden">
+                              <DefaultAvatarIcon className="w-full h-full" />
                             </div>
                             <div>
                               <p className="font-bold text-gray-900">{feedback.user_name}</p>

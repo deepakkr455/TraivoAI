@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Product } from '../../AgentAffiliate/types';
 import { getListedProducts, getPublicProfile, getSavedDeals, saveDeal, unsaveDeal, trackProductTimeSpent, incrementProductView } from '../../AgentAffiliate/services/supabaseService';
-import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon, MapIcon, HeartIcon } from '../../AgentAffiliate/components/Icons';
+import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon, MapIcon, HeartIcon, DefaultAvatarIcon } from '../../AgentAffiliate/components/Icons';
 import { ItineraryTimeline } from '../../AgentAffiliate/components/ItineraryTimeline';
 import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../services/messageService';
@@ -474,11 +474,11 @@ const DealDetailsPage: React.FC = () => {
                                 <div>
                                     <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Listed By</label>
                                     <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                                        <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg">
+                                        <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg overflow-hidden">
                                             {agentProfile?.avatar_url ? (
-                                                <img src={agentProfile.avatar_url} alt="Agent" className="w-full h-full rounded-full object-cover" />
+                                                <img src={agentProfile.avatar_url} alt="Agent" className="w-full h-full object-cover" />
                                             ) : (
-                                                agentProfile?.full_name ? agentProfile.full_name.charAt(0).toUpperCase() : (product.business_id ? 'A' : 'T')
+                                                <DefaultAvatarIcon className="w-full h-full" />
                                             )}
                                         </div>
                                         <div>

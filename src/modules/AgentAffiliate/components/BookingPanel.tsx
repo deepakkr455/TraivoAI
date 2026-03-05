@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Product, PricingOption } from '../types';
-import { PlusIcon, MinusIcon, UserCircleIcon, CheckCircleIcon } from './Icons';
+import { PlusIcon, MinusIcon, UserCircleIcon, CheckCircleIcon, DefaultAvatarIcon } from './Icons';
 
 interface BookingPanelProps {
     product: Product;
@@ -96,10 +96,8 @@ export const BookingPanel: React.FC<BookingPanelProps> = ({ product, agentName, 
 
                 <div className="pt-3 border-t border-gray-100 dark:border-gray-800/50">
                     <div className="flex items-center gap-3 p-2 bg-teal-50/20 dark:bg-teal-900/10 rounded-xl border border-teal-100/30">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-indigo-500 p-[1px] shrink-0">
-                            <div className="w-full h-full rounded-[7px] bg-white dark:bg-gray-950 flex items-center justify-center font-bold text-[10px] text-transparent bg-clip-text bg-gradient-to-br from-teal-500 to-indigo-600">
-                                {agentName ? agentName.charAt(0).toUpperCase() : 'T'}
-                            </div>
+                        <div className="w-8 h-8 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center overflow-hidden shrink-0">
+                            <DefaultAvatarIcon className="w-full h-full" />
                         </div>
                         <div className="min-w-0">
                             <p className="font-bold text-gray-950 dark:text-white text-[10px] tracking-tight truncate leading-tight">{agentName || 'Traivo Expert'}</p>
