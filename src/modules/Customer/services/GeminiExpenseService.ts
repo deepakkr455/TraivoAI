@@ -114,7 +114,12 @@ const geminiExtractExpense = async (
             messages: [{ role: 'user', content: prompt }]
         });
 
-        const content = response.choices?.[0]?.message?.content;
+        if (!response || !response.choices || response.choices.length === 0) {
+            console.error('Invalid AI response for expense extraction:', response);
+            return null;
+        }
+
+        const content = response.choices[0].message?.content;
         if (content) {
             const cleanedText = cleanJsonResponse(content);
             const extracted = JSON.parse(cleanedText) as ExtractedExpense;

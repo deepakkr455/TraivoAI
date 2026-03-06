@@ -645,6 +645,11 @@ export async function generateTravelImage(prompt: string, userId: string = ''): 
             prompt: `A professional, high-quality cinematic travel photography shot of ${prompt}. Vibrant colors, realistic textures, wide angle.`
         });
 
+        if (!response || !response.choices || response.choices.length === 0) {
+            logger.error("Invalid image generation response:", response);
+            return null;
+        }
+
         const assistantMsg = response.choices[0].message;
         let extractedUrl = null;
 
@@ -684,7 +689,13 @@ export async function parseItineraryWithAI(rawText: string, userId: string = '')
             prompt: rawText
         });
 
-        const cleanText = stripMarkdown(response.choices[0].message.content);
+        if (!response || !response.choices || response.choices.length === 0) {
+            logger.error("Invalid itinerary parsing response:", response);
+            return { itinerary: [] };
+        }
+
+        const assistantMsg = response.choices[0].message;
+        const cleanText = stripMarkdown(assistantMsg.content || '');
         const data = JSON.parse(cleanText);
 
         const rawItinerary = Array.isArray(data) ? data : (data.itinerary || data.items || []);

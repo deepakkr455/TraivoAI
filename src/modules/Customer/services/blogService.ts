@@ -142,6 +142,11 @@ export const blogService = {
                 // response_format: { type: "json_object" } // REMOVE JSON enforcement to allow custom format
             });
 
+            if (!response || !response.choices || response.choices.length === 0) {
+                console.error("Invalid AI response for blog generation:", response);
+                throw new Error("Received an empty or invalid response from the AI service.");
+            }
+
             let rawContent = response.choices[0].message.content;
 
             // 4. Parse Custom Format

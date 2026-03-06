@@ -143,25 +143,36 @@ export const getAgentResponse = async (history: ChatMessage[]): Promise<AppCompa
 
     if (error) {
         console.error("Edge Function Error:", error);
-        throw new Error(error.message || "Failed to get AI response from Edge Function");
+        throw new Error(error.message || "Failed to call AI service");
     }
 
-    // The Edge Function returns the full OpenAI-style completion object
-    const choice = data.choices[0];
-    const message = choice.message;
+    if (!data || (!data.choices && !data.text)) {
+        console.error("Invalid AI response format:", data);
+        throw new Error("Received an empty or invalid response from the AI service.");
+    }
 
     const response: AppCompatibleResponse = {};
 
-    if (message.tool_calls && message.tool_calls.length > 0) {
-        response.functionCalls = message.tool_calls.map((tc: any) => ({
-            name: tc.function.name,
-            args: JSON.parse(tc.function.arguments)
-        }));
+    // Handle standard choices format
+    if (data.choices && data.choices.length > 0) {
+        const choice = data.choices[0];
+        const message = choice.message;
+
+        if (message.tool_calls && message.tool_calls.length > 0) {
+            response.functionCalls = message.tool_calls.map((tc: any) => ({
+                name: tc.function.name,
+                args: JSON.parse(tc.function.arguments)
+            }));
+        }
+
+        if (message.content) {
+            response.text = message.content;
+        }
     }
 
-    // If there is content, include it. 
-    if (message.content) {
-        response.text = message.content;
+    // Handle direct text format (often used by Edge Function proxies)
+    if (data.text && !response.text) {
+        response.text = data.text;
     }
 
     return response;
