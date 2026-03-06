@@ -19,7 +19,7 @@ const CreatorPage: React.FC = () => {
         confirmProduct, deleteProduct, chatSessions, currentSessionId,
         setCurrentSessionId, createNewChat, deleteSession, renameSession,
         updateAffiliateStatus, removeAffiliateListing, lastGeneratedImageUrl,
-        isMobileHistoryOpen, setIsMobileHistoryOpen
+        isMobileHistoryOpen, setIsMobileHistoryOpen, isHistoryLoading
     } = useAgentData();
 
     const [isHistoryOpen, setIsHistoryOpen] = useState(true);
@@ -93,6 +93,7 @@ const CreatorPage: React.FC = () => {
                 <ChatInterface
                     messages={messages}
                     isLoading={isLoading}
+                    isHistoryLoading={isHistoryLoading}
                     onSendMessage={sendMessage}
                     onCardClick={handleCardClick}
                     onImageClick={handleImageClick}

@@ -1,14 +1,17 @@
 import React, { useState, useRef } from 'react';
 import { LoadingIcon } from '../Icons';
-import { supabase, uploadMedia } from '../../services/supabaseService';
+import { uploadMedia, updateOnboardingStatus } from '../../services/supabaseService';
+import { X, Upload, CheckCircle, ArrowRight, Shield, Building, Globe, Instagram, Phone, Mail, Award, Check } from 'lucide-react';
+import { Badge } from '../Badge';
 
 interface OnboardingModalProps {
     businessId: string;
     profile?: any;
     onComplete: (status: string, businessDetails: any, idDetails?: any) => void;
+    onClose?: () => void;
 }
 
-export const OnboardingModal: React.FC<OnboardingModalProps> = ({ businessId, profile, onComplete }) => {
+export const OnboardingModal: React.FC<OnboardingModalProps> = ({ businessId, profile, onComplete, onClose }) => {
     const [activeTab, setActiveTab] = useState<'basic' | 'identity'>('basic');
     const [loading, setLoading] = useState(false);
     const [logoPreview, setLogoPreview] = useState<string | null>(profile?.avatar_url || null);
@@ -49,22 +52,62 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ businessId, pr
         }
     };
 
-    const handleBasicSubmit = (e: React.FormEvent) => {
+    const handleBasicSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onComplete('basic_submitted', basicData);
+        setLoading(true);
+        try {
+            // Update profile with basic data + logo
+            await updateOnboardingStatus(
+                businessId,
+                'basic_submitted',
+                {
+                    ...basicData,
+                    logo_url: basicData.logo_url
+                }
+            );
+            setActiveTab('identity');
+        } catch (error) {
+            console.error('Basic onboarding error:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleIdentitySubmit = (e: React.FormEvent) => {
+    const handleIdentitySubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onComplete('id_verified', basicData, identityData);
+        setLoading(true);
+        try {
+            // Update profile with identity details
+            await updateOnboardingStatus(
+                businessId,
+                'id_verified',
+                undefined,
+                identityData
+            );
+            onComplete('id_verified', basicData, identityData);
+        } catch (error) {
+            console.error('Identity verification error:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-xl w-full flex flex-col overflow-hidden border border-gray-200 dark:border-gray-800 animate-in fade-in zoom-in duration-300">
-                <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Verify Your Presence</h2>
-                    <p className="text-xs text-gray-500 mt-1">Build trust with your customers by verifying your business identity.</p>
+                <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Verify Your Presence</h2>
+                        <p className="text-xs text-gray-500 mt-1">Build trust with your customers by verifying your business identity.</p>
+                    </div>
+                    {onClose && (
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-500"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    )}
                 </div>
 
                 <div className="flex border-b border-gray-100 dark:border-gray-800">

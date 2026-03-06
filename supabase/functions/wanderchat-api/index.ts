@@ -102,134 +102,13 @@ Every image delivered must be gallery-worthy — visually arresting within 0.3 s
 emotionally compelling, technically flawless, and worthy of genuine organic engagement on social media.
 `.trim();
 
-const AGENT_FLYER_SYSTEM_PROMPT = `
-You are an expert commercial graphic designer and travel marketing strategist, specialising in
-creating high-conversion, professional Business Flyers for Travel Agents and Agency Promotions.
-
-## YOUR ROLE
-Generate visually stunning, brand-ready travel flyers that:
-- Showcase holiday package promotions with premium aesthetic
-- Use professional layout techniques (masks, overlays, artistic borders)
-- Incorporate specific designer themes based on the destination or mood
-- Balance rich photography with clean, readable marketing typography
-
-## FLYER DESIGN SYSTEM (AGENT EXCLUSIVE)
-
-### 1. Kerala Backwaters (Minimalist Dream)
-- Visuals: Calm, high-definition houseboats on tranquil water.
-- Palette: Soft pastel greens, blues, and crisp white.
-- Typography: Elegant thin script for headlines, modern sans-serif for details.
-- Elements: Unique organic floating shapes, clean line-art leaves, subtle botanical patterns.
-- Feel: Clean white space, serene, premium minimalist.
-
-### 2. Rajasthan Heritage (Maximalist Gold & Jewels)
-- Visuals: Stunning palaces (Udaipur/Jodhpur) in deep rich colours.
-- Palette: Burgundy, forest green, royal gold, deep blue.
-- Typography: Bold serif blended with script, using gold gradients.
-- Elements: Ornate gold borders, complex traditional Indian patterns, photo masks shaped like palace archways.
-- Feel: Royal, opulent, traditional luxury.
-
-### 3. Goa Beach Vibe (Youthful & Bright Pop)
-- Visuals: Sun-drenched beaches, vibrant colored shacks, yoga/beach life.
-- Palette: Bright teal, orange, and purple.
-- Typography: Playful hand-drawn or trendy modern sans-serif.
-- Elements: Multiple irregular rounded photo shapes, modern minimal doodles, bright text overlays.
-- Feel: Fun, energetic, youthful, hip.
-
-### 4. Himalayan Adventure (Adventure & Gradients)
-- Visuals: Dramatic high-contrast snow-capped mountains, hiking/camping.
-- Palette: Deep blue, white, subtle purple gradients.
-- Typography: Strong, clean, bold sans-serif.
-- Elements: Geometric triangular photo masks, clean modern line icons, jagged blue/white wave footer.
-- Feel: Crisp, modern, adventurous, rugged.
-
-### 5. Varanasi Spirituality (Mystical Glow)
-- Visuals: Evening Aarti ceremony, river Ganges, lanterns.
-- Palette: Deep warm orange, gold, and deep night blue.
-- Typography: Artistic, textured serif fonts.
-- Elements: Floating glowing particles, light effects, photos in dissolving organic shapes, intricate pattern elements.
-- Feel: Mystical, glowing, spiritual, rich.
-
-### 6. Ladakh Road Trip (Utilitarian & Modern)
-- Visuals: Vehicles on winding mountain roads, blue lakes, unique landscapes.
-- Palette: Bold yellow and black (utilitarian theme).
-- Typography: Strong, modern, utilitarian sans-serif.
-- Elements: Dynamic angled/slanted shapes, minimal clean map/compass graphics.
-- Feel: Rugged, bold, functional, modern.
-
-### 7. Munnar Tea Gardens (Crisp & Fresh Greenery)
-- Visuals: Panoramic lush green tea plantations, rolling hills, mist.
-- Palette: Multiple shades of fresh green and clean white.
-- Typography: Clean script and serif blend.
-- Elements: Unique leaf and oval photo masks layered together, small line-art leaf icons.
-- Feel: Fresh, crisp, organic, revitalising.
-
-### 8. Agra Romance (Soft Romance & Gold)
-- Visuals: Taj Mahal at sunrise, natural light.
-- Palette: Light pink, gold, and soft sky blue.
-- Typography: Elegant calligraphy.
-- Elements: Delicate floral patterns, filigree borders, symmetrical rounded arches.
-- Feel: Romantic, timeless, soft, elegant.
-
-### 9. Puducherry French Quarter (Quaint & Pastel)
-- Visuals: Bright yellow/blue French buildings, bougainvillea.
-- Palette: Pastel yellow, soft blue, clean white.
-- Typography: Playful sans-serif and script mix.
-- Elements: Tile-shaped or window-frame photo masks, small bicycle and flower line icons.
-- Feel: Quaint, charming, coastal, artistic.
-
-### 10. Delhi Urban & Historic (Contemporary & Dynamic)
-- Visuals: Skyscrapers meets historic monuments (Qutub Minar), street food.
-- Palette: Strong contrasting blue, black, and red accents.
-- Typography: Sleek, modern sans-serif.
-- Elements: Angular overlapping geometric shapes, subtle neon light effects.
-- Feel: Dynamic, urban, contemporary, bold.
-
-## CULTURAL SENSITIVITY & GUARDRAILS
-Follow all standard travel photography guardrails: respect culture, ensure dignity, and avoid stereotypes.
-
-## OUTPUT STANDARD
-Flyers must look like they were designed by a top-tier global advertising agency.
-`.trim();
+// Agent Flyer prompt moved to agent-listing-api
 
 const getSystemInstruction = (mode?: string, personalization?: any) => {
     const now = new Date();
     const dateTimeContext = `Current System Time: ${now.toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}.`;
 
-    if (mode === 'affiliate') {
-        return `You are an AI assistant for affiliate partners on a travel listing platform.
-Your role is to help affiliate partners list travel experiences using embed codes from platforms like GetYourGuide, TripAdvisor, Viator, etc.
-
-When an affiliate partner provides an embed code (iframe, div, script) or a link:
-1.  **Extract the FULL embed code EXACTLY as provided.** Do not alter the HTML structure.
-2.  **Analyze the code/link for details.** Try to extract the title, location, or partner ID to pre-fill metadata.
-3.  **Ask for missing metadata** (Title, Description, Location, Tags) if you can't infer it.
-4.  **Once you have the code and metadata, call the 'createAffiliateListing' function.**
-5.  **You can also generate social media images using 'generate_social_image' to help them promote their listings.**
-
-Be conversational and helpful. If the code looks like a GetYourGuide widget, accept it immediately.`.trim();
-    }
-
-    if (mode === 'agent_listing' || mode === 'agent') {
-        return `You are an expert AI assistant for a B2B travel product listing platform.
-Your role is to have a conversation with a Travel Agent to gather details to list a new trip.
-Ask clarifying questions to guide the user. 
-Once you have enough information (title, location, description, pricing, duration, start date, group size, itinerary, theme tags, media), you MUST call 'createTripListing'.
-Always generate comprehensive standard travel details (Inclusions, Exclusions, Cancellation Policy) based on the context.
-You can also generate high-quality business flyers for their package promotions using 'generate_social_image'.
-
-When generating flyers for agents, you can suggest these exclusive design styles:
-1. Kerala Backwaters (Minimalist Dream)
-2. Rajasthan Heritage (Maximalist Gold & Jewels)
-3. Goa Beach Vibe (Youthful & Bright Pop)
-4. Himalayan Adventure (Adventure & Gradients)
-5. Varanasi Spirituality (Mystical Glow)
-6. Ladakh Road Trip (Utilitarian & Modern)
-7. Munnar Tea Gardens (Crisp & Fresh Greenery)
-8. Agra Romance (Soft Romance & Gold)
-9. Puducherry French Quarter (Quaint & Pastel)
-10. Delhi Urban & Historic (Contemporary & Dynamic)`.trim();
-    }
+    // Agent and Affiliate modes moved to agent-listing-api
 
     let personalizationContext = "";
     if (personalization) {
@@ -672,7 +551,7 @@ Deno.serve(async (req) => {
 
         if (action === 'generate_image') {
             console.log("[WanderChat] Action: generate_image");
-            const systemPrompt = mode === 'agent' ? AGENT_FLYER_SYSTEM_PROMPT : IMAGE_SYSTEM_PROMPT;
+            const systemPrompt = IMAGE_SYSTEM_PROMPT;
             const res = await callOpenRouter(openRouterApiKey, {
                 model: OPENROUTER_MODEL_IMAGE,
                 messages: [
@@ -685,16 +564,14 @@ Deno.serve(async (req) => {
         }
 
         if (action === 'generate_social_image') {
-            // const body = await req.json(); // Removed as body is parsed once at the top
-            // const { prompt, personalization, ...rest } = body; // Destructuring already done at the top for prompt, personalization
-            const { ...rest } = body; // Extract remaining properties for buildEnrichedPrompt
+            const { ...rest } = body;
             console.log("[WanderChat] Direct Action: generate_social_image");
 
             const enrichedPrompt = buildEnrichedPrompt({ prompt, personalization, ...rest });
             const aspectRatio = body.social_format ? (FORMAT_ASPECT_RATIO[body.social_format] || "1:1") : (body.aspect_ratio || "1:1");
             const imageSize = QUALITY_MAP[body.image_quality || 'high'] || "2K";
 
-            const systemPrompt = mode === 'agent' ? AGENT_FLYER_SYSTEM_PROMPT : IMAGE_SYSTEM_PROMPT;
+            const systemPrompt = IMAGE_SYSTEM_PROMPT;
             const imgRes = await callOpenRouter(openRouterApiKey, {
                 model: OPENROUTER_MODEL_IMAGE,
                 messages: [
@@ -802,9 +679,24 @@ Deno.serve(async (req) => {
 
         if (assistantMessage.tool_calls?.length > 0) {
             console.log(`[WanderChat] Tool Calls Detected: ${assistantMessage.tool_calls.map((tc: any) => tc.function.name).join(', ')}`);
+
+            // Separate tools handled here from those to be handled by the frontend
+            const backendTools = ['create_trip_plan', 'get_weather_forecast', 'generate_day_plan', 'search_internet', 'generate_social_image'];
+            const needsBackendProcessing = assistantMessage.tool_calls.some((tc: any) => backendTools.includes(tc.function.name));
+
+            if (!needsBackendProcessing) {
+                console.log("[WanderChat] No backend tools detected, returning assistant message for frontend processing.");
+                return new Response(JSON.stringify({ choices: [{ message: assistantMessage }] }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            }
+
             const results = await Promise.all(assistantMessage.tool_calls.map(async (toolCall: any) => {
                 const { name, arguments: argsJson } = toolCall.function;
-                const args = JSON.parse(argsJson);
+                let args: any = {};
+                try {
+                    args = JSON.parse(argsJson);
+                } catch (e) {
+                    console.error(`[WanderChat] Failed to parse args for ${name}:`, argsJson);
+                }
                 console.log(`[WanderChat] Executing Tool: ${name} with args:`, argsJson);
 
                 if (name === 'create_trip_plan') {
@@ -821,7 +713,6 @@ Deno.serve(async (req) => {
                     let imgRes = await callOpenRouter(openRouterApiKey, { model: OPENROUTER_MODEL_IMAGE, messages: [{ role: 'user', content: `Hero image for ${planData.title}` }] });
                     console.log("[WanderChat] Hero image response (full):", JSON.stringify(imgRes));
 
-                    // Extraction logic for multiple provider formats
                     const message = imgRes.choices?.[0]?.message;
                     let imageUrl = '';
 
@@ -850,7 +741,7 @@ Deno.serve(async (req) => {
                         messages: [
                             {
                                 role: 'system', content: `
-Generate a HIGH-FIDELITY weather report JSON. 
+Generate a HIGH-FIDELITY weather report JSON.
 STRICT REQUIREMENTS:
 1. Provide a full 5-day forecast list.
 2. Include a numeric AQI (Air Quality Index) value in 'current.airQuality'.
@@ -928,7 +819,7 @@ EXAMPLE OF GOOD ITEM:
                     const aspectRatio = args.social_format ? (FORMAT_ASPECT_RATIO[args.social_format] || "1:1") : (args.aspect_ratio || "1:1");
                     const imageSize = QUALITY_MAP[args.image_quality || 'high'] || "2K";
 
-                    const systemPrompt = mode === 'agent' ? AGENT_FLYER_SYSTEM_PROMPT : IMAGE_SYSTEM_PROMPT;
+                    const systemPrompt = IMAGE_SYSTEM_PROMPT;
                     const imgRes = await callOpenRouter(openRouterApiKey, {
                         model: OPENROUTER_MODEL_IMAGE,
                         messages: [
@@ -959,16 +850,23 @@ EXAMPLE OF GOOD ITEM:
 
                     return { text: `Here is your social media image for "${args.prompt}".`, imageUrl, tool: name };
                 }
+
+                // Fallback for tools not explicitly handled but registered as backend tools
+                return { text: `Tool ${name} called but no specific handler implemented yet in backend.`, tool: name };
             }));
             const final = results.find(r => r?.plan || r?.dayPlan || r?.weather || r?.text) || results[0];
             console.log(`[WanderChat] Returning Tool Result: ${final?.tool}`);
-            return new Response(JSON.stringify(final), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            return new Response(JSON.stringify(final || { error: "No tool results produced" }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
+
         console.log("[WanderChat] Returning direct text response.");
-        return new Response(JSON.stringify({ text: assistantMessage.content }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ text: assistantMessage.content || "" }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     } catch (e: any) {
         console.error("[WanderChat] Edge Function Exception:", e.message);
-        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ error: e.message || "Internal Server Error" }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
     }
 });

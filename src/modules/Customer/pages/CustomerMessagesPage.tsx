@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { MessageSquare, Send, Paperclip, Search, Menu, X, ArrowLeft, Download } from 'lucide-react';
+import { Search, Send, User, Paperclip, Download, ChevronLeft, MoreVertical, Phone, Info, Menu, MessageSquare, ArrowLeft, X } from 'lucide-react';
 import { messageService } from '../services/messageService';
 import { supabase } from '../../../services/supabaseClient';
 import Header from '../components/Header';
 import { CustomerInquiry } from '../../../types';
 import { AffiliateBanner } from '../../AgentAffiliate/components/AffiliateBanner';
+import { TripInquiryCard } from '../../../components/TripInquiryCard';
 
 const CustomerMessagesPage: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -290,7 +291,7 @@ const CustomerMessagesPage: React.FC = () => {
                                                             <h4 className={`font-bold text-sm truncate ${selectedId === inquiry.id ? 'text-gray-900' : 'text-gray-700'}`}>{inquiry.customer_name}</h4>
                                                             <span className="text-[10px] text-gray-400 text-nowrap ml-2 font-medium">{inquiry.timestamp}</span>
                                                         </div>
-                                                        <p className={`text-xs truncate ${selectedId === inquiry.id ? 'text-gray-600 font-medium' : 'text-gray-400'}`}>{inquiry.last_message}</p>
+                                                        <p className={`text-xs truncate ${selectedId === inquiry.id ? 'text-gray-600 font-medium' : 'text-gray-400'}`}>{messageService.formatMessagePreview(inquiry.last_message)}</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -343,37 +344,67 @@ const CustomerMessagesPage: React.FC = () => {
 
                             {/* Messages List */}
                             <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-[#F8FAFC]" ref={scrollRef}>
-                                {selectedInquiry.messages?.map((msg) => (
-                                    <div key={msg.id} className={`flex ${msg.sender === 'customer' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300 group`}>
-                                        <div className={`flex flex-col ${msg.sender === 'customer' ? 'items-end' : 'items-start'} max-w-[85%] lg:max-w-2xl`}>
-                                            <div className={`
-                                                px-6 py-4 rounded-2xl text-[15px] leading-relaxed shadow-sm relative
-                                                ${msg.sender === 'customer'
-                                                    ? 'bg-teal-600 text-white rounded-br-sm'
-                                                    : 'bg-white text-gray-800 rounded-bl-sm border border-gray-100'}
-                                            `}>
-                                                {msg.media_url && (
-                                                    <div className="mb-3 -mx-2 -mt-2">
-                                                        {msg.media_type === 'image' ? (
-                                                            <img src={msg.media_url} alt="Shared Image" className="rounded-xl max-h-80 object-cover w-full" />
-                                                        ) : msg.media_type === 'video' ? (
-                                                            <video src={msg.media_url} controls className="rounded-xl max-h-80 w-full" />
-                                                        ) : (
-                                                            <a href={msg.media_url} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${msg.sender === 'customer' ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-50 hover:bg-gray-100'} `}>
-                                                                <div className="p-2 bg-white/20 rounded-lg"><Download className="w-4 h-4" /></div>
-                                                                <span className="font-medium">Attachment</span>
-                                                            </a>
-                                                        )}
-                                                    </div>
-                                                )}
-                                                {msg.text && <p className="whitespace-pre-wrap">{msg.text}</p>}
+                                {selectedInquiry.messages?.map((msg) => {
+                                    const isInquiryCard = msg.text && msg.text.includes('[TRIP_INQUIRY_DETAILS]');
+                                    return (
+                                        <div key={msg.id} className={`flex ${msg.sender === 'customer' ? 'justify-end' : 'justify-start'} group animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                                            {!isInquiryCard && msg.sender === 'agent' && (
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-lg mr-3 mt-1 ring-4 ring-white">
+                                                    TA
+                                                </div>
+                                            )}
+                                            <div className={`flex flex-col ${msg.sender === 'customer' ? 'items-end' : 'items-start'} max-w-[85%] lg:max-w-2xl`}>
+                                                <div className={`
+                                                    ${isInquiryCard ? 'p-0 bg-transparent border-none shadow-none' : 'px-6 py-4 rounded-2xl text-[15px] leading-relaxed shadow-sm relative'}
+                                                    ${!isInquiryCard && msg.sender === 'customer'
+                                                        ? 'bg-teal-600 text-white rounded-br-sm'
+                                                        : !isInquiryCard ? 'bg-white text-gray-800 rounded-bl-sm border border-gray-100' : ''}
+                                                `}>
+                                                    {msg.media_url && (
+                                                        <div className="mb-3 -mx-2 -mt-2">
+                                                            {msg.media_type === 'image' ? (
+                                                                <img src={msg.media_url} alt="Shared Image" className="rounded-xl max-h-80 object-cover w-full" />
+                                                            ) : msg.media_type === 'video' ? (
+                                                                <video src={msg.media_url} controls className="rounded-xl max-h-80 w-full" />
+                                                            ) : (
+                                                                <a href={msg.media_url} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${msg.sender === 'customer' ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-50 hover:bg-gray-100'} `}>
+                                                                    <div className="p-2 bg-white/20 rounded-lg"><Download className="w-4 h-4" /></div>
+                                                                    <span className="font-medium">Attachment</span>
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {msg.text && msg.text.includes('[TRIP_INQUIRY_DETAILS]') ? (
+                                                        <div className="flex flex-col">
+                                                            <TripInquiryCard
+                                                                isUser={msg.sender === 'customer'}
+                                                                data={JSON.parse(msg.text.split('[TRIP_INQUIRY_DETAILS]')[1].split(/\r?\n\s*\r?\n/)[0].trim())}
+                                                            />
+                                                            {msg.text.split(/\r?\n\s*\r?\n/).slice(1).join('\n\n') && (
+                                                                <div className={`
+                                                                    px-5 py-3 rounded-2xl text-sm font-medium mt-1 shadow-sm
+                                                                    ${msg.sender === 'customer' ? 'bg-teal-600 text-white self-end rounded-tr-sm' : 'bg-white text-gray-800 self-start border border-gray-100 rounded-tl-sm'}
+                                                                `}>
+                                                                    {msg.text.split(/\r?\n\s*\r?\n/).slice(1).join('\n\n')}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ) : msg.text && (
+                                                        <p className="whitespace-pre-wrap">{msg.text}</p>
+                                                    )}
+                                                </div>
+                                                <div className={`text-[10px] font-medium mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${msg.sender === 'customer' ? 'text-gray-400 mr-1 text-right' : 'text-gray-400 ml-1'}`}>
+                                                    {msg.time}
+                                                </div>
                                             </div>
-                                            <div className={`text-[10px] font-medium mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${msg.sender === 'customer' ? 'text-gray-400 mr-1' : 'text-gray-400 ml-1'}`}>
-                                                {msg.time}
-                                            </div>
+                                            {msg.sender === 'customer' && (
+                                                <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden ml-3 mt-1 shadow-md">
+                                                    <User className="w-6 h-6 text-gray-400" />
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
 
                             {/* Input Area */}

@@ -88,6 +88,7 @@ const WanderChatPage: React.FC = () => {
   // Chat State
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [agentThoughts, setAgentThoughts] = useState<string[]>([]);
   const [isChatStarted, setIsChatStarted] = useState(false);
   const [chatInput, setChatInput] = useState('');
@@ -505,7 +506,7 @@ const WanderChatPage: React.FC = () => {
 
   const handleSelectSession = async (sessionId: string) => {
     if (!user) return;
-    setIsLoading(true);
+    setIsHistoryLoading(true);
     try {
       const messagesData = await getCustomerConversationMessages(user.id, sessionId);
       if (messagesData) {
@@ -520,7 +521,7 @@ const WanderChatPage: React.FC = () => {
         localStorage.setItem('sessionId', sessionId); // Update for persistence across refresh
       }
     } finally {
-      setIsLoading(false);
+      setIsHistoryLoading(false);
       setIsSidebarOpen(false); // Close on mobile selection
     }
   };
@@ -562,7 +563,7 @@ const WanderChatPage: React.FC = () => {
     }
 
     logger.info("HandleNewChat: Starting...");
-    setIsLoading(true);
+    setIsHistoryLoading(true);
     try {
       const SESSION_TITLES = [
         "Adventure Awaits", "Dream Vacation", "City Explorer", "Beach Paradise",
@@ -593,7 +594,7 @@ const WanderChatPage: React.FC = () => {
         setIsChatStarted(true);
       }
     } finally {
-      setIsLoading(false);
+      setIsHistoryLoading(false);
     }
   }, [user]);
 
@@ -830,8 +831,20 @@ const WanderChatPage: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-2 pb-4 max-w-4xl mx-auto">
-                      {messages.length === 0 ? (
+                    <div className="space-y-2 pb-4 max-w-4xl mx-auto relative min-h-[50vh]">
+                      {isHistoryLoading ? (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-50 animate-in fade-in duration-300 rounded-3xl">
+                          <div className="relative">
+                            <div className="w-16 h-16 border-4 border-teal-100 dark:border-teal-900/30 rounded-full" />
+                            <div className="absolute inset-0 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Sparkles className="w-6 h-6 text-teal-500 animate-pulse" />
+                            </div>
+                          </div>
+                          <h3 className="mt-6 text-lg font-bold text-gray-800 dark:text-gray-200">Retrieving Your Journey</h3>
+                          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 animate-pulse">Loading historical chat details...</p>
+                        </div>
+                      ) : messages.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in duration-500">
                           <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mb-6">
                             <MessageSquare className="w-8 h-8 text-teal-600" />

@@ -109,8 +109,9 @@ export const uploadMedia = async (file: File, businessId: string): Promise<strin
         return null;
     }
 
-    // Get secure local blob URL instead of the public Supabase URL
-    return await getSecureImageUrl('media', data.path);
+    // For product listings, we need a persistent public URL instead of a temporary blob URL
+    const { data: publicData } = supabase.storage.from('media').getPublicUrl(data.path);
+    return publicData.publicUrl;
 };
 
 // ---------------------------------------------------------------------------
@@ -864,6 +865,25 @@ export const trackProductInteraction = async (
 };
 
 /**
+ * Gets the total number of views for a specific product from granular interactions
+ */
+export const getProductViews = async (productId: string): Promise<number> => {
+    try {
+        const { count, error } = await supabase
+            .from('product_interactions')
+            .select('*', { count: 'exact', head: true })
+            .eq('product_id', productId)
+            .eq('interaction_type', 'view');
+
+        if (error) throw error;
+        return count || 0;
+    } catch (error) {
+        console.error('Error fetching product views:', error);
+        return 0;
+    }
+};
+
+/**
  * Tracks time spent on a product page, including metadata like scroll depth
  */
 export const trackProductTimeSpent = async (productId: string, durationSeconds: number, userId?: string, additionalMetadata: any = {}) => {
@@ -1164,7 +1184,7 @@ export const getUserPersonalization = async (userId: string) => {
     }
 };
 /**
- * Updates the onboarding status for a profile
+ * Updates the onboarding status for a profile and logs it in the agent_onboarding table
  */
 export const updateOnboardingStatus = async (userId: string, status: string, businessDetails?: any, idVerificationDetails?: any) => {
     try {
@@ -1178,20 +1198,59 @@ export const updateOnboardingStatus = async (userId: string, status: string, bus
             if (businessDetails.phone) updates.phone_number = businessDetails.phone;
             if (businessDetails.website) updates.company_website = businessDetails.website;
             if (businessDetails.social_handle) updates.instagram_page_id = businessDetails.social_handle;
-            // email is usually not updated here as it's the primary identifier
         }
 
         if (idVerificationDetails) updates.id_verification_details = idVerificationDetails;
 
-        const { error } = await supabase
+        // 1. Update Profiles table
+        const { error: profileError } = await supabase
             .from('profiles')
             .update(updates)
+            .eq('id', userId);
+
+        if (profileError) throw profileError;
+
+        // 2. Log in agent_onboarding table for granular tracking
+        const stepKey = status.includes('id') ? 'identity' : 'basic';
+        const { error: onboardingError } = await supabase
+            .from('agent_onboarding')
+            .upsert({
+                user_id: userId,
+                step_key: stepKey,
+                status: status.includes('verified') ? 'verified' : 'submitted',
+                details: status.includes('id') ? (idVerificationDetails || {}) : (businessDetails || {}),
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id,step_key' });
+
+        if (onboardingError) {
+            console.error('Error logging onboarding step:', onboardingError);
+            // Non-blocking for the main profile update
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error updating onboarding status:', error);
+        return false;
+    }
+};
+
+/**
+ * Update general profile fields
+ */
+export const updateProfile = async (userId: string, updates: any) => {
+    try {
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                ...updates,
+                updated_at: new Date().toISOString()
+            })
             .eq('id', userId);
 
         if (error) throw error;
         return true;
     } catch (error) {
-        console.error('Error updating onboarding status:', error);
+        console.error('Error updating profile:', error);
         return false;
     }
 };

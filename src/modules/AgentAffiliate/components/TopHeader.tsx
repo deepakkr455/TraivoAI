@@ -74,38 +74,53 @@ export const TopHeader: React.FC = () => {
                     <div className="relative">
                         <button
                             onClick={() => setIsProfileOpen(!isProfileOpen)}
-                            className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-1.5 rounded-full transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+                            className="flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-full transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
                         >
-                            <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shadow-md">
-                                {profile?.avatar_url && !imgError ? (
-                                    <img
-                                        src={profile.avatar_url}
-                                        alt="Profile"
-                                        className="w-full h-full object-cover"
-                                        onError={() => setImgError(true)}
-                                    />
-                                ) : (
-                                    <DefaultAvatarIcon className="w-full h-full" />
-                                )}
-                            </div>
-                            <div className="hidden md:block text-left mr-1">
-                                <div className="flex items-center gap-1.5 leading-none mb-0.5">
-                                    <p className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-200">
-                                        {profile?.full_name?.split(' ')[0] || 'User'}
-                                    </p>
-                                    {profile?.onboarding_status && profile.onboarding_status !== 'pending' && (
-                                        <Badge
-                                            state={
-                                                profile.onboarding_status === 'id_verified' ? 'blue' :
-                                                    (profile.onboarding_status === 'basic_submitted' && user?.email_confirmed_at) ? 'mustard' :
-                                                        'grey'
-                                            }
+                            <div className="relative flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 p-0.5 shadow-md flex items-center justify-center overflow-hidden">
+                                    {(profile?.avatar_url || user?.user_metadata?.avatar_url) ? (
+                                        <img
+                                            src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                                            alt="Profile"
+                                            className="w-full h-full object-cover rounded-full bg-white"
                                         />
+                                    ) : (
+                                        <DefaultAvatarIcon className="w-8 h-8 text-white" />
                                     )}
                                 </div>
-                                <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 leading-tight">
-                                    {planDisplayName}
-                                </p>
+                                {/* Status Badge Overlay - Positioned more carefully */}
+                                <div className="absolute -bottom-1 -right-1 ring-2 ring-white dark:ring-gray-900 rounded-full z-10 transition-transform hover:scale-110">
+                                    <Badge
+                                        state={
+                                            profile?.onboarding_status === 'id_verified' ? 'blue' :
+                                                profile?.onboarding_status === 'basic_verified' ? 'mustard' :
+                                                    'grey'
+                                        }
+                                        showLabel={false}
+                                        className="bg-white dark:bg-gray-800 !p-1 shadow-sm"
+                                    />
+                                </div>
+                            </div>
+                            <div className="hidden md:block text-left pr-1">
+                                <div className="flex flex-col leading-none">
+                                    <div className="flex items-center gap-2 mb-0.5">
+                                        <p className="text-sm font-black text-gray-900 dark:text-gray-100 tracking-tight">
+                                            {profile?.full_name || user?.user_metadata?.full_name || 'User'}
+                                        </p>
+                                        <Badge
+                                            state={
+                                                profile?.onboarding_status === 'id_verified' ? 'blue' :
+                                                    profile?.onboarding_status === 'basic_verified' ? 'mustard' :
+                                                        'grey'
+                                            }
+                                            showLabel={false}
+                                            className="scale-90"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] font-bold text-teal-600 dark:text-teal-400 tracking-wider">
+                                        {planDisplayName}
+                                    </p>
+                                </div>
                             </div>
                         </button>
 

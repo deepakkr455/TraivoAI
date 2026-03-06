@@ -50,6 +50,7 @@ interface AgentDataContextType {
     lastGeneratedImageUrl: string | null;
     isMobileHistoryOpen: boolean;
     setIsMobileHistoryOpen: (isOpen: boolean) => void;
+    isHistoryLoading: boolean;
 }
 
 const AgentDataContext = createContext<AgentDataContextType | undefined>(undefined);
@@ -64,6 +65,7 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
     const [lastGeneratedImageUrl, setLastGeneratedImageUrl] = useState<string | null>(null);
     const [isMobileHistoryOpen, setIsMobileHistoryOpen] = useState(false);
+    const [isHistoryLoading, setIsHistoryLoading] = useState(false);
     const [bookings, setBookings] = useState<Booking[]>([
         {
             id: 'b1', customer_name: 'Alice Johnson', customer_avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d', product_title: 'Majestic Manali Escape',
@@ -138,6 +140,8 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 }
             }
 
+            setIsHistoryLoading(true);
+
             if (activeSessionId) {
                 const history = await getConversationMessages(session.user.id, activeSessionId);
                 const hydratedHistory = history.map(msg => {
@@ -163,6 +167,8 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             console.error('Failed to fetch data:', error);
             setMessages([initialMessage]);
             conversationHistoryRef.current = [initialMessage];
+        } finally {
+            setIsHistoryLoading(false);
         }
     }, [session, profile, currentSessionId]);
 
@@ -229,6 +235,8 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const processFunctionCall = useCallback(async (functionCall: { name: string; args: any }) => {
         if (functionCall.name === createTripListingFunctionDeclaration.name) {
             const productData = functionCall.args;
+            console.log('🔔 Product Data:', productData);
+
             const newProduct: Product = {
                 id: crypto.randomUUID(),
                 created_at: new Date().toISOString(),
@@ -268,7 +276,7 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             const aiCardMessage: ChatMessage = {
                 id: crypto.randomUUID(),
                 sender: 'ai',
-                content: 'Great! I\'ve created a new trip listing with all the details. You can review the Inclusions, Exclusions, and Policies in the Trip Workspace.',
+                content: 'Great! I\'ve created a new package listing with all the details. You can review the Inclusions, Exclusions, and Policies in the Trip Workspace.',
                 productCard: newProduct,
             };
             setMessages(prev => [...prev, aiCardMessage]);
@@ -548,7 +556,8 @@ export const AgentDataProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             refreshInquiries,
             lastGeneratedImageUrl,
             isMobileHistoryOpen,
-            setIsMobileHistoryOpen
+            setIsMobileHistoryOpen,
+            isHistoryLoading
         }}>
             {children}
         </AgentDataContext.Provider>

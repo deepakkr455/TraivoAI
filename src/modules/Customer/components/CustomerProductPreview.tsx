@@ -5,7 +5,7 @@ import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon,
 import { ItineraryTimeline } from '../../AgentAffiliate/components/ItineraryTimeline';
 import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../services/messageService';
-import { getPublicProfile } from '../../AgentAffiliate/services/supabaseService';
+import { getPublicProfile, getProductViews } from '../../AgentAffiliate/services/supabaseService';
 import { useNavigate } from 'react-router-dom';
 
 interface CustomerProductPreviewProps {
@@ -82,7 +82,34 @@ export const CustomerProductPreview: React.FC<CustomerProductPreviewProps> = ({ 
         const customerName = (user as any)?.user_metadata?.full_name || user.email || 'Traveler';
         const avatarUrl = (user as any)?.user_metadata?.avatar_url || (user as any)?.user_metadata?.picture || null;
 
-        const inquiryId = await messageService.checkOrCreateInquiry(product.id, agentId, user.id, customerName, avatarUrl, tripId);
+        const startingPrice = product.pricing?.length > 0
+            ? Math.min(...product.pricing.map(p => p.cost))
+            : 0;
+
+        // Fetch LIVE view count from table
+        const liveViews = await getProductViews(product.id);
+
+        const initialMessage = `[TRIP_INQUIRY_DETAILS]
+{
+  "tripId": "${product.id}",
+  "title": "${product.title}",
+  "location": "${product.location}",
+  "duration": "${product.duration}",
+  "price": "Rs. ${startingPrice.toLocaleString()}",
+  "views": "${liveViews}"
+}
+
+I'm interested in this package. Can you please provide more details?`;
+
+        const inquiryId = await messageService.checkOrCreateInquiry(
+            product.id,
+            agentId,
+            user.id,
+            customerName,
+            avatarUrl,
+            tripId,
+            initialMessage
+        );
 
         if (inquiryId) {
             navigate(`/user/messages?inquiry_id=${inquiryId}`);

@@ -16,11 +16,12 @@ interface ChatInterfaceProps {
     isAffiliate?: boolean;
     canSendMessage?: boolean;
     quotaInfo?: string;
+    isHistoryLoading?: boolean;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
     messages, isLoading, onSendMessage, onCardClick, onImageClick, isAffiliate = false,
-    canSendMessage = true, quotaInfo
+    canSendMessage = true, quotaInfo, isHistoryLoading = false
 }) => {
     const [input, setInput] = useState('');
     const [files, setFiles] = useState<File[]>([]);
@@ -109,17 +110,33 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     return (
         <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 p-4 md:p-6 overflow-y-auto custom-scrollbar">
-                <div className="space-y-6">
-                    {messages.map((msg) => (
-                        <Message key={msg.id} message={msg} onCardClick={onCardClick} onImageClick={onImageClick} />
-                    ))}
-                    {(isLoading || isUploading) && (
-                        <div className="flex justify-center items-center gap-3 py-4">
-                            <LoadingIcon />
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                                {isUploading ? 'Uploading media...' : 'The AI is planning your trip details...'}
-                            </p>
+                <div className="space-y-6 relative h-full">
+                    {isHistoryLoading ? (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm z-50 animate-in fade-in duration-300">
+                            <div className="relative">
+                                <div className="w-16 h-16 border-4 border-teal-100 dark:border-teal-900 rounded-full" />
+                                <div className="absolute inset-0 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <Sparkles className="w-6 h-6 text-teal-500 animate-pulse" />
+                                </div>
+                            </div>
+                            <h3 className="mt-6 text-lg font-bold text-gray-800 dark:text-gray-200">Retrieving History</h3>
+                            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 animate-pulse">Gathering your previous travel plans...</p>
                         </div>
+                    ) : (
+                        <>
+                            {messages.map((msg) => (
+                                <Message key={msg.id} message={msg} onCardClick={onCardClick} onImageClick={onImageClick} />
+                            ))}
+                            {(isLoading || isUploading) && (
+                                <div className="flex justify-center items-center gap-3 py-4">
+                                    <LoadingIcon />
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                                        {isUploading ? 'Uploading media...' : 'The AI is planning your trip details...'}
+                                    </p>
+                                </div>
+                            )}
+                        </>
                     )}
                     <div ref={messagesEndRef} />
                 </div>

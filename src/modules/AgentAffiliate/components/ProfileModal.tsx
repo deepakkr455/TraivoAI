@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { XIcon, UserCircleIcon, CheckCircleIcon, ClockIcon, DefaultAvatarIcon } from './Icons';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { affiliateSubscriptionService } from '../services/subscriptionService';
+import { XIcon, DefaultAvatarIcon } from './Icons';
 import { AgentTier } from '../types';
+import { updateOnboardingStatus } from '../services/supabaseService';
+import { Badge } from './Badge';
+import { OnboardingModal } from './onboarding/OnboardingModal';
+import { Shield, Settings, CheckCircle } from 'lucide-react';
 
 
 interface ProfileModalProps {
@@ -17,6 +21,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const [tiers, setTiers] = useState<AgentTier[]>([]);
     const [loading, setLoading] = useState(true);
     const [imgError, setImgError] = useState(false);
+    const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+    const { refreshSession } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,18 +56,18 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const quotaLimit = currentTier?.daily_quota || 20; // Default to base if not found
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in duration-300">
                 {/* Header */}
                 <div className="relative h-32 bg-gradient-to-r from-teal-500 to-blue-600">
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors"
+                        className="absolute top-4 right-4 p-2.5 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all hover:rotate-90"
                     >
-                        <XIcon className="w-5 h-5" />
+                        <XIcon className="w-5 h-5" strokeWidth={2.5} />
                     </button>
                     <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-                        <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 bg-white dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                        <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 bg-white dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-lg relative group">
                             {(profile?.avatar_url || user?.user_metadata?.avatar_url) && !imgError ? (
                                 <img
                                     src={profile?.avatar_url || user?.user_metadata?.avatar_url}
@@ -69,8 +76,21 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                                     onError={() => setImgError(true)}
                                 />
                             ) : (
-                                <DefaultAvatarIcon className="w-20 h-20" />
+                                <DefaultAvatarIcon className="w-20 h-20 text-gray-300" />
                             )}
+
+                            {/* Status Badge Overlay - Small and positioned correctly bottom-right */}
+                            <div className="absolute bottom-1 right-1 z-10 transition-transform group-hover:scale-110">
+                                <Badge
+                                    state={
+                                        profile?.onboarding_status === 'id_verified' ? 'blue' :
+                                            profile?.onboarding_status === 'basic_verified' ? 'mustard' :
+                                                'grey'
+                                    }
+                                    className="!p-1 shadow-lg ring-2 ring-white dark:ring-gray-800"
+                                    showLabel={false}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -80,9 +100,40 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                         {profile?.full_name || user?.email?.split('@')[0] || 'User'}
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                         {profile?.company_name || user?.email}
                     </p>
+
+                    {/* Verification Status & Profile Edit Section - Clean horizontal layout */}
+                    <div className="mb-6 px-6 py-5 bg-teal-50/20 dark:bg-teal-900/10 rounded-3xl border border-teal-100/50 dark:border-teal-900/30 text-left">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Shield className="w-4 h-4 text-teal-600" />
+                            <h3 className="text-[10px] font-black text-teal-600 dark:text-teal-400 uppercase tracking-widest">Verification Status</h3>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                            <div className="flex-shrink-0">
+                                <Badge
+                                    state={
+                                        profile?.onboarding_status === 'id_verified' ? 'blue' :
+                                            profile?.onboarding_status === 'basic_verified' ? 'mustard' :
+                                                'grey'
+                                    }
+                                    showLabel={true}
+                                />
+                            </div>
+                            <button
+                                onClick={() => setIsOnboardingOpen(true)}
+                                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-teal-600 text-white text-xs font-black rounded-xl hover:bg-teal-700 shadow-md transition-all active:scale-95 whitespace-nowrap"
+                            >
+                                <Settings className="w-4 h-4" />
+                                Edit Onboarding
+                            </button>
+                        </div>
+                        <p className="mt-3 text-[10px] text-gray-500 font-medium italic text-center leading-normal px-4">
+                            Keep your profile verified to build high trust and gain 2x platform priority.
+                        </p>
+                    </div>
 
                     {/* Subscription Details */}
                     <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700 text-left">
@@ -128,7 +179,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                             <p className="text-xs font-bold text-gray-500 mb-1">Included Features:</p>
                             {subInfo.features.map((feature, idx) => (
                                 <div key={idx} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-                                    <CheckCircleIcon className="w-3 h-3 text-teal-500" />
+                                    <CheckCircle className="w-3 h-3 text-teal-500" />
                                     <span>{feature}</span>
                                 </div>
                             ))}
@@ -147,6 +198,19 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                     </button>
                 </div>
             </div>
+
+            {/* Full Onboarding Form Modal Overlay */}
+            {isOnboardingOpen && user?.id && (
+                <OnboardingModal
+                    businessId={user.id}
+                    profile={profile}
+                    onClose={() => setIsOnboardingOpen(false)}
+                    onComplete={async () => {
+                        await refreshSession();
+                        setIsOnboardingOpen(false);
+                    }}
+                />
+            )}
         </div>
     );
 };

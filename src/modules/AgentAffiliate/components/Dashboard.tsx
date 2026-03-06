@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMessage, Product, MediaUpload, Booking, CustomerInquiry } from '../types';
-import { CheckCircleIcon, UsersIcon, WalletIcon, ChartBarIcon, SearchIcon, DownloadIcon, AlertCircleIcon, SendIcon, PaperclipIcon, MessageSquareIcon, FilterIcon, StarIcon, LightningIcon, RocketIcon, EyeOffIcon, BellIcon, LockIcon, MapIcon, CalendarIcon, ChevronDownIcon, ClockIcon, DefaultAvatarIcon } from './Icons';
+import { Search, Send, User, Paperclip, Download, ChevronLeft, MoreVertical, Phone, Info, Menu, MessageSquare, ArrowLeft, X, CheckCircle, Users, Wallet, BarChart, AlertCircle, Filter, Star, Zap, Rocket, EyeOff, Bell, Lock, Map, Calendar, ChevronDown, Clock } from 'lucide-react';
+import { DefaultAvatarIcon } from './Icons'; // Assuming DefaultAvatarIcon is a custom icon and not from Lucide
 import { messageService } from '../../Customer/services/messageService';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../../../services/supabaseClient';
@@ -8,6 +9,7 @@ import { getProductAnalytics, trackProductInteraction, acceptTermsAndConditions,
 import { AffiliateBanner } from './AffiliateBanner';
 import { TandCModal } from './onboarding/TandCModal';
 import { OnboardingModal } from './onboarding/OnboardingModal';
+import { TripInquiryCard } from '../../../components/TripInquiryCard';
 import { Badge } from './Badge';
 
 interface DashboardProps {
@@ -32,7 +34,7 @@ const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color })
     const points = data.map((d, i) => {
         const x = i * step;
         const y = height - ((d - min) / range) * height;
-        return `${x},${y} `;
+        return `${x},${y}`;
     }).join(' ');
 
     return (
@@ -105,7 +107,7 @@ const FilterButton: React.FC<{ active: boolean; onClick: () => void; label: stri
             : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
             }`}
     >
-        {hasAlert && <span className="text-red-500"><AlertCircleIcon /></span>}
+        {hasAlert && <span className="text-red-500"><AlertCircle /></span>}
         {label}
     </button>
 );
@@ -179,7 +181,7 @@ const VisitHeatmap: React.FC<{ data: { title: string; views: number; relative_si
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col h-full">
             <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <RocketIcon className="w-4 h-4 text-orange-500" /> Visit View (Listing Heatmap)
+                <Rocket className="w-4 h-4 text-orange-500" /> Visit View (Listing Heatmap)
             </h3>
             {data.length > 0 ? (
                 <div className="flex-1 flex flex-wrap gap-2 content-start overflow-hidden">
@@ -238,7 +240,7 @@ const ActivityHeatmap: React.FC<{ data: { day: string; hours: number[] }[] }> = 
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col h-full">
             <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <ClockIcon className="w-4 h-4 text-teal-500" /> Customer Activity Heatmap
+                <Clock className="w-4 h-4 text-teal-500" /> Customer Activity Heatmap
             </h3>
             <div className="flex-1 flex flex-col min-h-[220px]">
                 <div className="flex mb-2">
@@ -372,9 +374,9 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
 
     if (analytics?.actionableInsights && analytics.actionableInsights.length > 0) {
         actionableInsights = analytics.actionableInsights.map((insight: any) => {
-            let icon = <StarIcon className="text-purple-500" />;
-            if (insight.iconType === 'rocket') icon = <RocketIcon className="text-orange-500" />;
-            if (insight.iconType === 'lightning') icon = <LightningIcon className="text-yellow-500" />;
+            let icon = <Star className="text-purple-500" />;
+            if (insight.iconType === 'rocket') icon = <Rocket className="text-orange-500" />;
+            if (insight.iconType === 'lightning') icon = <Zap className="text-yellow-500" />;
             return { ...insight, icon };
         });
     }
@@ -435,7 +437,7 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                     <div className="flex items-center gap-2 mt-1">
                         <p className="text-base text-gray-500 dark:text-gray-400">Track customer engagement and inventory health.</p>
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700">
-                            <CalendarIcon className="w-3 h-3" /> Last 30 Days <ChevronDownIcon className="w-3 h-3 text-gray-400" />
+                            <Calendar className="w-3 h-3" /> Last 30 Days <ChevronDown className="w-3 h-3 text-gray-400" />
                         </span>
                     </div>
                 </div>
@@ -470,10 +472,10 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <KPICard title="Total Inquiries" value={totalInquiriesCount.toString()} icon={<MessageSquareIcon />} trend="+18.5%" trendUp={true} color="teal" sparklineData={leadTrend} />
-                    <KPICard title="Total Leads" value={totalLeadsCount.toString()} icon={<UsersIcon />} trend="+12.2%" trendUp={true} color="blue" sparklineData={leadTrend} />
-                    <KPICard title="Avg. Time Spent" value={`${avgTimeAll}m`} icon={<ClockIcon />} trend="+5.4s" trendUp={true} color="purple" sparklineData={impressionTrend} />
-                    <KPICard title="Active Listings" value={activeListingsCount.toString()} icon={<MapIcon />} trend="Stable" trendUp={true} color="indigo" sparklineData={listingTrend} />
+                    <KPICard title="Total Inquiries" value={totalInquiriesCount.toString()} icon={<MessageSquare />} trend="+18.5%" trendUp={true} color="teal" sparklineData={leadTrend} />
+                    <KPICard title="Total Leads" value={totalLeadsCount.toString()} icon={<Users />} trend="+12.2%" trendUp={true} color="blue" sparklineData={leadTrend} />
+                    <KPICard title="Avg. Time Spent" value={`${avgTimeAll}m`} icon={<Clock />} trend="+5.4s" trendUp={true} color="purple" sparklineData={impressionTrend} />
+                    <KPICard title="Active Listings" value={activeListingsCount.toString()} icon={<Map />} trend="Stable" trendUp={true} color="indigo" sparklineData={listingTrend} />
                 </div>
             </div>
 
@@ -485,9 +487,9 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                     </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <ExpandableList title="Inquiries by Listing" icon={<MessageSquareIcon className="w-4 h-4 text-teal-500" />} data={topLeadsList} color="bg-teal-500" />
-                    <ExpandableList title="Views by Listing" icon={<UsersIcon className="w-4 h-4 text-blue-500" />} data={topViewsList} color="bg-blue-500" />
-                    <ExpandableList title="Engagement Score" isPercentage icon={<LightningIcon className="w-4 h-4 text-indigo-500" />} data={topEngagementList} color="bg-indigo-500" />
+                    <ExpandableList title="Inquiries by Listing" icon={<MessageSquare className="w-4 h-4 text-teal-500" />} data={topLeadsList} color="bg-teal-500" />
+                    <ExpandableList title="Views by Listing" icon={<Users className="w-4 h-4 text-blue-500" />} data={topViewsList} color="bg-blue-500" />
+                    <ExpandableList title="Engagement Score" isPercentage icon={<Zap className="w-4 h-4 text-indigo-500" />} data={topEngagementList} color="bg-indigo-500" />
                 </div>
             </div>
 
@@ -501,7 +503,7 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
                         <div className="lg:col-span-8 bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                             <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                                <MapIcon className="w-4 h-4 text-purple-500" /> Customer Location Distribution
+                                <Map className="w-4 h-4 text-purple-500" /> Customer Location Distribution
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-4">
@@ -546,7 +548,7 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                                 <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-4 flex items-center justify-between">
                                     <span>Visit Trending</span>
                                     <span className="text-[10px] text-green-500 font-bold flex items-center gap-1">
-                                        <LightningIcon className="w-3 h-3" /> +14% Up
+                                        <Zap className="w-3 h-3" /> +14% Up
                                     </span>
                                 </h3>
                                 <div className="h-24 w-full">
@@ -613,12 +615,12 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
 
                     <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-black p-8 rounded-2xl border border-gray-700 shadow-2xl overflow-hidden relative">
                         <div className="absolute top-0 right-0 p-8 opacity-10">
-                            <StarIcon className="w-32 h-32 text-amber-400 rotate-12" />
+                            <Star className="w-32 h-32 text-amber-400 rotate-12" />
                         </div>
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-8">
                                 <div className="bg-amber-500/20 p-2 rounded-lg">
-                                    <StarIcon className="w-6 h-6 text-amber-500" />
+                                    <Star className="w-6 h-6 text-amber-500" />
                                 </div>
                                 <h3 className="text-xl font-bold text-white">Actionable Insights</h3>
                                 <span className="bg-amber-500 text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Premium Exclusive</span>
@@ -652,12 +654,12 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-6">
                         <div className="bg-white/80 dark:bg-gray-900/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/20 max-w-md transform transition-all hover:scale-105">
                             <div className="bg-gradient-to-br from-amber-400 to-orange-500 text-white w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                                <LockIcon className="w-7 h-7" />
+                                <Lock className="w-7 h-7" />
                             </div>
                             <h4 className="text-xl font-extrabold text-gray-900 dark:text-white mb-2">Unlock Pro Analytics</h4>
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">Gain deep insights into customer behavior and listing health source metrics.</p>
                             <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
-                                <LightningIcon className="text-yellow-400" /> Upgrade Now - $29/mo
+                                <Zap className="text-yellow-400" /> Upgrade Now - $29/mo
                             </button>
                         </div>
                     </div>
@@ -732,7 +734,7 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                                     </div>
                                 </div>
                                 <button onClick={onBoostClick} className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-3 rounded-lg flex items-center justify-center gap-2 shadow-md">
-                                    <RocketIcon /> Boost Listing
+                                    <Rocket /> Boost Listing
                                 </button>
                             </div>
                         </div>
@@ -752,7 +754,7 @@ const Overview: React.FC<{ products: Product[], inquiries: CustomerInquiry[], on
                             <button onClick={() => setShowPreview(false)} className="absolute top-4 right-4 bg-black/40 text-white p-2 rounded-full backdrop-blur-md">✕</button>
                             <div className="absolute bottom-6 left-6 text-white">
                                 <h2 className="text-3xl font-bold">{spotlightProduct.title}</h2>
-                                <p className="opacity-80 flex items-center gap-2 mt-1"><MapIcon className="w-4 h-4" /> {spotlightProduct.location}</p>
+                                <p className="opacity-80 flex items-center gap-2 mt-1"><Map className="w-4 h-4" /> {spotlightProduct.location}</p>
                             </div>
                         </div>
                         <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -860,7 +862,7 @@ const MessagesView: React.FC<{ inquiries: CustomerInquiry[]; setInquiries?: (inq
             .channel(`inquiry_messages_${selectedId}`)
             .on(
                 'postgres_changes',
-                { event: 'INSERT', schema: 'public', table: 'inquiry_messages', filter: `inquiry_id=eq.${selectedId}` },
+                { event: 'INSERT', schema: 'public', table: 'inquiry_messages', filter: `inquiry_id = eq.${selectedId}` },
                 (payload: any) => {
                     if (payload.new && payload.new.sender_role === 'customer') {
                         const incomingMsg = {
@@ -901,7 +903,7 @@ const MessagesView: React.FC<{ inquiries: CustomerInquiry[]; setInquiries?: (inq
             <div className="h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 p-8 text-center font-sans">
                 <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 max-w-md">
                     <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
-                        <MessageSquareIcon className="w-8 h-8" />
+                        <MessageSquare className="w-8 h-8" />
                     </div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No Inquiries Yet</h2>
                     <p className="text-gray-500 dark:text-gray-400">When travel seekers inquire about your listings, they will appear here.</p>
@@ -940,7 +942,7 @@ const MessagesView: React.FC<{ inquiries: CustomerInquiry[]; setInquiries?: (inq
                                 <span className="text-[10px] text-gray-400">{inquiry.timestamp}</span>
                             </div>
                             <p className="text-xs text-teal-600 font-medium mb-1 truncate">{inquiry.product}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{inquiry.last_message}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{messageService.formatMessagePreview(inquiry.last_message || '')}</p>
                         </div>
                     ))}
 
@@ -966,30 +968,52 @@ const MessagesView: React.FC<{ inquiries: CustomerInquiry[]; setInquiries?: (inq
                             </div>
                         </div>
                         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50 dark:bg-gray-900/50">
-                            {selectedInquiry.messages?.map((msg) => (
-                                <div key={msg.id} className={`flex ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[85%] lg:max-w-md shadow-sm text-sm px-5 py-3 rounded-2xl ${msg.sender === 'agent' ? 'bg-teal-600 text-white rounded-br-sm' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-sm border border-gray-100 dark:border-gray-600'}`}>
-                                        {msg.media_url && (
-                                            <div className="rounded-xl overflow-hidden mb-2">
-                                                {msg.media_type === 'image' ? (
-                                                    <img src={msg.media_url} alt="Shared" className="w-full h-auto max-h-72 object-cover" onClick={() => window.open(msg.media_url, '_blank')} />
-                                                ) : (
-                                                    <a href={msg.media_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs opacity-80 underline underline-offset-2">Download Attachment</a>
-                                                )}
-                                            </div>
-                                        )}
-                                        <p>{msg.text}</p>
-                                        <p className={`text-[10px] mt-1 text-right ${msg.sender === 'agent' ? 'text-teal-100' : 'text-gray-400'}`}>{msg.time}</p>
+                            {selectedInquiry.messages?.map((msg) => {
+                                const isInquiryCard = msg.text && msg.text.includes('[TRIP_INQUIRY_DETAILS]');
+                                return (
+                                    <div key={msg.id} className={`flex ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[85%] lg:max-w-md ${isInquiryCard ? 'p-0 bg-transparent border-none' : 'shadow-sm text-sm px-5 py-3 rounded-2xl'} ${!isInquiryCard && msg.sender === 'agent' ? 'bg-teal-600 text-white rounded-br-sm' : !isInquiryCard ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-sm border border-gray-100 dark:border-gray-600' : ''}`}>
+                                            {msg.media_url && (
+                                                <div className="rounded-xl overflow-hidden mb-2">
+                                                    {msg.media_type === 'image' ? (
+                                                        <img src={msg.media_url} alt="Shared" className="w-full h-auto max-h-72 object-cover" onClick={() => window.open(msg.media_url, '_blank')} />
+                                                    ) : (
+                                                        <a href={msg.media_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs opacity-80 underline underline-offset-2">Download Attachment</a>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {msg.text && msg.text.includes('[TRIP_INQUIRY_DETAILS]') ? (
+                                                <div className="flex flex-col">
+                                                    <div className="shadow-2xl rounded-[2.5rem] overflow-hidden">
+                                                        <TripInquiryCard
+                                                            isUser={msg.sender === 'customer'}
+                                                            data={JSON.parse(msg.text.split('[TRIP_INQUIRY_DETAILS]')[1].split(/\r?\n\s*\r?\n/)[0].trim())}
+                                                        />
+                                                    </div>
+                                                    {msg.text.split(/\r?\n\s*\r?\n/).slice(1).join('\n\n') && (
+                                                        <div className={`
+px-4 py-2 rounded-xl text-xs font-medium mt-1 shadow-sm
+                                                            ${msg.sender === 'agent' ? 'bg-teal-600 text-white self-end' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 self-start border border-gray-100 dark:border-gray-600'}
+`}>
+                                                            {msg.text.split(/\r?\n\s*\r?\n/).slice(1).join('\n\n')}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : msg.text && (
+                                                <p>{msg.text}</p>
+                                            )}
+                                            <p className={`text-[10px] mt-1 text-right ${msg.sender === 'agent' ? 'text-teal-100' : 'text-gray-400'}`}>{msg.time}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                             <div ref={messagesEndRef} />
                         </div>
                         <div className="p-5 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
                             <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*,video/*,application/pdf" />
                             <div className="flex items-center gap-3">
                                 <button onClick={() => fileInputRef.current?.click()} className="text-gray-400 hover:text-gray-600 transition-colors" disabled={isUploading}>
-                                    {isUploading ? <div className="animate-spin h-5 w-5 border-2 border-teal-500 border-t-transparent rounded-full" /> : <PaperclipIcon />}
+                                    {isUploading ? <div className="animate-spin h-5 w-5 border-2 border-teal-500 border-t-transparent rounded-full" /> : <Paperclip />}
                                 </button>
                                 <input
                                     type="text"
@@ -1001,14 +1025,14 @@ const MessagesView: React.FC<{ inquiries: CustomerInquiry[]; setInquiries?: (inq
                                     disabled={isUploading}
                                 />
                                 <button onClick={() => handleSendMessage(replyText)} disabled={!replyText.trim() && !isUploading} className="p-3 rounded-full bg-teal-600 text-white hover:bg-teal-700 shadow-md">
-                                    <SendIcon />
+                                    <Send />
                                 </button>
                             </div>
                         </div>
                     </>
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
-                        <MessageSquareIcon className="w-12 h-12 opacity-20 mb-4" />
+                        <MessageSquare className="w-12 h-12 opacity-20 mb-4" />
                         <p className="text-sm font-medium">Select a conversation to start chatting</p>
                     </div>
                 )}

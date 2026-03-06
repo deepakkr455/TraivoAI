@@ -7,6 +7,28 @@ import logger from '../../../utils/logger';
 
 export const messageService = {
 
+    /**
+     * Formats a message for sidebar preview by abstracting JSON tags.
+     */
+    formatMessagePreview(text: string): string {
+        if (!text) return "";
+        if (typeof text !== 'string') return "";
+
+        if (text.includes('[TRIP_INQUIRY_DETAILS]')) {
+            // Robustly split by double newlines (handles both \n\n and \r\n\r\n)
+            const parts = text.split(/\r?\n\s*\r?\n/);
+
+            // The user message is typically the second part after the JSON block
+            if (parts.length > 1) {
+                const userMsg = parts[parts.length - 1].trim();
+                if (userMsg) return userMsg;
+            }
+
+            return "I'm interested in this package. Can you please provide more details?";
+        }
+        return text;
+    },
+
     async uploadMedia(file: File): Promise<{ url: string, type: 'image' | 'video' | 'pdf' } | null> {
         try {
             const fileExt = file.name.split('.').pop();
@@ -37,7 +59,7 @@ export const messageService = {
      * If yes, returns it.
      * If no, creates a new inquiry.
      */
-    async checkOrCreateInquiry(productId: string, agentId: string, customerId: string, customerName: string, customerAvatar?: string, tripId?: string): Promise<string | null> {
+    async checkOrCreateInquiry(productId: string, agentId: string, customerId: string, customerName: string, customerAvatar?: string, tripId?: string, initialMessage?: string): Promise<string | null> {
         try {
             // 1. Check existing
             let query = supabase
@@ -68,7 +90,7 @@ export const messageService = {
                     agent_id: agentId,
                     customer_name: customerName,
                     customer_avatar: customerAvatar || null,
-                    last_message: "Started a new inquiry",
+                    last_message: initialMessage || "Started a new inquiry",
                     unread_agent: true,
                     status: 'open'
                 })
@@ -76,6 +98,23 @@ export const messageService = {
                 .single();
 
             if (createError) throw createError;
+
+            // 3. Insert Initial Message if provided
+            if (initialMessage) {
+                const { error: msgError } = await supabase
+                    .from('inquiry_messages')
+                    .insert({
+                        inquiry_id: newInquiry.id,
+                        sender_id: customerId,
+                        sender_role: 'customer',
+                        message_text: initialMessage
+                    });
+
+                if (msgError) {
+                    logger.error("Error inserting initial message:", msgError);
+                    // We don't throw here to avoid failing the whole inquiry creation
+                }
+            }
 
             // Track inquiry interaction
             trackProductInteraction(productId, 'inquiry');

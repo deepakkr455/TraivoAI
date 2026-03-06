@@ -4,7 +4,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../../Customer/services/messageService';
 import { Product } from '../types';
 import { ClockIcon, LightningIcon, StarIcon, HeartIcon } from './Icons';
-import { incrementProductView, incrementProductClick, saveDeal, unsaveDeal } from '../services/supabaseService';
+import { incrementProductView, incrementProductClick, saveDeal, unsaveDeal, supabase } from '../services/supabaseService';
 
 interface ProductCardProps {
     product: Product;
@@ -136,6 +136,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isLi
         }
     };
 
+    const resolveImageUrl = (url: string) => {
+        if (!url) return 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=1887&auto=format&fit=crop';
+
+        // If it's already a full URL (http, https, blob, data), return as is
+        if (/^(http|https|blob|data):/i.test(url)) return url;
+
+        // If it looks like a Supabase storage path (no scheme), try to get public URL
+        // Assuming 'media' bucket as default for listings
+        const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(url);
+        return publicUrl;
+    };
+
     const handleCardClick = (e: React.MouseEvent) => {
         // Track click
         if (product?.id) incrementProductClick(product.id);
@@ -146,7 +158,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isLi
         <div ref={cardRef} onClick={handleCardClick} className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 w-full cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full flex flex-col">
             <div className="relative">
                 <img
-                    src={product.media_urls?.[0] || 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=1887&auto=format&fit=crop'}
+                    src={resolveImageUrl(product.media_urls?.[0])}
                     alt={product.title}
                     className="w-full h-48 object-cover rounded-t-lg"
                 />

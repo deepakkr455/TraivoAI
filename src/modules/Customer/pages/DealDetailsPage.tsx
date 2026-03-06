@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Product } from '../../AgentAffiliate/types';
-import { getListedProducts, getPublicProfile, getSavedDeals, saveDeal, unsaveDeal, trackProductTimeSpent, incrementProductView } from '../../AgentAffiliate/services/supabaseService';
+import { getListedProducts, getPublicProfile, getSavedDeals, saveDeal, unsaveDeal, trackProductTimeSpent, incrementProductView, getProductViews } from '../../AgentAffiliate/services/supabaseService';
 import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon, MapIcon, HeartIcon, DefaultAvatarIcon } from '../../AgentAffiliate/components/Icons';
 import { ItineraryTimeline } from '../../AgentAffiliate/components/ItineraryTimeline';
 import { useAuth } from '../../../hooks/useAuth';
@@ -11,6 +11,8 @@ import Header from '../components/Header';
 import { ArrowLeft, MessageCircle, Share2 } from 'lucide-react';
 import { AffiliateBanner } from '../../AgentAffiliate/components/AffiliateBanner';
 import { FloatingChatIcon } from '../components/FloatingChatIcon';
+
+import { Badge } from '../../AgentAffiliate/components/Badge';
 
 const InfoItem: React.FC<{ icon: React.ReactNode; label: string; value: string; }> = ({ icon, label, value }) => (
     <div className="flex flex-col gap-2">
@@ -231,7 +233,37 @@ const DealDetailsPage: React.FC = () => {
         const customerName = (user as any)?.user_metadata?.full_name || user.email || 'Traveler';
         const avatarUrl = (user as any)?.user_metadata?.avatar_url || (user as any)?.user_metadata?.picture || null;
 
-        const inquiryId = await messageService.checkOrCreateInquiry(product.id, agentId, user.id, customerName, avatarUrl);
+        const minPrice = Math.min(...(product.pricing?.map(p => p.cost) || [0])).toLocaleString();
+
+        // Fetch LIVE view count from table
+        const liveViews = await getProductViews(product.id);
+
+        const agentStatus = agentProfile?.onboarding_status === 'id_verified' ? 'blue' :
+            agentProfile?.onboarding_status === 'basic_verified' ? 'mustard' :
+                'grey';
+
+        const initialMessage = `[TRIP_INQUIRY_DETAILS]
+{
+  "tripId": "${product.id}",
+  "title": "${product.title}",
+  "location": "${product.location}",
+  "duration": "${product.duration}",
+  "price": "Rs. ${minPrice}",
+  "views": "${liveViews}",
+  "agentStatus": "${agentStatus}"
+}
+
+I'm interested in this package. Can you please provide more details?`;
+
+        const inquiryId = await messageService.checkOrCreateInquiry(
+            product.id,
+            agentId,
+            user.id,
+            customerName,
+            avatarUrl,
+            undefined, // tripId if any
+            initialMessage
+        );
 
         if (inquiryId) {
             navigate(`/user/messages?inquiry_id=${inquiryId}`);
@@ -482,9 +514,20 @@ const DealDetailsPage: React.FC = () => {
                                             )}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-gray-900 dark:text-white text-sm">
-                                                {agentProfile?.full_name || (product.business_id ? 'Verified Traivo Agent' : 'Travel Agent')}
-                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-bold text-gray-900 dark:text-white text-sm">
+                                                    {agentProfile?.full_name || (product.business_id ? 'Verified Traivo Agent' : 'Travel Agent')}
+                                                </p>
+                                                <Badge
+                                                    state={
+                                                        agentProfile?.onboarding_status === 'id_verified' ? 'blue' :
+                                                            agentProfile?.onboarding_status === 'basic_verified' ? 'mustard' :
+                                                                'grey'
+                                                    }
+                                                    showLabel={false}
+                                                    className="scale-75 origin-left"
+                                                />
+                                            </div>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
                                                 Member Since {agentProfile?.created_at ? new Date(agentProfile.created_at).getFullYear() : '2024'}
                                             </p>

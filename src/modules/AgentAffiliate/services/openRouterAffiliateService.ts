@@ -123,7 +123,7 @@ export const getAffiliateResponse = async (history: ChatMessage[]): Promise<AppC
 
     const formattedHistory = formatConversationHistory(history);
 
-    const { data, error } = await supabase.functions.invoke('wanderchat-api', {
+    const { data, error } = await supabase.functions.invoke('agent-listing-api', {
         body: {
             mode: 'affiliate',
             messages: formattedHistory,

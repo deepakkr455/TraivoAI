@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isChatActive, onNaviga
       }}
     >
       <div className="flex items-center space-x-3">
-        <Link to="/user/wanderchat" className="flex items-center gap-2">
+        <Link to="/user/wanderchat" className="flex items-center gap-1">
           <MapPinIcon />
           {/* <span className="text-2xl font-bold tracking-tight">
             <span className="text-teal-500 text-2xl md:text-3xl font-bold tracking-wider">Traivo</span>
