@@ -84,7 +84,7 @@ export const getPublicProfile = async (userId: string) => {
 
     const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, created_at, avatar_url')
+        .select('full_name, created_at, avatar_url, onboarding_status')
         .eq('id', userId)
         .maybeSingle();
 
@@ -433,9 +433,7 @@ const viewedProductIds = new Set<string>();
 // Increment view count for a product
 // Product Analytics (Granular Tracking Only)
 export const incrementProductView = async (id: string, metadata: any = {}) => {
-    // We are now using granular tracking via the 'product_interactions' table.
-    // The legacy 'increment_product_view' RPC caused 404s, and direct updates caused 400s due to RLS.
-    // This new approach is cleaner and provides more data (metadata, location, etc).
+    console.log(`👁️ incrementProductView called for: ${id}`, metadata);
     trackProductInteraction(id, 'view', metadata);
 };
 
@@ -598,8 +596,10 @@ export const incrementAffiliateView = async (id: string) => {
     if (viewedIds.has(id)) return;
     viewedIds.add(id);
 
+    console.log(`👁️ incrementAffiliateView called for: ${id}`);
     const { error } = await supabase.rpc('increment_affiliate_view', { row_id: id });
     if (error) {
+        console.error(`❌ increment_affiliate_view RPC failed for ${id}:`, error);
         // Fallback: Fetch current, then update (not atomic, but works)
         const { data: current, error: fetchError } = await supabase
             .from('affiliate_listings')
@@ -610,10 +610,16 @@ export const incrementAffiliateView = async (id: string) => {
         if (fetchError) return;
 
         if (current) {
-            await supabase
+            const { error: updateError } = await supabase
                 .from('affiliate_listings')
                 .update({ views: (current.views || 0) + 1 })
                 .eq('id', id);
+
+            if (updateError) {
+                console.error(`❌ incrementAffiliateView fallback update failed for ${id}:`, updateError);
+            } else {
+                console.log(`✅ incrementAffiliateView fallback update succeeded for ${id}`);
+            }
         }
     }
 };
@@ -837,6 +843,10 @@ export const trackProductInteraction = async (
                 location_city: location_city,
                 metadata: metadata
             });
+
+        if (!error) {
+            console.log(`✅ trackProductInteraction succeeded: [${type}] for ${productId}`);
+        }
 
         if (error) {
             // Fallback for strict database constraints (e.g. if 'click' or 'time_spent' is not allowed)
@@ -1230,6 +1240,34 @@ export const updateOnboardingStatus = async (userId: string, status: string, bus
         return true;
     } catch (error) {
         console.error('Error updating onboarding status:', error);
+        return false;
+    }
+};
+
+/**
+ * Triggers the onboarding-notifications edge function
+ */
+export const notifyOnboardingStatusChange = async (userId: string, status: string, fullName: string, email: string) => {
+    try {
+        const { data, error } = await supabase.functions.invoke('onboarding-notifications', {
+            body: {
+                record: {
+                    user_id: userId,
+                    full_name: fullName,
+                    email: email,
+                    new_status: status
+                }
+            }
+        });
+
+        if (error) {
+            console.error('Error triggering onboarding notification:', error);
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Failed to invoke onboarding notification function:', error);
         return false;
     }
 };

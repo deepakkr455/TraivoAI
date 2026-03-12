@@ -26,8 +26,8 @@ const SignupPage: React.FC = () => {
       setTimeout(() => {
         navigate('/user/wanderchat');
       }, 2000);
-    } catch (err) {
-      setError('Failed to create an account. The email may already be in use.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to create an account. The email may already be in use.');
     } finally {
       setLoading(false);
     }

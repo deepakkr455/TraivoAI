@@ -5,6 +5,7 @@ import { Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
 import { useSubscription } from '../../../hooks/useSubscription';
 import { useAuth } from '../../../hooks/useAuth';
 import PayUForm from '../../../components/PayUForm';
+import SubscriptionRequestModal from '../../../components/SubscriptionRequestModal';
 
 type BillingCycle = 'monthly' | 'quarterly' | 'yearly';
 
@@ -22,6 +23,7 @@ const SubscriptionPage: React.FC = () => {
     const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
     const [successPlan, setSuccessPlan] = useState<string | null>(null);
     const [pendingPayment, setPendingPayment] = useState<PendingPayment | null>(null);
+    const [requestModal, setRequestModal] = useState<{ isOpen: boolean; plan: any } | null>(null);
 
     const getPrice = (plan: any) => {
         if (billingCycle === 'monthly') return plan.monthly_price;
@@ -55,7 +57,7 @@ const SubscriptionPage: React.FC = () => {
         }
 
         if (plan.name === 'custom') {
-            window.location.href = '#/user/contact';
+            window.location.href = '/user/contact';
             return;
         }
 
@@ -68,6 +70,11 @@ const SubscriptionPage: React.FC = () => {
             return;
         }
 
+        // For Paid plans, show Request Modal (PayU commented out for now)
+        const amount = getPrice(plan);
+        setRequestModal({ isOpen: true, plan: { ...plan, amount } });
+
+        /*
         // For Paid plans, initiate PayU transaction
         const amount = getPrice(plan);
         const txnid = `txn_${Date.now()}`;
@@ -78,6 +85,7 @@ const SubscriptionPage: React.FC = () => {
             billingCycle,
             txnid
         });
+        */
     };
 
     if (loading && availablePlans.length === 0) {
@@ -121,6 +129,7 @@ const SubscriptionPage: React.FC = () => {
             <Header showBackground={true} />
 
             {/* Hidden PayU Form triggered when payment is pending */}
+            {/* 
             {pendingPayment && user && (
                 <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <PayUForm
@@ -143,6 +152,19 @@ const SubscriptionPage: React.FC = () => {
                         ✕ Cancel
                     </button>
                 </div>
+            )}
+            */}
+
+            {requestModal && user && (
+                <SubscriptionRequestModal
+                    isOpen={requestModal.isOpen}
+                    onClose={() => setRequestModal(null)}
+                    planName={requestModal.plan.name}
+                    billingCycle={billingCycle}
+                    amount={requestModal.plan.amount}
+                    userId={user.id}
+                    userType="customer"
+                />
             )}
 
             <div className="flex-1 overflow-y-auto w-full">

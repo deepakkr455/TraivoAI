@@ -56,9 +56,13 @@ const tools = [
                         type: "string",
                         enum: ['horizontal-banner', 'vertical-banner', 'square-banner'],
                         description: 'Categorize this banner based on its dimensions in the embed code.'
+                    },
+                    package_type: {
+                        type: "string",
+                        description: 'The type of package (e.g., cars, hotels, trips, tours, flights).'
                     }
                 },
-                required: ['embed_code', 'title', 'country', 'city', 'banner_type']
+                required: ['embed_code', 'title', 'country', 'city', 'banner_type', 'package_type']
             }
         }
     },

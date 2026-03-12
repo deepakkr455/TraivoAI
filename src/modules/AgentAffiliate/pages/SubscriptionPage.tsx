@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { affiliateSubscriptionService } from '../services/subscriptionService';
 import { AgentTier, AgentFeature } from '../types';
 import PayUForm from '../../../components/PayUForm';
+import SubscriptionRequestModal from '../../../components/SubscriptionRequestModal';
 
 interface PendingPayment {
     amount: number;
@@ -25,6 +26,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
     const [updating, setUpdating] = useState(false);
     const [successPlan, setSuccessPlan] = useState<string | null>(null);
     const [pendingPayment, setPendingPayment] = useState<PendingPayment | null>(null);
+    const [requestModal, setRequestModal] = useState<{ isOpen: boolean; tier: AgentTier } | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -167,6 +169,10 @@ const AffiliateSubscriptionPage: React.FC = () => {
             return;
         }
 
+        // For Paid plans, show Request Modal (PayU commented out for now)
+        setRequestModal({ isOpen: true, tier });
+
+        /*
         // For Paid plans, initiate PayU transaction
         const txnid = `txn_${Date.now()}`;
         setPendingPayment({
@@ -175,6 +181,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
             billingCycle,
             txnid
         });
+        */
     };
 
     if (loading) {
@@ -216,6 +223,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
     return (
         <div className="h-screen bg-gray-50 flex flex-col font-sans overflow-hidden">
             {/* PayU Form Overlay triggered when payment is pending */}
+            {/* 
             {pendingPayment && user && (
                 <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <PayUForm
@@ -239,6 +247,19 @@ const AffiliateSubscriptionPage: React.FC = () => {
                         ✕ Cancel
                     </button>
                 </div>
+            )}
+            */}
+
+            {requestModal && user && (
+                <SubscriptionRequestModal
+                    isOpen={requestModal.isOpen}
+                    onClose={() => setRequestModal(null)}
+                    planName={requestModal.tier.name}
+                    billingCycle={billingCycle}
+                    amount={getPrice(requestModal.tier)}
+                    userId={user.id}
+                    userType="affiliate"
+                />
             )}
 
             <div className="flex-1 overflow-y-auto w-full">
@@ -299,7 +320,7 @@ const AffiliateSubscriptionPage: React.FC = () => {
 
                                         <button
                                             className="mt-8 block w-full py-4 px-6 bg-gray-900 text-white rounded-2xl text-center font-bold uppercase tracking-wider text-xs hover:bg-black transition-all transform active:scale-95"
-                                            onClick={() => window.location.href = 'mailto:sales@traivoai.com'}
+                                            onClick={() => window.location.href = '/user/contact'}
                                         >
                                             CONTACT US
                                         </button>

@@ -73,6 +73,7 @@ export interface AffiliateListing {
     platform_ranking?: number;
     personal_ranking?: number;
     banner_type?: string;
+    package_type?: string;
 }
 
 export interface ChatMessage {
