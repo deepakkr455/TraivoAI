@@ -432,8 +432,13 @@ const viewedProductIds = new Set<string>();
 
 // Increment view count for a product
 // Product Analytics (Granular Tracking Only)
+<<<<<<< HEAD
 export const incrementProductView = async (id: string, metadata: any = {}) => {// We are now using granular tracking via the 'product_interactions' table.// The legacy 'increment_product_view' RPC caused 404s, and direct updates caused 400s due to RLS.
     // This new approach is cleaner and provides more data (metadata, location, etc).
+=======
+export const incrementProductView = async (id: string, metadata: any = {}) => {
+    console.log(`👁️ incrementProductView called for: ${id}`, metadata);
+>>>>>>> fbaaea9da9a327f43dd3965fdd133a60e03ed236
     trackProductInteraction(id, 'view', metadata);
 };
 
