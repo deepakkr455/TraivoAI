@@ -38,8 +38,8 @@ const LoginPage: React.FC = () => {
       console.log(email)
       await login(email, password);
       // Navigation is now handled by the useEffect above once the user state updates
-    } catch (err) {
-      setError('Failed to log in. Please check your credentials.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to log in. Please check your credentials.');
       setLoading(false);
     }
   };

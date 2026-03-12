@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { AffiliateListing } from '../types';
 import { incrementAffiliateView, incrementAffiliateClick } from '../services/supabaseService';
+import { useVisibilityTracker } from '../../../hooks/useVisibilityTracker';
 
 interface AffiliateCardProps {
     listing: AffiliateListing;
@@ -8,46 +9,13 @@ interface AffiliateCardProps {
 
 export const AffiliateCard: React.FC<AffiliateCardProps> = ({ listing }) => {
 
-    const cardRef = React.useRef<HTMLDivElement>(null);
-    const hasViewed = React.useRef(false);
-    const timerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-    // Track View when visible for 2 seconds
-    useEffect(() => {
-        if (hasViewed.current || !listing.id) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const entry = entries[0];
-                if (entry.isIntersecting) {
-                    // Element is visible (50%), start timer
-                    timerRef.current = setTimeout(() => {
-                        if (!hasViewed.current && listing.id) {
-                            incrementAffiliateView(listing.id);
-                            hasViewed.current = true;
-                            observer.disconnect();
-                        }
-                    }, 2000); // 2 seconds threshold
-                } else {
-                    // Element left visibility, clear timer
-                    if (timerRef.current) {
-                        clearTimeout(timerRef.current);
-                        timerRef.current = null;
-                    }
-                }
-            },
-            { threshold: 0.5 } // 50% of the card must be visible
-        );
-
-        if (cardRef.current) {
-            observer.observe(cardRef.current);
-        }
-
-        return () => {
-            if (timerRef.current) clearTimeout(timerRef.current);
-            observer.disconnect();
-        };
-    }, [listing.id]);
+    const cardRef = useVisibilityTracker<HTMLDivElement>({
+        onVisibleThreshold: () => {
+            if (listing.id) incrementAffiliateView(listing.id);
+        },
+        thresholdMs: 10000, // 10 seconds threshold
+        intersectionThreshold: 0.5
+    });
 
     // Track Click Handler
     const handleCardClick = () => {

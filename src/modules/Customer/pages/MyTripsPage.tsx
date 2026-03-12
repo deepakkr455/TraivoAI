@@ -214,11 +214,24 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/10 to-transparent" />
 
-                      <div className="absolute top-4 md:top-8 left-4 md:left-8">
+                      <div className="absolute top-4 md:top-8 left-4 md:left-8 flex items-center gap-3">
                         <div className="bg-white/20 backdrop-blur-md text-white px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[10px] md:text-[10px] font-bold uppercase tracking-widest border border-white/20">
                           Upcoming Voyage
                         </div>
                       </div>
+
+                      {/* Delete Button for Hero (Owner Only) */}
+                      {heroTrip.isOwner && (
+                        <div className="absolute top-4 md:top-8 right-4 md:right-8 z-20">
+                          <button
+                            onClick={(e) => handleDeleteTrip(e, heroTrip.id)}
+                            className="p-3 bg-red-600/90 hover:bg-red-500 text-white backdrop-blur-md rounded-2xl shadow-lg border border-white/20 transition-all hover:scale-110 active:scale-95 group/del"
+                            title="Delete this trip"
+                          >
+                            <Trash2 className="w-5 h-5 md:w-6 md:h-6" />
+                          </button>
+                        </div>
+                      )}
 
                       <div className="absolute bottom-6 md:bottom-12 left-6 md:left-12 right-6 md:right-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="max-w-3xl">
@@ -319,7 +332,8 @@ const TripExplorerCard = ({ trip, isCompleted, onClick, onDelete }: { trip: Trip
       {trip.isOwner && (
         <button
           onClick={onDelete}
-          className="absolute top-4 right-4 p-2 bg-black/10 hover:bg-red-500 text-white backdrop-blur-md rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-200 border border-white/10"
+          className="absolute top-4 right-4 p-2 bg-red-600 md:bg-black/10 hover:bg-red-500 text-white backdrop-blur-md rounded-xl md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 border border-white/10"
+          title="Delete trip"
         >
           <Trash2 className="w-4 h-4" />
         </button>

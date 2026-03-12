@@ -5,8 +5,9 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const OPENROUTER_MODEL_SYNTHESIS = "google/gemini-2.0-flash-001";
-const OPENROUTER_MODEL_IMAGE = "google/gemini-2.5-flash-preview-05-20";
+const OPENROUTER_MODEL_SYNTHESIS = "google/gemini-3-flash-preview";
+//const OPENROUTER_MODEL_SYNTHESIS = "inception/mercury-2";
+const OPENROUTER_MODEL_IMAGE = "google/gemini-2.5-flash-image";
 
 const IMAGE_SYSTEM_PROMPT = `
 You are an elite travel photography director and social media visual strategist, specialising in
@@ -560,7 +561,19 @@ Deno.serve(async (req) => {
                 ],
                 modalities: ["image", "text"]
             });
-            return new Response(JSON.stringify(res), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+            const message = res.choices?.[0]?.message;
+            let imageUrl = '';
+
+            if (message?.images?.[0]) {
+                const img = message.images[0];
+                imageUrl = typeof img === 'string' ? img : (img.url || img.image_url?.url || img.b64_json);
+            } else if (typeof message?.content === 'string') {
+                const urlMatch = message.content.match(/(https?:\/\/[^\s)\]"]+|data:image\/[a-zA-Z]*;base64,[^\s)\]"]+)/);
+                if (urlMatch) imageUrl = urlMatch[0];
+            }
+
+            return new Response(JSON.stringify({ ...res, imageUrl }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
         if (action === 'generate_social_image') {
@@ -584,11 +597,13 @@ Deno.serve(async (req) => {
 
             const message = imgRes.choices?.[0]?.message;
             let imageUrl = '';
+
             if (message?.images?.[0]) {
                 const img = message.images[0];
                 imageUrl = typeof img === 'string' ? img : (img.url || img.image_url?.url || img.b64_json);
-            } else if (typeof message?.content === 'string' && (message.content.startsWith('http') || message.content.startsWith('data:'))) {
-                imageUrl = message.content;
+            } else if (typeof message?.content === 'string') {
+                const urlMatch = message.content.match(/(https?:\/\/[^\s)\]"]+|data:image\/[a-zA-Z]*;base64,[^\s)\]"]+)/);
+                if (urlMatch) imageUrl = urlMatch[0];
             }
 
             return new Response(JSON.stringify({
@@ -710,7 +725,11 @@ Deno.serve(async (req) => {
                     const planData = JSON.parse(stripMarkdown(planRes.choices[0].message.content));
                     console.log("[WanderChat] Plan generated, fetching hero image...");
 
-                    let imgRes = await callOpenRouter(openRouterApiKey, { model: OPENROUTER_MODEL_IMAGE, messages: [{ role: 'user', content: `Hero image for ${planData.title}` }] });
+                    let imgRes = await callOpenRouter(openRouterApiKey, {
+                        model: OPENROUTER_MODEL_IMAGE,
+                        messages: [{ role: 'user', content: `Hero image for ${planData.title}` }],
+                        modalities: ["image"]
+                    });
                     console.log("[WanderChat] Hero image response (full):", JSON.stringify(imgRes));
 
                     const message = imgRes.choices?.[0]?.message;
@@ -719,8 +738,9 @@ Deno.serve(async (req) => {
                     if (message?.images && Array.isArray(message.images) && message.images.length > 0) {
                         const img = message.images[0];
                         imageUrl = typeof img === 'string' ? img : (img.url || img.image_url?.url || img.b64_json);
-                    } else if (typeof message?.content === 'string' && (message.content.startsWith('http') || message.content.startsWith('data:'))) {
-                        imageUrl = message.content;
+                    } else if (typeof message?.content === 'string') {
+                        const urlMatch = message.content.match(/(https?:\/\/[^\s)\]"]+|data:image\/[a-zA-Z]*;base64,[^\s)\]"]+)/);
+                        if (urlMatch) imageUrl = urlMatch[0];
                     }
 
                     if (imageUrl) {
@@ -838,8 +858,9 @@ EXAMPLE OF GOOD ITEM:
                     if (message?.images?.[0]) {
                         const img = message.images[0];
                         imageUrl = typeof img === 'string' ? img : (img.url || img.image_url?.url || img.b64_json);
-                    } else if (typeof message?.content === 'string' && (message.content.startsWith('http') || message.content.startsWith('data:'))) {
-                        imageUrl = message.content;
+                    } else if (typeof message?.content === 'string') {
+                        const urlMatch = message.content.match(/(https?:\/\/[^\s)\]"]+|data:image\/[a-zA-Z]*;base64,[^\s)\]"]+)/);
+                        if (urlMatch) imageUrl = urlMatch[0];
                     }
 
                     if (!imageUrl && imgRes.error) {
@@ -854,9 +875,9 @@ EXAMPLE OF GOOD ITEM:
                 // Fallback for tools not explicitly handled but registered as backend tools
                 return { text: `Tool ${name} called but no specific handler implemented yet in backend.`, tool: name };
             }));
-            const final = results.find(r => r?.plan || r?.dayPlan || r?.weather || r?.text) || results[0];
-            console.log(`[WanderChat] Returning Tool Result: ${final?.tool}`);
-            return new Response(JSON.stringify(final || { error: "No tool results produced" }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+            const mergedResults = results.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+            console.log(`[WanderChat] Returning Combined Tool Results: ${results.map(r => r.tool).join(', ')}`);
+            return new Response(JSON.stringify(mergedResults || { error: "No tool results produced" }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
 

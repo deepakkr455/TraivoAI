@@ -5,6 +5,7 @@ import { messageService } from '../../Customer/services/messageService';
 import { Product } from '../types';
 import { ClockIcon, LightningIcon, StarIcon, HeartIcon } from './Icons';
 import { incrementProductView, incrementProductClick, saveDeal, unsaveDeal, supabase } from '../services/supabaseService';
+import { useVisibilityTracker } from '../../../hooks/useVisibilityTracker';
 
 interface ProductCardProps {
     product: Product;
@@ -52,46 +53,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isLi
     };
 
 
-    const cardRef = React.useRef<HTMLDivElement>(null);
-    const hasViewed = React.useRef(false);
-    const timerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-    // Track view when visible for 2 seconds
-    React.useEffect(() => {
-        if (hasViewed.current || !product?.id) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const entry = entries[0];
-                if (entry.isIntersecting) {
-                    // Element is visible (50%), start timer
-                    timerRef.current = setTimeout(() => {
-                        if (!hasViewed.current && product?.id) {
-                            incrementProductView(product.id, { context: 'card_impression' });
-                            hasViewed.current = true;
-                            observer.disconnect();
-                        }
-                    }, 2000); // 2 seconds threshold
-                } else {
-                    // Element left visibility, clear timer
-                    if (timerRef.current) {
-                        clearTimeout(timerRef.current);
-                        timerRef.current = null;
-                    }
-                }
-            },
-            { threshold: 0.5 } // 50% of the card must be visible
-        );
-
-        if (cardRef.current) {
-            observer.observe(cardRef.current);
-        }
-
-        return () => {
-            if (timerRef.current) clearTimeout(timerRef.current);
-            observer.disconnect();
-        };
-    }, [product?.id]);
+    const cardRef = useVisibilityTracker<HTMLDivElement>({
+        onVisibleThreshold: () => {
+            if (product?.id) {
+                incrementProductView(product.id, { context: 'card_impression' });
+            }
+        },
+        thresholdMs: 10000,
+        intersectionThreshold: 0.5
+    });
 
     // Helper to format the location to be bold and uppercase like the design
     const formatLocation = (location: string) => {

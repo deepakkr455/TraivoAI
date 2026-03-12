@@ -8,6 +8,7 @@ import { MapPreviewCard } from './MapPreviewCard';
 import { SocialImagePreviewCard } from '../../../components/SocialImagePreviewCard';
 import { generateTripPlanHtml } from '../services/htmlGenerator';
 import { DefaultAvatarIcon } from '../../AgentAffiliate/components/Icons';
+import { Copy, ThumbsUp, ThumbsDown, Flag, Check } from 'lucide-react';
 
 interface MessageBubbleProps {
   message: Message;
@@ -15,6 +16,11 @@ interface MessageBubbleProps {
   onWeatherClick?: (weather: WeatherData) => void;
   onMapClick?: (dayPlan: DayPlan) => void;
   onImageClick?: (imageUrl: string, prompt?: string) => void;
+  onRateUp?: (message: Message) => void;
+  onRateDown?: (message: Message) => void;
+  onReport?: (message: Message) => void;
+  isRatedUp?: boolean;
+  isRatedDown?: boolean;
 }
 
 const BotIcon = () => (
@@ -34,19 +40,89 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onPlanClick,
   onWeatherClick,
   onMapClick,
-  onImageClick
+  onImageClick,
+  onRateUp,
+  onRateDown,
+  onReport,
+  isRatedUp,
+  isRatedDown
 }) => {
+  const [copied, setCopied] = React.useState(false);
   const isUser = message.role === 'user';
   const content = message.content;
 
+  const handleCopy = () => {
+    const textToCopy = content.text || '';
+    if (textToCopy) {
+      navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   // Render content based on MessageContent properties
   const renderContent = () => {
-    // Render trip plan if available
+    const parts: React.ReactNode[] = [];
+
+    // 1. Render text with Markdown (usually first for context)
+    if (content.text) {
+      parts.push(
+        <div key="text" className={`prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-gray-800 prose-pre:text-gray-100 ${isUser ? 'prose-invert !text-white prose-p:text-white prose-headings:text-white prose-li:text-white prose-strong:text-white prose-code:text-white' : ''} ${content.isLimit ? 'text-red-600 font-bold' : ''}`}>
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              p: ({ node, ...props }) => <p className={`mb-4 last:mb-0 ${isUser ? 'text-white' : ''}`} {...props} />,
+              h1: ({ node, ...props }) => <h1 className={`text-xl font-bold mb-4 ${isUser ? 'text-white' : ''}`} {...props} />,
+              h2: ({ node, ...props }) => <h2 className={`text-lg font-bold mb-3 ${isUser ? 'text-white' : ''}`} {...props} />,
+              h3: ({ node, ...props }) => <h3 className={`text-md font-bold mb-2 ${isUser ? 'text-white' : ''}`} {...props} />,
+              ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4" {...props} />,
+              ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
+              li: ({ node, ...props }) => <li className={`mb-1 ${isUser ? 'text-white' : ''}`} {...props} />,
+              table: ({ node, ...props }) => (
+                <div className="overflow-x-auto mb-4">
+                  <table className="min-w-full border-collapse border border-gray-300 rounded-lg overflow-hidden" {...props} />
+                </div>
+              ),
+              thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
+              th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900" {...props} />,
+              td: ({ node, ...props }) => <td className={`border border-gray-300 px-4 py-2 ${isUser ? 'text-white' : ''}`} {...props} />,
+              code: ({ node, ...props }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-pink-600 font-mono text-sm" {...props} />,
+            }}
+          >
+            {content.text}
+          </Markdown>
+          {content.isLimit && (
+            <div className="mt-4">
+              <button
+                onClick={() => window.location.href = '#/user/subscription'}
+                className="bg-red-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105 active:scale-95"
+              >
+                Upgrade Now
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // 2. Render weather if available
+    if (content.weather) {
+      parts.push(
+        <div key="weather" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <WeatherPreviewCard
+            data={content.weather}
+            onViewClick={() => onWeatherClick?.(content.weather!)}
+          />
+        </div>
+      );
+    }
+
+    // 3. Render trip plan if available
     if (content.plan) {
       const planData = content.plan;
-
-      return (
+      parts.push(
         <div
+          key="plan"
           onClick={() => onPlanClick?.(planData)}
           className="cursor-pointer"
         >
@@ -62,33 +138,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       );
     }
 
-    // Render weather if available
-    if (content.weather) {
-      return (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <WeatherPreviewCard
-            data={content.weather}
-            onViewClick={() => onWeatherClick?.(content.weather!)}
-          />
-        </div>
-      );
-    }
-
-    // Render image if available
-    if (content.imageUrl) {
-      return (
-        <SocialImagePreviewCard
-          imageUrl={content.imageUrl}
-          prompt={content.text}
-          onClick={() => onImageClick?.(content.imageUrl!, content.text)}
-        />
-      );
-    }
-
-    // Render day plan map if available
+    // 4. Render day plan map if available
     if (content.dayPlan) {
-      return (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+      parts.push(
+        <div key="map" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
           <MapPreviewCard
             dayPlan={content.dayPlan}
             onViewMap={() => onMapClick?.(content.dayPlan!)}
@@ -97,51 +150,28 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       );
     }
 
-    // Render text with Markdown
-    return (
-      <div className={`prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-gray-800 prose-pre:text-gray-100 ${isUser ? 'prose-invert !text-white prose-p:text-white prose-headings:text-white prose-li:text-white prose-strong:text-white prose-code:text-white' : ''} ${content.isLimit ? 'text-red-600 font-bold' : ''}`}>
-        <Markdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            p: ({ node, ...props }) => <p className={`mb-4 last:mb-0 ${isUser ? 'text-white' : ''}`} {...props} />,
-            h1: ({ node, ...props }) => <h1 className={`text-xl font-bold mb-4 ${isUser ? 'text-white' : ''}`} {...props} />,
-            h2: ({ node, ...props }) => <h2 className={`text-lg font-bold mb-3 ${isUser ? 'text-white' : ''}`} {...props} />,
-            h3: ({ node, ...props }) => <h3 className={`text-md font-bold mb-2 ${isUser ? 'text-white' : ''}`} {...props} />,
-            ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4" {...props} />,
-            ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4" {...props} />,
-            li: ({ node, ...props }) => <li className={`mb-1 ${isUser ? 'text-white' : ''}`} {...props} />,
-            table: ({ node, ...props }) => (
-              <div className="overflow-x-auto mb-4">
-                <table className="min-w-full border-collapse border border-gray-300 rounded-lg overflow-hidden" {...props} />
-              </div>
-            ),
-            thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
-            th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900" {...props} />,
-            td: ({ node, ...props }) => <td className={`border border-gray-300 px-4 py-2 ${isUser ? 'text-white' : ''}`} {...props} />,
-            code: ({ node, ...props }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-pink-600 font-mono text-sm" {...props} />,
-          }}
-        >
-          {content.text}
-        </Markdown>
-        {content.isLimit && (
-          <div className="mt-4">
-            <button
-              onClick={() => window.location.href = '#/user/subscription'}
-              className="bg-red-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105 active:scale-95"
-            >
-              Upgrade Now
-            </button>
-          </div>
-        )}
-      </div>
-    );
+    // 5. Render image if available
+    if (content.imageUrl) {
+      parts.push(
+        <SocialImagePreviewCard
+          key="image"
+          imageUrl={content.imageUrl}
+          prompt={content.text}
+          onClick={() => onImageClick?.(content.imageUrl!, content.text)}
+        />
+      );
+    }
+
+    if (parts.length > 0) {
+      return <div className="space-y-4 w-full">{parts}</div>;
+    }
 
     // Fallback
     return <div className="text-sm">No content to display</div>;
   };
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} group py-2`}>
       <div className={`max-w-2xl w-full ${isUser ? 'items-end' : 'items-start'} flex flex-col`}>
         <div className={`flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`}>
           {!isUser ? <BotIcon /> : <UserIcon />}
@@ -154,6 +184,45 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           >
             {renderContent()}
           </div>
+
+          {!isUser && (
+            <div className="flex items-center gap-1 mt-2 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <button
+                onClick={handleCopy}
+                title="Copy response"
+                className={`p-1.5 rounded-lg transition-all flex items-center gap-1.5 hover:bg-gray-100 ${copied ? 'text-teal-600' : 'text-gray-400 hover:text-gray-600'}`}
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied && <span className="text-[10px] font-medium uppercase tracking-wider animate-in fade-in slide-in-from-left-1">Copied</span>}
+              </button>
+
+              <div className="w-px h-3 bg-gray-200 mx-1" />
+
+              <button
+                onClick={() => onRateUp?.(message)}
+                title="Helpful"
+                className={`p-1.5 rounded-lg transition-all hover:bg-gray-100 ${isRatedUp ? 'text-teal-600 bg-teal-50' : 'text-gray-400 hover:text-teal-600'}`}
+              >
+                <ThumbsUp size={14} fill={isRatedUp ? 'currentColor' : 'none'} />
+              </button>
+
+              <button
+                onClick={() => onRateDown?.(message)}
+                title="Not helpful"
+                className={`p-1.5 rounded-lg transition-all hover:bg-gray-100 ${isRatedDown ? 'text-red-600 bg-red-50' : 'text-gray-400 hover:text-red-600'}`}
+              >
+                <ThumbsDown size={14} fill={isRatedDown ? 'currentColor' : 'none'} />
+              </button>
+
+              <button
+                onClick={() => onReport?.(message)}
+                title="Report issue"
+                className="p-1.5 rounded-lg transition-all hover:bg-gray-100 text-gray-400 hover:text-amber-600 ml-auto"
+              >
+                <Flag size={14} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

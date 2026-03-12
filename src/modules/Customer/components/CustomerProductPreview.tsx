@@ -5,8 +5,9 @@ import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon,
 import { ItineraryTimeline } from '../../AgentAffiliate/components/ItineraryTimeline';
 import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../services/messageService';
-import { getPublicProfile, getProductViews } from '../../AgentAffiliate/services/supabaseService';
+import { getPublicProfile, getProductViews, incrementProductView } from '../../AgentAffiliate/services/supabaseService';
 import { useNavigate } from 'react-router-dom';
+import { useVisibilityTracker } from '../../../hooks/useVisibilityTracker';
 
 interface CustomerProductPreviewProps {
     product: Product;
@@ -21,6 +22,16 @@ export const CustomerProductPreview: React.FC<CustomerProductPreviewProps> = ({ 
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'policies'>('overview');
     const [agentProfile, setAgentProfile] = useState<any>(null);
+
+    const previewRef = useVisibilityTracker<HTMLDivElement>({
+        onVisibleThreshold: () => {
+            if (product.id) {
+                incrementProductView(product.id, { context: 'quick_preview' });
+            }
+        },
+        thresholdMs: 10000,
+        enabled: !!product.id
+    });
 
     React.useEffect(() => {
         const fetchAgent = async () => {
@@ -120,7 +131,7 @@ I'm interested in this package. Can you please provide more details?`;
 
     return (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-0 md:p-4 z-50 backdrop-blur-sm font-sans">
-            <div className="bg-white dark:bg-gray-900 rounded-none md:rounded-2xl shadow-2xl w-full max-w-[96vw] h-full md:h-[92vh] flex flex-col overflow-hidden border border-gray-200 dark:border-gray-800">
+            <div ref={previewRef} className="bg-white dark:bg-gray-900 rounded-none md:rounded-2xl shadow-2xl w-full max-w-[96vw] h-full md:h-[92vh] flex flex-col overflow-hidden border border-gray-200 dark:border-gray-800">
                 {/* Header */}
                 <header className="flex justify-between items-center px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 z-10 shrink-0">
                     <div className="flex-1 min-w-0 mr-4">

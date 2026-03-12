@@ -115,7 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password: pass,
       options: {
         data: {
-          full_name: name, // This adds the name to user_metadata
+          full_name: name || 'Traivo User',
+          user_type: 'other' // Default type until personalized
         }
       }
     });

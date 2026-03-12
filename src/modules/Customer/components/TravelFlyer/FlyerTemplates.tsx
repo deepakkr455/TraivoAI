@@ -305,7 +305,7 @@ export const FlyerPreview: React.FC<FlyerProps> = ({ data, templateId, onUpdate,
                                             <div className="flex items-center justify-between mb-8">
                                                 <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">
                                                     <EditableText
-                                                        initialValue={labels.voyageTitle || 'The Voyage Detail'}
+                                                        initialValue={labels.voyageTitle || 'The Traivo Detail'}
                                                         onSave={val => handleLabelUpdate('voyageTitle', val)}
                                                         isEditable={isEditable}
                                                     />

@@ -4,6 +4,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Product } from '../../AgentAffiliate/types';
 import { getListedProducts, getPublicProfile, getSavedDeals, saveDeal, unsaveDeal, trackProductTimeSpent, incrementProductView, getProductViews } from '../../AgentAffiliate/services/supabaseService';
 import { XIcon, StarIcon, ClockIcon, TourTypeIcon, GroupSizeIcon, LanguagesIcon, ChevronLeftIcon, ChevronRightIcon, CheckCircleIcon, MapIcon, HeartIcon, DefaultAvatarIcon } from '../../AgentAffiliate/components/Icons';
+import { useVisibilityTracker } from '../../../hooks/useVisibilityTracker';
 import { ItineraryTimeline } from '../../AgentAffiliate/components/ItineraryTimeline';
 import { useAuth } from '../../../hooks/useAuth';
 import { messageService } from '../services/messageService';
@@ -98,19 +99,21 @@ const DealDetailsPage: React.FC = () => {
         };
     }, [productId, user]);
 
-    // Track View with Metadata on Mount
-    useEffect(() => {
-        if (!productId) return;
-        const searchParamsObj = Object.fromEntries([...searchParams]);
-
-        // Track the view event explicitly with metadata
-        incrementProductView(productId, {
-            context: 'detail_page',
-            source: searchParamsObj.ref || searchParamsObj.source || 'direct',
-            ...searchParamsObj
-        });
-
-    }, [productId]);
+    // Track View with 10s Threshold
+    const searchParamsObj = Object.fromEntries([...searchParams]);
+    const mainRef = useVisibilityTracker<HTMLDivElement>({
+        onVisibleThreshold: () => {
+            if (productId) {
+                incrementProductView(productId, {
+                    context: 'detail_page',
+                    source: searchParamsObj.ref || searchParamsObj.source || 'direct',
+                    ...searchParamsObj
+                });
+            }
+        },
+        thresholdMs: 10000,
+        enabled: !!productId
+    });
 
     const loadProduct = async () => {
         if (!productId) {
@@ -303,7 +306,7 @@ I'm interested in this package. Can you please provide more details?`;
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans">
+        <div ref={mainRef} className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans">
             {/* Back & Share Buttons - Fixed at Corner */}
             <div className="fixed top-4 left-4 z-50 flex items-center gap-2">
                 <button
@@ -518,15 +521,31 @@ I'm interested in this package. Can you please provide more details?`;
                                                 <p className="font-bold text-gray-900 dark:text-white text-sm">
                                                     {agentProfile?.full_name || (product.business_id ? 'Verified Traivo Agent' : 'Travel Agent')}
                                                 </p>
-                                                <Badge
-                                                    state={
-                                                        agentProfile?.onboarding_status === 'id_verified' ? 'blue' :
-                                                            agentProfile?.onboarding_status === 'basic_verified' ? 'mustard' :
-                                                                'grey'
-                                                    }
-                                                    showLabel={false}
-                                                    className="scale-75 origin-left"
-                                                />
+                                                {/* Verification Badge */}
+                                                {agentProfile?.onboarding_status === 'id_verified' && (
+                                                    <div className="group relative flex items-center justify-center cursor-help">
+                                                        <div className="size-4 bg-primary rounded-full border border-white dark:border-slate-800 flex items-center justify-center shadow-sm">
+                                                            <span className="material-symbols-outlined !text-[10px] text-white font-bold fill-1">check</span>
+                                                        </div>
+                                                        {/* Tooltip */}
+                                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                                            Premium Trusted
+                                                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {(agentProfile?.onboarding_status === 'basic_verified' || agentProfile?.onboarding_status === 'id_submitted') && (
+                                                    <div className="group relative flex items-center justify-center cursor-help">
+                                                        <div className="size-4 bg-amber-500 rounded-full border border-white dark:border-slate-800 flex items-center justify-center shadow-sm">
+                                                            <span className="material-symbols-outlined !text-[10px] text-white font-bold fill-1">check</span>
+                                                        </div>
+                                                        {/* Tooltip */}
+                                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                                            Basic Trusted
+                                                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
                                                 Member Since {agentProfile?.created_at ? new Date(agentProfile.created_at).getFullYear() : '2024'}

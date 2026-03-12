@@ -37,6 +37,11 @@ export const AffiliateWorkspace: React.FC<AffiliateWorkspaceProps> = ({ listings
                                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 uppercase tracking-wider">
                                         {listing.affiliate_source}
                                     </span>
+                                    {listing.package_type && (
+                                        <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300 uppercase tracking-wider">
+                                            {listing.package_type}
+                                        </span>
+                                    )}
                                     <h3 className="font-bold text-gray-900 dark:text-white mt-1 line-clamp-1">{listing.title}</h3>
                                     <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">{listing.description}</p>
 

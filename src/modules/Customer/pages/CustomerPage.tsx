@@ -8,6 +8,7 @@ import { MessageBubble } from '../components/MessageBubble';
 import { AgentThought } from '../components/AgentThought';
 import { Message, TripPlanData, MessageContent, WeatherData, DayPlan } from '../../../types';
 import { orchestrateResponse } from '../services/geminiService';
+import { ReportModal } from '../components/ReportModal';
 import logger from '../../../utils/logger';
 import TravelFlyerEditor from '../components/TravelFlyer/TravelFlyerEditor';
 import { generateTripPlanHtml } from '../services/htmlGenerator';
@@ -33,7 +34,8 @@ import {
   updateCustomerChatSessionTitle,
   getCustomerConversationMessages,
   getAffiliateListings,
-  saveUserPersonalization
+  saveUserPersonalization,
+  submitAiFeedback
 } from '../../AgentAffiliate/services/supabaseService';
 import { AffiliateBanner } from '../../AgentAffiliate/components/AffiliateBanner';
 import { SmartWelcome } from '../components/SmartWelcome';
@@ -133,6 +135,11 @@ const WanderChatPage: React.FC = () => {
   const [showSmartWelcome, setShowSmartWelcome] = useState(false);
   const [sessionOnboardingGuarded, setSessionOnboardingGuarded] = useState(false);
   const [limitMessage, setLimitMessage] = useState<string | null>(null);
+
+  // Feedback State
+  const [reportMessage, setReportMessage] = useState<Message | null>(null);
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [ratedMessages, setRatedMessages] = useState<Record<string, 'up' | 'down'>>({});
 
   // Check if user needs onboarding
   useEffect(() => {
@@ -255,6 +262,25 @@ const WanderChatPage: React.FC = () => {
     setIsSidebarCollapsed(true); // Auto-collapse on response (Desktop)
     loadSessions(); // Refresh list to catch new session title
 
+    // Priority-based panel selection
+    let panelToOpen: 'plan' | 'weather' | 'map' | 'image' | null = null;
+
+    if (result.imageUrl) {
+      setActiveImageUrl(result.imageUrl);
+      setActiveImagePrompt(result.text || "Your custom journey visual");
+      panelToOpen = 'image';
+    }
+
+    if (result.weather) {
+      setWeatherData(result.weather);
+      panelToOpen = 'weather';
+    }
+
+    if (result.dayPlan) {
+      setDayPlanData(result.dayPlan);
+      panelToOpen = 'map';
+    }
+
     if (result.plan) {
       const htmlContent = generateTripPlanHtml(result.plan);
       const blob = new Blob([htmlContent], { type: 'text/html' });
@@ -265,23 +291,11 @@ const WanderChatPage: React.FC = () => {
         id: newModelMessage.id,
         planData: result.plan,
       });
-      setActiveRightPanel('plan');
+      panelToOpen = 'plan';
     }
 
-    if (result.weather) {
-      setWeatherData(result.weather);
-      setActiveRightPanel('weather');
-    }
-
-    if (result.dayPlan) {
-      setDayPlanData(result.dayPlan);
-      setActiveRightPanel('map');
-    }
-
-    if (result.imageUrl) {
-      setActiveImageUrl(result.imageUrl);
-      setActiveImagePrompt(result.text || "Your custom journey visual");
-      setActiveRightPanel('image');
+    if (panelToOpen) {
+      setActiveRightPanel(panelToOpen);
     }
   };
 
@@ -634,6 +648,61 @@ const WanderChatPage: React.FC = () => {
 
 
 
+  const handleRateUp = async (message: Message) => {
+    if (!user || ratedMessages[message.id] === 'up') return;
+
+    setRatedMessages(prev => ({ ...prev, [message.id]: 'up' }));
+
+    await submitAiFeedback({
+      user_id: user.id,
+      session_id: currentActiveSessionId || user.sessionId,
+      query_id: message.id,
+      response: message.content.text || 'Non-text response',
+      thumb_rating: 'up'
+    });
+  };
+
+  const handleRateDown = async (message: Message) => {
+    if (!user || ratedMessages[message.id] === 'down') return;
+
+    setRatedMessages(prev => ({ ...prev, [message.id]: 'down' }));
+
+    await submitAiFeedback({
+      user_id: user.id,
+      session_id: currentActiveSessionId || user.sessionId,
+      query_id: message.id,
+      response: message.content.text || 'Non-text response',
+      thumb_rating: 'down'
+    });
+  };
+
+  const handleReport = (message: Message) => {
+    setReportMessage(message);
+  };
+
+  const handleSubmitReport = async (feedbackText: string) => {
+    if (!user || !reportMessage) return;
+
+    setIsSubmittingReport(true);
+    try {
+      const result = await submitAiFeedback({
+        user_id: user.id,
+        session_id: currentActiveSessionId || user.sessionId,
+        query_id: reportMessage.id,
+        response: reportMessage.content.text || 'Non-text response',
+        feedback_text: feedbackText,
+        is_reported: true
+      });
+
+      if (result.success) {
+        setReportMessage(null);
+        // Could show a success toast here
+      }
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
+
   const goToMyTrips = () => navigate('/user/my-trips');
 
   if (authLoading) {
@@ -899,6 +968,11 @@ const WanderChatPage: React.FC = () => {
                                   setActiveRightPanel('image');
                                 }
                               }}
+                              onRateUp={handleRateUp}
+                              onRateDown={handleRateDown}
+                              onReport={handleReport}
+                              isRatedUp={ratedMessages[msg.id] === 'up'}
+                              isRatedDown={ratedMessages[msg.id] === 'down'}
                             />
                           </div>
                         ))
@@ -1179,6 +1253,14 @@ const WanderChatPage: React.FC = () => {
           initialData={personalization}
         />
       )}
+
+      {/* Report Issue Modal */}
+      <ReportModal
+        isOpen={!!reportMessage}
+        onClose={() => setReportMessage(null)}
+        onSubmit={handleSubmitReport}
+        isLoading={isSubmittingReport}
+      />
 
       <style>{`
                 .animate-slideInRight { animation: slideInRight 0.5s ease-out; }

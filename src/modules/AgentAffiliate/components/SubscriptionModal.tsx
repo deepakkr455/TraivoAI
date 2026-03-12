@@ -6,6 +6,7 @@ import { affiliateSubscriptionService } from '../services/subscriptionService';
 import { AgentTier, AgentFeature } from '../types';
 import PayUForm from '../../../components/PayUForm';
 import { Loader2, Sparkles } from 'lucide-react';
+import SubscriptionRequestModal from '../../../components/SubscriptionRequestModal';
 
 interface SubscriptionModalProps {
     onClose: () => void;
@@ -25,6 +26,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose })
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [pendingPayment, setPendingPayment] = useState<PendingPayment | null>(null);
+    const [requestModal, setRequestModal] = useState<{ isOpen: boolean; tier: AgentTier } | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -93,6 +95,10 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose })
             return;
         }
 
+        // For Paid plans, show Request Modal (PayU commented out for now)
+        setRequestModal({ isOpen: true, tier });
+
+        /*
         const txnid = `txn_${Date.now()}`;
         setPendingPayment({
             amount: price,
@@ -100,10 +106,12 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose })
             billingCycle: 'monthly',
             txnid
         });
+        */
     };
 
     return (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[100] backdrop-blur-sm font-sans">
+            {/* 
             {pendingPayment && user && (
                 <div className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <PayUForm
@@ -122,6 +130,19 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose })
                     />
                     <button onClick={() => setPendingPayment(null)} className="absolute top-4 right-4 text-white hover:text-gray-300 font-bold">✕ Cancel</button>
                 </div>
+            )}
+            */}
+
+            {requestModal && user && (
+                <SubscriptionRequestModal
+                    isOpen={requestModal.isOpen}
+                    onClose={() => setRequestModal(null)}
+                    planName={requestModal.tier.name}
+                    billingCycle="monthly"
+                    amount={requestModal.tier.monthly_price}
+                    userId={user.id}
+                    userType="affiliate"
+                />
             )}
 
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col border border-gray-200 dark:border-gray-800">

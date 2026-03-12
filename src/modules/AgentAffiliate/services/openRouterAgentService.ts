@@ -20,7 +20,7 @@ const tools = [
                     start_date: { type: "string", description: 'The starting date of the trip in YYYY-MM-DD format.' },
                     duration: { type: "string", description: 'The total duration of the trip. e.g., "3D/2N + Travel"' },
                     location: { type: "string", description: 'The primary location of the trip.' },
-                    package_type: { type: "string", description: 'The type of package. e.g., "Specific Tour", "Backpacking Trip"' },
+                    package_type: { type: "string", description: 'The type of package. e.g., "trips", "hotels", "cars", "cruises", "flights", etc.' },
                     theme_tags: { type: "string", description: 'Comma-separated tags describing the trip theme.' },
                     media_urls: { type: "array", items: { type: "string" }, description: 'URLs for media.' },
                     itinerary: {

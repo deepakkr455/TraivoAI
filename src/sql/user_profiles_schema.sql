@@ -53,14 +53,44 @@ CREATE POLICY "Users can update own profile"
 -- 3. Trigger for new user signup
 -- Automatically create a profile row when a new user signs up via Auth
 CREATE OR REPLACE FUNCTION public.handle_new_user() 
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+SET search_path = public
+AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, personalization)
+  INSERT INTO public.profiles (
+    id, 
+    email,
+    full_name, 
+    user_type,
+    company_name,
+    company_size,
+    company_website,
+    instagram_page_id,
+    facebook_id,
+    phone_number,
+    alternative_number,
+    city,
+    state
+  )
   VALUES (
     NEW.id, 
-    NEW.raw_user_meta_data->>'full_name',
-    COALESCE(NEW.raw_user_meta_data->'personalization', '{}'::JSONB)
+    COALESCE(NEW.email, ''),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', 'Traivo User'),
+    COALESCE(NEW.raw_user_meta_data->>'user_type', 'other'),
+    COALESCE(NEW.raw_user_meta_data->>'company_name', ''),
+    COALESCE(NEW.raw_user_meta_data->>'company_size', ''),
+    COALESCE(NEW.raw_user_meta_data->>'company_website', ''),
+    COALESCE(NEW.raw_user_meta_data->>'instagram_page_id', ''),
+    COALESCE(NEW.raw_user_meta_data->>'facebook_id', ''),
+    COALESCE(NEW.raw_user_meta_data->>'phone_number', ''),
+    COALESCE(NEW.raw_user_meta_data->>'alternative_number', ''),
+    COALESCE(NEW.raw_user_meta_data->>'city', ''),
+    COALESCE(NEW.raw_user_meta_data->>'state', '')
   );
+  RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+  -- Log error or just allow sign-up to continue without a profile row
+  -- In a production environment, you might want more complex logging here.
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

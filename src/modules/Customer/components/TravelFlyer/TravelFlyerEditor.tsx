@@ -237,10 +237,10 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
 
     return (
         <div className="fixed inset-0 z-[100] bg-slate-50 flex flex-col overflow-hidden animate-in fade-in duration-500 font-sans">
-            {/* Top Navigation Bar - Floating Style */}
-            <header className="absolute top-0 left-0 right-0 z-50 px-6 py-4 pointer-events-none">
-                <div className="max-w-[1920px] mx-auto flex items-center justify-between pointer-events-auto">
-                    <div className="flex items-center gap-4 bg-white/80 backdrop-blur-xl border border-white/20 p-2 pr-6 rounded-2xl shadow-sm">
+            {/* Top Navigation Bar - Sticky on Mobile, Floating on Desktop */}
+            <header className="relative lg:absolute top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 pointer-events-auto lg:pointer-events-none">
+                <div className="max-w-[1920px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pointer-events-auto">
+                    <div className="flex items-center gap-4 bg-white/80 backdrop-blur-xl border border-white/20 p-2 pr-4 md:pr-6 rounded-2xl shadow-sm w-full sm:w-auto">
                         <button
                             onClick={onBack}
                             className="p-3 hover:bg-slate-100 rounded-xl transition-all text-slate-500 hover:text-slate-800"
@@ -253,13 +253,13 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                                 <Wand2 className="w-5 h-5" />
                             </div>
                             <div>
-                                <h1 className="text-sm font-bold text-slate-900 leading-none tracking-tight">VoyageFlyer Studio</h1>
+                                <h1 className="text-sm font-bold text-slate-900 leading-none tracking-tight">Traivo Flyer Studio</h1>
                                 <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mt-1">Design Mode</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 bg-white/80 backdrop-blur-xl border border-white/20 p-2 rounded-2xl shadow-sm">
+                    <div className="flex items-center gap-3 bg-white/80 backdrop-blur-xl border border-white/20 p-2 rounded-2xl shadow-sm w-full sm:w-auto justify-between sm:justify-start">
                         <div className="flex p-1 bg-slate-100/50 rounded-xl">
                             <button
                                 onClick={() => setView('edit')}
@@ -278,19 +278,20 @@ const TravelFlyerEditor: React.FC<TravelFlyerEditorProps> = ({ onBack }) => {
                         <button
                             onClick={handleExportPDF}
                             disabled={isExporting}
-                            className="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2.5 disabled:opacity-50 disabled:hover:translate-y-0"
+                            className="bg-slate-900 hover:bg-black text-white px-4 md:px-6 py-2.5 rounded-xl font-bold text-[10px] md:text-xs uppercase tracking-wider shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2.5 disabled:opacity-50 disabled:hover:translate-y-0"
                         >
                             {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                            {isExporting ? 'Generating...' : 'Export PDF'}
+                            <span className="hidden xs:inline">{isExporting ? 'Generating...' : 'Export PDF'}</span>
+                            <span className="xs:hidden">{isExporting ? '...' : 'PDF'}</span>
                         </button>
                     </div>
                 </div>
             </header>
 
-            <main className="flex-1 overflow-hidden flex flex-col lg:flex-row w-full pt-24 lg:pt-0">
+            <main className="flex-1 overflow-hidden flex flex-col lg:flex-row w-full min-h-0">
                 {/* Modern Editor Sidebar */}
-                <section ref={sidebarRef} className={`w-full lg:w-[420px] 2xl:w-[480px] bg-white border-r border-slate-100 overflow-y-auto shrink-0 transition-all z-40 lg:pt-24 pb-12 ${view === 'preview' ? 'hidden' : 'block'}`}>
-                    <div className="px-6 pb-6 space-y-8">
+                <section ref={sidebarRef} className={`flex-1 lg:flex-none w-full lg:w-[420px] 2xl:w-[480px] bg-white border-r border-slate-100 overflow-y-auto shrink-0 transition-all z-40 lg:pt-24 pb-32 lg:pb-12 ${view === 'preview' ? 'hidden' : 'block'}`}>
+                    <div className="px-6 pb-20 lg:pb-6 space-y-8">
                         {error && (
                             <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2 animate-in slide-in-from-top-2">
                                 <div className="w-2 h-2 rounded-full bg-red-500"></div>

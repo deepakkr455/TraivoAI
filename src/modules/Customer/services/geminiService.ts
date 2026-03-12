@@ -179,13 +179,37 @@ const toOpenRouterHistory = (messages: Message[]): any[] => {
     return messages.map(msg => {
         const role = msg.role === 'user' ? 'user' : 'assistant';
         let content = '';
+
+        // 1. Start with text content if available
         if (msg.content.text) {
             content = msg.content.text;
-        } else if (msg.content.plan) {
-            content = `[A trip plan for ${msg.content.plan.title} was generated and shown to the user as a card.]`;
-        } else if (msg.content.imageUrl) {
-            content = '[The user was shown a generated image]';
         }
+
+        // 2. Append structured data blocks if this is a model response
+        if (msg.role === 'model') {
+            const { plan, weather, dayPlan } = msg.content;
+
+            if (weather) {
+                content += `\n\n[SYSTEM: The following weather report JSON was generated and displayed as a card:\n${JSON.stringify(weather, null, 2)}\n]`;
+            }
+            if (dayPlan) {
+                content += `\n\n[SYSTEM: The following day plan JSON was generated and displayed as a card:\n${JSON.stringify(dayPlan, null, 2)}\n]`;
+            }
+            if (plan) {
+                content += `\n\n[SYSTEM: The following trip plan JSON was generated and displayed as a card:\n${JSON.stringify(plan, null, 2)}\n]`;
+            }
+        }
+
+        // 3. Append image info if available
+        if (msg.content.imageUrl) {
+            content += (content ? '\n\n' : '') + '[The user was shown a generated image]';
+        }
+
+        // Fallback for assistant messages (OpenRouter/AI models dislike empty content)
+        if (role === 'assistant' && !content.trim()) {
+            content = '[System: Request processed successfully]';
+        }
+
         return { role, content };
     });
 };
@@ -289,7 +313,7 @@ export const fetchHistory = async (userId: string, sessionId: string): Promise<M
             .eq('userid', userId)
             .eq('session_id', sessionId)
             .order('datetime', { ascending: false })
-            .limit(20);
+            .limit(30);
         if (error) throw error;
 
         // Reverse to get chronological order (oldest to newest) from the fetch results (newest to oldest)
@@ -337,7 +361,7 @@ const saveInteraction = async (
             const SESSION_TITLES = [
                 "Adventure Awaits", "Dream Vacation", "City Explorer", "Beach Paradise",
                 "Mountain Retreat", "Cultural Journey", "Foodie Tour", "Hidden Gems",
-                "Road Trip", "Weekend Getaway", "Nature Escape", "Historic Wonders"
+                "Road Trip", "Weekend Getaway", "Nature Escape", "Historic Wonders", "Make it memorable"
             ];
             const title = SESSION_TITLES[Math.floor(Math.random() * SESSION_TITLES.length)];
             await supabase.from('customer_chat_sessions').insert([{
@@ -485,6 +509,8 @@ const handleDayPlanMap = async (args: any, messages: any[], addAgentThought: (th
     return { dayPlan: normalizeDayPlan(result.dayPlan) };
 };
 
+
+//Handles Tool calling
 export const orchestrateResponse = async (
     prompt: string,
     userId: string,
@@ -574,6 +600,7 @@ export const orchestrateResponse = async (
         clearInterval(interval); // Stop rotation
 
         logger.info("[WanderChat] orchestrateResponse RAW Result:", JSON.stringify(result, null, 2));
+        console.log("[WanderChat] orchestrateResponse RAW Result:", JSON.stringify(result, null, 2));
 
         if (result.weather) {
             result.weather = normalizeWeatherData(result.weather, prompt);
@@ -582,13 +609,12 @@ export const orchestrateResponse = async (
             result.dayPlan = normalizeDayPlan(result.dayPlan);
         }
 
-        if (result.tool) {
-            onResult(result);
-            await saveInteraction(userId, sessionId, prompt, result, result.tool);
-        } else {
-            onResult(result);
-            await saveInteraction(userId, sessionId, prompt, result, 'general_query');
-        }
+        // Determine tool category for logging
+        const toolCount = [result.plan, result.weather, result.dayPlan, result.imageUrl].filter(Boolean).length;
+        const category = toolCount > 1 ? 'multi_tool' : (result.tool || 'general_query');
+
+        onResult(result);
+        await saveInteraction(userId, sessionId, prompt, result, category);
     } catch (err) {
         clearInterval(interval);
         throw err;

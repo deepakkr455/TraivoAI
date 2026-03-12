@@ -1,7 +1,7 @@
 import { Template } from './types';
 
 export const TEMPLATES: Template[] = [
-    { id: 'luxury', name: 'Elite Voyage', description: 'Serif fonts with elegant overlays.', thumbnail: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=400', isMultiPage: true },
+    { id: 'luxury', name: 'Elite Traivo', description: 'Serif fonts with elegant overlays.', thumbnail: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=400', isMultiPage: true },
     { id: 'editorial', name: 'Globe Magazine', description: 'Clean, bold typography and white space.', thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=400', isMultiPage: true },
     { id: 'adventure', name: 'Nomad Soul', description: 'Rugged, dynamic and vibrant.', thumbnail: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=400', isMultiPage: true },
     { id: 'mosaic', name: 'Picture Perfect', description: 'Focus on multi-image layouts.', thumbnail: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=400', isMultiPage: true },
@@ -23,8 +23,8 @@ export const DEFAULT_FLYER_DATA = {
         { day: 'Day 4', title: 'Wine Tasting Tour', description: 'Visiting three traditional wineries with cliffside views.', price: '$150' },
         { day: 'Day 5', title: 'Black Sand Beach', description: 'Relaxation at Perissa Beach followed by a farewell dinner.', price: '$200' }
     ],
-    contactEmail: 'hello@voyageflyer.com',
-    contactPhone: '+1-555-WANDER',
+    contactEmail: 'support@traivoai.com',
+    contactPhone: '+1-555-TRAIVO',
     website: 'www.traivoai.com',
     colorTheme: '#0f172a',
     fontFamily: 'serif' as const,
