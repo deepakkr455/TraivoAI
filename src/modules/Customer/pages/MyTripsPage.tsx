@@ -185,7 +185,7 @@ export const MyTripsPage: React.FC<MyTripsProps> = ({ onBack }) => {
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold mb-3 text-gray-900">No adventures yet</h2>
                 <p className="text-gray-500 max-w-md mb-8 text-base md:text-lg">
-                  Your  stories are waiting to be written. Start planning your first getaway today!
+                  Your future stories are waiting to be written. Start planning your first getaway today!
                 </p>
                 <button
                   onClick={() => navigate('/user/wanderchat')}
